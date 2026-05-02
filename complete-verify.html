@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action Handler - BTEC Cloud</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* تنسيق إضافي لتموضع العين داخل حقل الباسوورد */
+        .input-group {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 42px; /* تعديل المكان ليتناسب مع الليبل */
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.5);
+            transition: 0.3s;
+        }
+        .toggle-password:hover {
+            color: #4facfe;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="css-shape shape-1" style="--rot: -35deg;"></div>
+    <div class="css-shape shape-2" style="--rot: 20deg;"></div>
+    <div class="css-shape shape-3" style="--rot: 45deg;"></div>
+    <div class="css-shape shape-4"></div>
+
+    <div class="glass-card" style="text-align: center; min-height: 350px; display: flex; flex-direction: column; justify-content: center;">
+        
+        <!-- 1. شاشة التحميل -->
+        <div id="loading-msg">
+            <i class="fas fa-spinner fa-spin" style="font-size: 50px; color: #4facfe;"></i>
+            <h2 class="login-title" style="margin-top: 20px;">Processing...</h2>
+            <p style="color: #e0e0e0;">Please wait while we handle your request.</p>
+        </div>
+
+        <!-- 2. شاشة نجاح تأكيد الإيميل -->
+        <div id="success-verify" style="display: none;">
+            <i class="fas fa-check-circle" style="font-size: 60px; color: #00f2fe; margin-bottom: 20px;"></i>
+            <h2 class="login-title">Email Verified!</h2>
+            <p style="color: #000000; margin-bottom: 30px;">Your account is now active. You can log in.</p>
+            <a href="index.html" class="submit-btn" style="text-decoration: none; display: inline-block; width: 100%; box-sizing: border-box;">Login Now</a>
+        </div>
+
+        <!-- 3. شاشة إعادة تعيين كلمة المرور (مع إضافة العين) -->
+        <div id="reset-password-ui" style="display: none;">
+            <i class="fas fa-key" style="font-size: 50px; color: #4facfe; margin-bottom: 20px;"></i>
+            <h2 class="login-title">New Password</h2>
+            <p style="color: #000000; margin-bottom: 20px; font-size: 14px;">Create a strong password for your account.</p>
+            
+            <div class="input-group" style="text-align: left;">
+                <label>New Password</label>
+                <input type="password" id="new-password" placeholder="At least 6 characters">
+                <!-- أيقونة العين -->
+                <i class="fas fa-eye-slash toggle-password" id="reset-eye-icon"></i>
+            </div>
+            <button id="save-password-btn" class="submit-btn">Save Password</button>
+        </div>
+
+        <!-- 4. شاشة النجاح بعد تغيير الباسوورد -->
+        <div id="success-reset" style="display: none;">
+            <i class="fas fa-shield-alt" style="font-size: 60px; color: #00f2fe; margin-bottom: 20px;"></i>
+            <h2 class="login-title">Password Changed!</h2>
+            <p style="color: #e0e0e0; margin-bottom: 30px;">Your password has been updated successfully.</p>
+            <a href="index.html" class="submit-btn" style="text-decoration: none; display: inline-block; width: 100%; box-sizing: border-box;">Login with New Password</a>
+        </div>
+
+        <!-- 5. شاشة الخطأ -->
+        <div id="error-msg" style="display: none;">
+            <i class="fas fa-times-circle" style="font-size: 60px; color: #ff4b2b; margin-bottom: 20px;"></i>
+            <h2 class="login-title">Action Failed</h2>
+            <p id="error-text" style="color: #e0e0e0; margin-bottom: 30px;">The link is invalid or has expired.</p>
+            <a href="index.html" class="submit-btn" style="text-decoration: none; display: inline-block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #ff416c, #ff4b2b);">Back to Home</a>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, applyActionCode, confirmPasswordReset, verifyPasswordResetCode } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
+            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            projectId: "btec-cloud-portal-d6a93",
+            storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
+            messagingSenderId: "230354414241",
+            appId: "1:230354414241:web:b365524169fb815b449ee0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const actionCode = urlParams.get('oobCode');
+        const mode = urlParams.get('mode');
+
+        function showUI(id) {
+            document.getElementById('loading-msg').style.display = 'none';
+            document.getElementById('success-verify').style.display = 'none';
+            document.getElementById('reset-password-ui').style.display = 'none';
+            document.getElementById('success-reset').style.display = 'none';
+            document.getElementById('error-msg').style.display = 'none';
+            document.getElementById(id).style.display = 'block';
+        }
+
+        if (actionCode) {
+            switch (mode) {
+                case 'verifyEmail':
+                    applyActionCode(auth, actionCode)
+                        .then(() => showUI('success-verify'))
+                        .catch(() => showUI('error-msg'));
+                    break;
+                case 'resetPassword':
+                    verifyPasswordResetCode(auth, actionCode)
+                        .then(() => showUI('reset-password-ui'))
+                        .catch(() => showUI('error-msg'));
+                    break;
+                default:
+                    showUI('error-msg');
+            }
+        } else {
+            showUI('error-msg');
+        }
+
+        // منطق تشغيل "العين" لإظهار/إخفاء الباسوورد
+        const newPasswordInput = document.getElementById('new-password');
+        const resetEyeIcon = document.getElementById('reset-eye-icon');
+
+        resetEyeIcon.addEventListener('click', () => {
+            const isPassword = newPasswordInput.getAttribute('type') === 'password';
+            newPasswordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            resetEyeIcon.classList.toggle('fa-eye-slash', !isPassword);
+            resetEyeIcon.classList.toggle('fa-eye', isPassword);
+        });
+
+        // حفظ الباسوورد الجديد
+        document.getElementById('save-password-btn').addEventListener('click', () => {
+            const newPassword = newPasswordInput.value;
+            if (newPassword.length < 6) {
+                alert("Password must be at least 6 characters!");
+                return;
+            }
+
+            const btn = document.getElementById('save-password-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            confirmPasswordReset(auth, actionCode, newPassword)
+                .then(() => showUI('success-reset'))
+                .catch(() => showUI('error-msg'));
+        });
+    </script>
+</body>
+</html>
