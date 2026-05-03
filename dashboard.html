@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEC Cloud - Dashboard</title>
+    <!-- أيقونة الموقع (Favicon) -->
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <!-- مكتبة الأيقونات (FontAwesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #041222;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary-glow: #00a8fc;
+            --text-main: #ffffff;
+            --text-muted: #8ba0b2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 168, 252, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 168, 252, 0.05), transparent 25%);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+            border-top: none;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-glow);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 50px 20px;
+        }
+
+        .welcome-section {
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .welcome-section p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .search-bar:focus {
+            border-color: var(--primary-glow);
+        }
+
+        /* سهم الفلتر الجديد المخصص */
+        .select-filter {
+            padding: 12px 35px 12px 15px; 
+            background-color: rgba(0, 0, 0, 0.2);
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%238ba0b2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center; 
+            background-size: 14px; 
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .select-filter option {
+            background-color: var(--bg-dark);
+            color: white;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* كرت المادة (إضافة cursor: pointer لأنه قابل للضغط) */
+        .course-card {
+            cursor: pointer; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 168, 252, 0.15);
+            border-color: rgba(0, 168, 252, 0.3);
+        }
+
+        /* تعديل الغلاف للحفاظ على الزوايا الدائرية */
+        .course-cover {
+            height: 120px;
+            background: linear-gradient(135deg, rgba(0, 168, 252, 0.2), rgba(0, 86, 179, 0.1));
+            position: relative;
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 16px 16px 0 0; 
+        }
+
+        .course-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .course-title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .course-term {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: rgba(0, 168, 252, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-glow);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* --- أكواد القوائم المنسدلة (Dropdowns للـ Navbar) --- */
+        .dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 15px;
+            min-width: 160px;
+            background: #0d1b2a;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            flex-direction: column;
+            z-index: 1000;
+            padding: 8px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .dropdown-menu.show {
+            display: flex;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 168, 252, 0.15);
+        }
+
+        .dropdown-item i {
+            width: 15px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .dropdown-item:hover i {
+            color: var(--primary-glow);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar glass-panel">
+        <div class="logo">
+            <!-- اللوجو السحابة -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00a8fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(0, 168, 252, 0.5));">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                <path d="M9 14l2 2 4-4"></path>
+            </svg>
+            BTEC Cloud
+        </div>
+        
+        <div class="nav-actions">
+            <!-- قائمة اللغة -->
+            <div class="dropdown-wrapper">
+                <span>🌐 EN ▾</span>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item">العربية (AR)</a>
+                    <a href="#" class="dropdown-item" style="color:var(--primary-glow)">English (EN)</a>
+                </div>
+            </div>
+
+            <!-- قائمة الإشعارات -->
+            <div class="dropdown-wrapper">
+                <span>🔔</span>
+                <div class="dropdown-menu" style="min-width: 220px;">
+                    <div style="padding: 10px 20px; font-size: 12px; font-weight: bold; color: var(--text-muted); border-bottom: 1px solid var(--glass-border);">Notifications</div>
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">
+                        No new notifications
+                    </div>
+                </div>
+            </div>
+
+            <!-- قائمة البروفايل -->
+            <div class="dropdown-wrapper">
+                <div class="profile-pic" id="profile-pic">U</div>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
+                        <i class="fas fa-sign-out-alt" style="color:#ff4b2b;"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="welcome-section">
+            <h1 id="welcome-msg">Hello, Student! 👋</h1>
+            <p>Here is an overview of your courses.</p>
+        </div>
+
+        <div class="toolbar glass-panel">
+            <select id="semesterFilter" class="select-filter" onchange="window.filterCourses()">
+                <option value="all">All Semesters</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+            </select>
+            
+            <input type="text" id="searchInput" class="search-bar" placeholder="Search for a course...">
+        </div>
+
+        <div class="courses-grid" id="coursesContainer">
+            
+            <!-- ====== Semester 1 ====== -->
+            <div class="course-card glass-panel" data-semester="1" onclick="viewDetails('Databases')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Databases</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 1</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <div class="course-card glass-panel" data-semester="1" onclick="viewDetails('Using IT to Support Information and Communication in Organizations')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Using IT to Support Information and Communication in Organizations</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 1</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <div class="course-card glass-panel" data-semester="1" onclick="viewDetails('Data Modeling and Spreadsheets')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Data Modeling and Spreadsheets</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 1</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <!-- ====== Semester 2 ====== -->
+            <div class="course-card glass-panel" data-semester="2" onclick="viewDetails('Introduction to Computer Networks')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Introduction to Computer Networks</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 2</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <div class="course-card glass-panel" data-semester="2" onclick="viewDetails('Introduction to Programming')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Introduction to Programming</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 2</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <div class="course-card glass-panel" data-semester="2" onclick="viewDetails('Introduction to Digital Graphics and Animation')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Introduction to Digital Graphics and Animation</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 2</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <!-- ====== Semester 3 ====== -->
+            <div class="course-card glass-panel" data-semester="3" onclick="viewDetails('Introduction to Web Development')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Introduction to Web Development</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 3</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <div class="course-card glass-panel" data-semester="3" onclick="viewDetails('Introduction to Applications')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Introduction to Applications</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 3</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <div class="course-card glass-panel" data-semester="3" onclick="viewDetails('Introduction to Game Design')">
+                <div class="course-cover"></div>
+                <div class="course-content">
+                    <div class="course-title">Introduction to Game Design</div>
+                    <div class="course-footer">
+                        <span class="course-term">Semester 3</span>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
+            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            projectId: "btec-cloud-portal-d6a93",
+            storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
+            messagingSenderId: "230354414241",
+            appId: "1:230354414241:web:b365524169fb815b449ee0",
+            measurementId: "G-CVWMNZQNKQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // التحقق من حالة المستخدم
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userName = user.displayName || "Student";
+                document.getElementById("welcome-msg").innerHTML = `Hello, ${userName}! 👋`;
+                document.getElementById("profile-pic").innerText = userName.charAt(0);
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // تسجيل الخروج
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                window.location.href = "index.html";
+            });
+        });
+
+        // -----------------------------------------
+        // دالة عرض التفاصيل عند الكبس على الكرت
+        // -----------------------------------------
+        window.viewDetails = function(courseName) {
+            alert("Opening details for: " + courseName);
+        };
+
+        // -----------------------------------------
+        // تشغيل القوائم المنسدلة (للـ Navbar)
+        // -----------------------------------------
+        document.querySelectorAll('.dropdown-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                
+                // تسكير أي قائمة ثانية فاتحة
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if (menu !== wrapper.querySelector('.dropdown-menu')) {
+                        menu.classList.remove('show');
+                    }
+                });
+                
+                // فتح/إغلاق القائمة الحالية
+                const menu = wrapper.querySelector('.dropdown-menu');
+                if(menu) menu.classList.toggle('show');
+            });
+        });
+
+        // تسكير القائمة إذا كبسنا برا الشاشة
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        });
+
+        // -----------------------------------------
+        // كود الفلترة + البحث المباشر
+        // -----------------------------------------
+        window.filterCourses = function() {
+            const selectedSemester = document.getElementById("semesterFilter").value;
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const courses = document.querySelectorAll(".course-card");
+
+            courses.forEach(course => {
+                const courseSemester = course.getAttribute("data-semester");
+                const title = course.querySelector('.course-title').innerText.toLowerCase();
+                
+                const matchesSemester = (selectedSemester === "all" || selectedSemester === courseSemester);
+                const matchesSearch = title.includes(searchText);
+
+                if (matchesSemester && matchesSearch) {
+                    course.style.display = "flex"; 
+                } else {
+                    course.style.display = "none"; 
+                }
+            });
+        }
+
+        // تشغيل الفلترة بمجرد كتابة أي حرف
+        document.getElementById('searchInput').addEventListener('input', window.filterCourses);
+    </script>
+</body>
+</html>
