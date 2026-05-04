@@ -18,21 +18,18 @@
     font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
-html, body.dashboard-body {
-    display: block !important;
-    flex-direction: column !important; /* لضمان قتل التوسيط العرضي */
-    width: 100% !important;
-    height: auto !important;
-    min-height: 100vh !important;
+body.dashboard-body {
+    display: block !important; 
     background-color: var(--bg-dark);
     background-image: 
         radial-gradient(circle at 15% 50%, rgba(0, 168, 252, 0.08), transparent 25%),
         radial-gradient(circle at 85% 30%, rgba(0, 168, 252, 0.05), transparent 25%);
     color: var(--text-main);
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; 
+    overflow-y: auto !important; 
 }
 
 /* إجبار الـ Navbar يوخذ العرض كامل ويضل فوق */
