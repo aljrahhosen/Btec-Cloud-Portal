@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEC Cloud - My Profile</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- استخدام نفس ملف ستايل الداشبورد الأساسي -->
+    <link rel="stylesheet" href="dashboard-style.css">
+    <style>
+        .profile-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .profile-sidebar {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-glow), #0056b3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 10px 25px rgba(0, 168, 252, 0.4);
+            text-transform: uppercase;
+        }
+        .profile-name { font-size: 24px; font-weight: 600; margin-bottom: 5px; }
+        .profile-role { color: var(--primary-glow); font-size: 14px; font-weight: 500; margin-bottom: 20px; }
+        
+        .profile-content {
+            flex: 2;
+            min-width: 300px;
+            padding: 30px;
+        }
+        .info-group { margin-bottom: 25px; }
+        .info-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: block; }
+        .info-value { font-size: 16px; color: white; padding: 12px 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 8px; }
+        
+        .btn-edit { background: var(--primary-glow); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; margin-top: 10px; }
+        .btn-edit:hover { background: #0088cc; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
+        
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
+        .back-link:hover { color: var(--primary-glow); }
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <nav class="navbar glass-panel">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00a8fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(0, 168, 252, 0.5));">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                <path d="M9 14l2 2 4-4"></path>
+            </svg>
+            BTEC Cloud
+        </div>
+        <div class="nav-actions">
+            <!-- قائمة البروفايل (عشان يقدر يرجع للداشبورد أو يسجل خروج) -->
+            <div class="dropdown-wrapper">
+                <div class="profile-pic" id="nav-profile-pic">U</div>
+                <div class="dropdown-menu">
+                    <a href="dashboard.html" class="dropdown-item"><i class="fas fa-home"></i> Dashboard</a>
+                    <a href="settings.html" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        
+        <div class="welcome-section">
+            <h1>My Profile</h1>
+            <p>Manage your personal information and student details.</p>
+        </div>
+
+        <div class="profile-container">
+            <!-- الشريط الجانبي للحساب -->
+            <div class="glass-panel profile-sidebar">
+                <div class="profile-avatar" id="main-avatar">U</div>
+                <div class="profile-name" id="display-name">Student Name</div>
+                <div class="profile-role">Engineering Student</div>
+                <button class="btn-edit"><i class="fas fa-pen"></i> Edit Profile</button>
+            </div>
+
+            <!-- تفاصيل الحساب -->
+            <div class="glass-panel profile-content">
+                <div class="info-group">
+                    <span class="info-label">Full Name</span>
+                    <div class="info-value" id="info-name">Loading...</div>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Email Address</span>
+                    <div class="info-value" id="info-email">Loading...</div>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Student ID</span>
+                    <div class="info-value">BTEC-2026-001</div>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Major / Specialization</span>
+                    <div class="info-value">Engineering</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
+            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            projectId: "btec-cloud-portal-d6a93",
+            storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
+            messagingSenderId: "230354414241",
+            appId: "1:230354414241:web:b365524169fb815b449ee0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userName = user.displayName || "Student";
+                const userEmail = user.email || "No email provided";
+                
+                // تعبئة البيانات في الواجهة
+                document.getElementById("nav-profile-pic").innerText = userName.charAt(0);
+                document.getElementById("main-avatar").innerText = userName.charAt(0);
+                document.getElementById("display-name").innerText = userName;
+                document.getElementById("info-name").innerText = userName;
+                document.getElementById("info-email").innerText = userEmail;
+            } else {
+                window.location.href = "index.html"; // طرد إذا مش مسجل دخول
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => window.location.href = "index.html");
+        });
+
+        // تشغيل القوائم المنسدلة
+        document.querySelector('.dropdown-wrapper').addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.querySelector('.dropdown-menu').classList.toggle('show');
+        });
+        document.addEventListener('click', () => {
+            const menu = document.querySelector('.dropdown-menu');
+            if(menu) menu.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
