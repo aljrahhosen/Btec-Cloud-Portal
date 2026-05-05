@@ -157,19 +157,42 @@
                         </div>
                         
                         <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" class="g-crit">Criteria Achieved:</h4>
-                        <div class="criteria-grid">
-                            <span class="crit-tag achieved-p">P1</span>
-                            <span class="crit-tag achieved-p">P2</span>
-                            <span class="crit-tag achieved-p">P3</span>
-                            <span class="crit-tag achieved-m">M1</span>
-                            <span class="crit-tag achieved-m">M2</span>
-                            <span class="crit-tag achieved-d">D1</span>
-                            <span class="crit-tag">P4</span>
-                            <span class="crit-tag">M3</span>
-                            <span class="crit-tag">D2</span>
-                        </div>
-                    </div>
-                </div>
+                        <!-- قسم العلامات بتنسيق P -> M -> D -->
+<div class="module-content">
+    <div class="grade-box-container">
+        <!-- 1. Pass -->
+        <div class="grade-box">
+            <h4 class="g-assign1">Assignment 1</h4>
+            <div class="grade-val val-pass">PASS</div>
+        </div>
+        <!-- 2. Merit -->
+        <div class="grade-box">
+            <h4 class="g-assign2">Assignment 2</h4>
+            <div class="grade-val val-merit">MERIT</div>
+        </div>
+        <!-- 3. Distinction -->
+        <div class="grade-box" style="border-color: rgba(255, 215, 0, 0.4); background: rgba(255,215,0,0.05);">
+            <h4 class="g-final">Target Grade</h4>
+            <div class="grade-val val-dist">DISTINCTION</div>
+        </div>
+    </div>
+    
+    <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" class="g-crit">Criteria Achieved:</h4>
+    <div class="criteria-grid">
+        <!-- مرتبة حسب النوع: P أولاً، ثم M، ثم D -->
+        <span class="crit-tag achieved-p">P1</span>
+        <span class="crit-tag achieved-p">P2</span>
+        <span class="crit-tag achieved-p">P3</span>
+        <span class="crit-tag achieved-p">P4</span>
+        
+        <span class="crit-tag achieved-m">M1</span>
+        <span class="crit-tag achieved-m">M2</span>
+        <span class="crit-tag">M3</span>
+        
+        <span class="crit-tag achieved-d">D1</span>
+        <span class="crit-tag">D2</span>
+    </div>
+</div>
 
                 <h3 style="color: white; margin-bottom: 20px; font-weight: 600; margin-top: 30px;" id="c-content-title">Learning Aims</h3>
 
