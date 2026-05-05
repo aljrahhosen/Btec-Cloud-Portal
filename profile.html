@@ -7,10 +7,9 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard-style.css?v=2">
+    <link rel="stylesheet" href="dashboard-style.css?v=3">
     
     <style>
-        /* ستايلات البروفايل الخاصة */
         .profile-container { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
         .profile-sidebar { flex: 1; min-width: 250px; text-align: center; padding: 40px 20px; }
         .profile-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-glow), #0056b3); display: flex; justify-content: center; align-items: center; font-size: 48px; font-weight: bold; color: white; margin: 0 auto 20px auto; box-shadow: 0 10px 25px rgba(0, 168, 252, 0.4); text-transform: uppercase; }
@@ -26,10 +25,12 @@
         .btn-primary { background: var(--primary-glow); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary:hover { background: #0088cc; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
         
+        .btn-danger-outline { background: transparent; border: 1px solid #ff4b2b; color: #ff4b2b; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: 600; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-danger-outline:hover { background: rgba(255, 75, 43, 0.1); }
+
         .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
         .back-link:hover { color: var(--primary-glow); }
 
-        /* نافذة التعديل (Modal) */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
         .modal-overlay.active { display: flex; }
         .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; box-shadow: 0 15px 50px rgba(0,0,0,0.5); position: relative; }
@@ -50,7 +51,6 @@
 
 <body class="dashboard-body" style="display: block !important; width: 100% !important; height: auto !important; min-height: 100vh !important; overflow-y: auto !important;">
 
-    <!-- الـ Navbar -->
     <nav class="navbar glass-panel" style="width: 100% !important; top: 0 !important; position: relative !important; display: flex !important;">
         <div class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00a8fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(0, 168, 252, 0.5));">
@@ -60,13 +60,21 @@
             BTEC Cloud
         </div>
         <div class="nav-actions">
+            <!-- Language Dropdown -->
+            <div class="dropdown-wrapper">
+                <span id="lang-display">🌐 EN ▾</span>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item" onclick="setLanguage('ar')">العربية (AR)</a>
+                    <a href="#" class="dropdown-item" onclick="setLanguage('en')">English (EN)</a>
+                </div>
+            </div>
+
             <div class="dropdown-wrapper">
                 <div class="profile-pic" id="nav-profile-pic">U</div>
                 <div class="dropdown-menu">
-                    <a href="dashboard.html" class="dropdown-item"><i class="fas fa-home"></i> Dashboard</a>
-                    <a href="settings.html" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="dashboard.html" class="dropdown-item" id="nav-dash"><i class="fas fa-home"></i> Dashboard</a>
                     <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i> <span id="nav-logout">Logout</span>
                     </a>
                 </div>
             </div>
@@ -74,47 +82,47 @@
     </nav>
 
     <main class="container">
-        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <a href="dashboard.html" class="back-link" id="back-link-text"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         
         <div class="welcome-section">
-            <h1>My Profile</h1>
-            <p>Manage your personal information, academic details, and identity.</p>
+            <h1 id="page-title">My Profile</h1>
+            <p id="page-desc">Manage your personal information, academic details, and identity.</p>
         </div>
 
         <div class="profile-container">
-            <!-- الشريط الجانبي للحساب -->
             <div class="glass-panel profile-sidebar">
                 <div class="profile-avatar" id="main-avatar">U</div>
                 <div class="profile-name" id="display-name">Loading...</div>
-                <div class="profile-role" id="display-major">Engineering Student</div>
-                <button class="btn-primary" id="open-edit-btn"><i class="fas fa-pen"></i> Edit Profile</button>
+                <div class="profile-role" id="display-major">BTEC Student</div>
+                
+                <button class="btn-primary" id="open-edit-btn"><i class="fas fa-pen"></i> <span id="btn-edit-text">Edit Profile</span></button>
+                <button class="btn-danger-outline" id="reset-pass-btn"><i class="fas fa-key"></i> <span id="btn-pass-text">Change Password</span></button>
             </div>
 
-            <!-- تفاصيل الحساب -->
             <div class="glass-panel profile-content">
                 <div class="info-grid">
                     <div class="info-group">
-                        <span class="info-label">Full Name</span>
+                        <span class="info-label" id="label-name">Full Name</span>
                         <div class="info-value" id="info-name">Loading...</div>
                     </div>
                     <div class="info-group">
-                        <span class="info-label">Email Address</span>
+                        <span class="info-label" id="label-email">Email Address</span>
                         <div class="info-value" id="info-email">Loading...</div>
                     </div>
                     <div class="info-group">
-                        <span class="info-label">National ID (الرقم الوطني)</span>
-                        <div class="info-value" id="info-nid">Not Set</div>
+                        <span class="info-label" id="label-nid">National ID</span>
+                        <div class="info-value" id="info-nid">Not Available</div>
                     </div>
                     <div class="info-group">
-                        <span class="info-label">Student ID (الرقم الجامعي)</span>
-                        <div class="info-value" id="info-sid">Not Set</div>
+                        <span class="info-label" id="label-sid">Student Number</span>
+                        <div class="info-value" id="info-sid" style="color: var(--primary-glow); font-weight: bold; letter-spacing: 1px;">Loading...</div>
                     </div>
                     <div class="info-group">
-                        <span class="info-label">University</span>
-                        <div class="info-value" id="info-uni">Not Set</div>
+                        <span class="info-label" id="label-school">School</span>
+                        <div class="info-value" id="info-school">Not Set</div>
                     </div>
                     <div class="info-group">
-                        <span class="info-label">Location / Country</span>
+                        <span class="info-label" id="label-loc">Location / Country</span>
                         <div class="info-value" id="info-loc">Not Set</div>
                     </div>
                 </div>
@@ -122,32 +130,24 @@
         </div>
     </main>
 
-    <!-- نافذة التعديل المنبثقة (Modal) -->
+    <!-- Modal -->
     <div class="modal-overlay" id="edit-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Edit Profile Details</div>
+                <div class="modal-title" id="modal-title-text">Edit Profile Details</div>
                 <button class="close-btn" id="close-modal-btn"><i class="fas fa-times"></i></button>
             </div>
             
             <div class="form-group">
-                <label>National ID</label>
-                <input type="number" id="input-nid" placeholder="Enter your 10-digit National ID">
+                <label id="modal-label-school">School</label>
+                <input type="text" id="input-school" placeholder="e.g. BTEC High School">
             </div>
             <div class="form-group">
-                <label>Student ID</label>
-                <input type="text" id="input-sid" placeholder="e.g. 20240001">
-            </div>
-            <div class="form-group">
-                <label>University</label>
-                <input type="text" id="input-uni" placeholder="Where do you study?">
-            </div>
-            <div class="form-group">
-                <label>Major</label>
+                <label id="modal-label-major">Major</label>
                 <input type="text" id="input-major" placeholder="Your specialization">
             </div>
             <div class="form-group">
-                <label>Location</label>
+                <label id="modal-label-loc">Location</label>
                 <input type="text" id="input-loc" placeholder="City, Country">
             </div>
 
@@ -158,10 +158,9 @@
         </div>
     </div>
 
-    <!-- أكواد الجافاسكريبت والفايربيس -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -175,35 +174,93 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // بيانات افتراضية إذا كان المستخدم لسا ما عدل حسابه
-        const defaultData = {
-            nid: "",
-            sid: "",
-            uni: "Yarmouk University",
-            major: "Internet of Things Engineering",
-            loc: "Jordan"
+        // ----------------- نظام الترجمة -----------------
+        const translations = {
+            en: {
+                langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", pageTitle: "My Profile",
+                pageDesc: "Manage your personal information, academic details, and identity.",
+                editBtn: "Edit Profile", passBtn: "Change Password",
+                labelName: "Full Name", labelEmail: "Email Address", labelNid: "National ID",
+                labelSid: "Student Number", labelSchool: "School", labelLoc: "Location / Country",
+                modalTitle: "Edit Profile Details", modalCancel: "Cancel", modalSave: "Save Changes",
+                navDash: "Dashboard", navLogout: "Logout", alertPass: "Password reset link sent to your email!"
+            },
+            ar: {
+                langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", pageTitle: "حسابي الشخصي",
+                pageDesc: "إدارة معلوماتك الشخصية، الأكاديمية، وهويتك.",
+                editBtn: "تعديل الحساب", passBtn: "تغيير كلمة المرور",
+                labelName: "الاسم الكامل", labelEmail: "البريد الإلكتروني", labelNid: "الرقم الوطني",
+                labelSid: "الرقم الطلابي", labelSchool: "المدرسة", labelLoc: "الموقع / الدولة",
+                modalTitle: "تعديل بيانات الحساب", modalCancel: "إلغاء", modalSave: "حفظ التعديلات",
+                navDash: "لوحة التحكم", navLogout: "تسجيل الخروج", alertPass: "تم إرسال رابط تغيير كلمة المرور إلى إيميلك!"
+            }
         };
 
-        // دالة لجلب البيانات من المتصفح (عشان تضل محفوظة)
-        function loadProfileData() {
-            const saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
+        window.setLanguage = function(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             
-            // تعبئة البيانات بالواجهة
-            document.getElementById('info-nid').innerText = saved.nid || "Not Set";
-            document.getElementById('info-sid').innerText = saved.sid || "Not Set";
-            document.getElementById('info-uni').innerText = saved.uni;
+            document.getElementById('lang-display').innerText = translations[lang].langDisplay;
+            document.getElementById('back-link-text').innerHTML = `<i class="fas fa-${lang === 'ar' ? 'arrow-right' : 'arrow-left'}"></i> ${translations[lang].backDash}`;
+            document.getElementById('page-title').innerText = translations[lang].pageTitle;
+            document.getElementById('page-desc').innerText = translations[lang].pageDesc;
+            document.getElementById('btn-edit-text').innerText = translations[lang].editBtn;
+            document.getElementById('btn-pass-text').innerText = translations[lang].passBtn;
+            
+            document.getElementById('label-name').innerText = translations[lang].labelName;
+            document.getElementById('label-email').innerText = translations[lang].labelEmail;
+            document.getElementById('label-nid').innerText = translations[lang].labelNid;
+            document.getElementById('label-sid').innerText = translations[lang].labelSid;
+            document.getElementById('label-school').innerText = translations[lang].labelSchool;
+            document.getElementById('label-loc').innerText = translations[lang].labelLoc;
+            
+            document.getElementById('modal-title-text').innerText = translations[lang].modalTitle;
+            document.getElementById('modal-label-school').innerText = translations[lang].labelSchool;
+            document.getElementById('modal-label-major').innerText = translations[lang].labelSchool + " Major";
+            document.getElementById('modal-label-loc').innerText = translations[lang].labelLoc;
+            
+            document.getElementById('cancel-btn').innerText = translations[lang].modalCancel;
+            document.getElementById('save-btn').innerText = translations[lang].modalSave;
+            document.getElementById('nav-dash').innerHTML = `<i class="fas fa-home"></i> ${translations[lang].navDash}`;
+            document.getElementById('nav-logout').innerText = translations[lang].navLogout;
+
+            localStorage.setItem('preferredLang', lang);
+        };
+
+        // ----------------- توليد وإدارة بيانات الطالب -----------------
+        function generateStudentNumber() {
+            // يولد رقم مكون من 6 خانات عشوائية مستحيل يتكرر بسهولة
+            return 'BTEC' + Math.floor(100000 + Math.random() * 900000);
+        }
+
+        const defaultData = {
+            nid: "Waiting for Sync...", // سيتم جلبه من التسجيل لاحقاً
+            sid: "", 
+            school: "",
+            major: "BTEC Student",
+            loc: ""
+        };
+
+        function loadProfileData() {
+            let saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
+            
+            // توليد رقم طلابي فريد لأول مرة فقط
+            if (!saved.sid) {
+                saved.sid = generateStudentNumber();
+                localStorage.setItem('btec_user_profile', JSON.stringify(saved));
+            }
+
+            document.getElementById('info-nid').innerText = saved.nid || "Waiting for Sync...";
+            document.getElementById('info-sid').innerText = saved.sid;
+            document.getElementById('info-school').innerText = saved.school || "Not Set";
             document.getElementById('display-major').innerText = saved.major;
             document.getElementById('info-loc').innerText = saved.loc;
 
-            // تعبئة البيانات جوا نافذة التعديل عشان لما يفتحها يلاقيهم
-            document.getElementById('input-nid').value = saved.nid;
-            document.getElementById('input-sid').value = saved.sid;
-            document.getElementById('input-uni').value = saved.uni;
-            document.getElementById('input-major').value = saved.major;
-            document.getElementById('input-loc').value = saved.loc;
+            document.getElementById('input-school').value = saved.school || "";
+            document.getElementById('input-major').value = saved.major || "";
+            document.getElementById('input-loc').value = saved.loc || "";
         }
 
-        // تسجيل الدخول وجلب الاسم والإيميل من الفايربيس
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userName = user.displayName || "Student";
@@ -215,55 +272,63 @@
                 document.getElementById("info-name").innerText = userName;
                 document.getElementById("info-email").innerText = userEmail;
 
-                loadProfileData(); // جلب باقي البيانات (الرقم الوطني وغيره)
+                loadProfileData(); 
+                const savedLang = localStorage.getItem('preferredLang') || 'en';
+                setLanguage(savedLang);
             } else {
                 window.location.href = "index.html"; 
             }
         });
 
-        // ----------------- تشغيل نافذة التعديل (Modal) -----------------
-        const modal = document.getElementById('edit-modal');
-        const openBtn = document.getElementById('open-edit-btn');
-        const closeBtn = document.getElementById('close-modal-btn');
-        const cancelBtn = document.getElementById('cancel-btn');
-        const saveBtn = document.getElementById('save-btn');
-
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        const closeModal = () => modal.classList.remove('active');
-        closeBtn.addEventListener('click', closeModal);
-        cancelBtn.addEventListener('click', closeModal);
-
-        // حفظ التعديلات
-        saveBtn.addEventListener('click', () => {
-            const newData = {
-                nid: document.getElementById('input-nid').value,
-                sid: document.getElementById('input-sid').value,
-                uni: document.getElementById('input-uni').value,
-                major: document.getElementById('input-major').value,
-                loc: document.getElementById('input-loc').value,
-            };
-
-            // حفظ البيانات في المتصفح
-            localStorage.setItem('btec_user_profile', JSON.stringify(newData));
+        // ----------------- تغيير كلمة المرور -----------------
+        document.getElementById('reset-pass-btn').addEventListener('click', () => {
+            const userEmail = auth.currentUser.email;
+            const currentLang = localStorage.getItem('preferredLang') || 'en';
             
-            // تحديث الواجهة فوراً
+            sendPasswordResetEmail(auth, userEmail).then(() => {
+                alert(translations[currentLang].alertPass);
+            }).catch((error) => {
+                alert("Error: " + error.message);
+            });
+        });
+
+        // ----------------- نافذة التعديل (Modal) -----------------
+        const modal = document.getElementById('edit-modal');
+        document.getElementById('open-edit-btn').addEventListener('click', () => modal.classList.add('active'));
+        
+        const closeModal = () => modal.classList.remove('active');
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+        document.getElementById('cancel-btn').addEventListener('click', closeModal);
+
+        document.getElementById('save-btn').addEventListener('click', () => {
+            let saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
+            
+            saved.school = document.getElementById('input-school').value;
+            saved.major = document.getElementById('input-major').value;
+            saved.loc = document.getElementById('input-loc').value;
+
+            localStorage.setItem('btec_user_profile', JSON.stringify(saved));
             loadProfileData();
             closeModal();
         });
 
-        // ----------------- القوائم وتسجيل الخروج -----------------
+        // ----------------- القوائم -----------------
         document.getElementById('logout-btn').addEventListener('click', (e) => {
             e.preventDefault();
             signOut(auth).then(() => window.location.href = "index.html");
         });
 
-        document.querySelector('.dropdown-wrapper').addEventListener('click', function(e) {
-            e.stopPropagation();
-            this.querySelector('.dropdown-menu').classList.toggle('show');
+        document.querySelectorAll('.dropdown-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if(menu !== this.querySelector('.dropdown-menu')) menu.classList.remove('show');
+                });
+                this.querySelector('.dropdown-menu').classList.toggle('show');
+            });
         });
         document.addEventListener('click', () => {
-            const menu = document.querySelector('.dropdown-menu');
-            if(menu) menu.classList.remove('show');
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
         });
     </script>
 </body>
