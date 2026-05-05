@@ -32,9 +32,9 @@
         html[dir="rtl"] .module-icon { margin-right: 0; margin-left: 15px; }
         .header-left { display: flex; align-items: center; }
         
-        /* حركة الفتح والإغلاق الصافية */
-        .toggle-icon { transition: transform 0.4s ease; color: var(--text-muted); }
-        .module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.4s ease; background: transparent; }
+        .toggle-icon { transition: transform 0.2s ease; color: var(--text-muted); }
+.module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.2s ease-in-out; background: transparent; }
+.module-card.active .module-content { padding: 20px; max-height: 800px; border-top: 1px solid var(--glass-border); }
         
         /* زدنا الـ max-height لـ 1500 عشان ياخذ راحته بالفتح مهما كان المحتوى طويل */
         .module-card.active .module-content { padding: 20px; max-height: 1500px; border-top: 1px solid var(--glass-border); }
