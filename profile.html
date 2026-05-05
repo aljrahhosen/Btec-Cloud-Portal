@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard-style.css?v=3">
+    <link rel="stylesheet" href="dashboard-style.css?v=4">
     
     <style>
         .profile-container { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
@@ -43,6 +43,7 @@
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
         .form-group input { width: 100%; padding: 10px 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 8px; color: white; outline: none; }
         .form-group input:focus { border-color: var(--primary-glow); }
+        .form-group input:disabled { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); cursor: not-allowed; border: 1px solid rgba(255, 255, 255, 0.1); }
         .modal-actions { display: flex; gap: 10px; margin-top: 25px; }
         .btn-cancel { background: transparent; border: 1px solid var(--glass-border); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1; }
         .btn-save { background: var(--primary-glow); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1; font-weight: 600; }
@@ -111,7 +112,7 @@
                     </div>
                     <div class="info-group">
                         <span class="info-label" id="label-nid">National ID</span>
-                        <div class="info-value" id="info-nid">Not Available</div>
+                        <div class="info-value" id="info-nid">Waiting for Sync...</div>
                     </div>
                     <div class="info-group">
                         <span class="info-label" id="label-sid">Student Number</span>
@@ -123,7 +124,7 @@
                     </div>
                     <div class="info-group">
                         <span class="info-label" id="label-loc">Location / Country</span>
-                        <div class="info-value" id="info-loc">Not Set</div>
+                        <div class="info-value" id="info-loc" style="color: #4CAF50; font-weight: 500;"><i class="fas fa-map-marker-alt"></i> Jordan - Irbid</div>
                     </div>
                 </div>
             </div>
@@ -146,9 +147,10 @@
                 <label id="modal-label-major">Major</label>
                 <input type="text" id="input-major" placeholder="Your specialization">
             </div>
+            <!-- حقل الموقع معطل (ReadOnly) لأنه ثابت -->
             <div class="form-group">
                 <label id="modal-label-loc">Location</label>
-                <input type="text" id="input-loc" placeholder="City, Country">
+                <input type="text" id="input-loc" value="Jordan - Irbid" disabled>
             </div>
 
             <div class="modal-actions">
@@ -224,41 +226,38 @@
             document.getElementById('nav-dash').innerHTML = `<i class="fas fa-home"></i> ${translations[lang].navDash}`;
             document.getElementById('nav-logout').innerText = translations[lang].navLogout;
 
+            // تغيير اسم الدولة للغة المحددة
+            document.getElementById('info-loc').innerHTML = lang === 'ar' ? '<i class="fas fa-map-marker-alt"></i> الأردن - إربد' : '<i class="fas fa-map-marker-alt"></i> Jordan - Irbid';
+            document.getElementById('input-loc').value = lang === 'ar' ? 'الأردن - إربد' : 'Jordan - Irbid';
+
             localStorage.setItem('preferredLang', lang);
         };
 
         // ----------------- توليد وإدارة بيانات الطالب -----------------
         function generateStudentNumber() {
-            // يولد رقم مكون من 6 خانات عشوائية مستحيل يتكرر بسهولة
             return 'BTEC' + Math.floor(100000 + Math.random() * 900000);
         }
 
         const defaultData = {
-            nid: "Waiting for Sync...", // سيتم جلبه من التسجيل لاحقاً
-            sid: "", 
             school: "",
             major: "BTEC Student",
-            loc: ""
         };
 
         function loadProfileData() {
             let saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
             
-            // توليد رقم طلابي فريد لأول مرة فقط
-            if (!saved.sid) {
-                saved.sid = generateStudentNumber();
-                localStorage.setItem('btec_user_profile', JSON.stringify(saved));
+            let sid = localStorage.getItem('btec_student_id');
+            if (!sid) {
+                sid = generateStudentNumber();
+                localStorage.setItem('btec_student_id', sid);
             }
 
-            document.getElementById('info-nid').innerText = saved.nid || "Waiting for Sync...";
-            document.getElementById('info-sid').innerText = saved.sid;
+            document.getElementById('info-sid').innerText = sid;
             document.getElementById('info-school').innerText = saved.school || "Not Set";
             document.getElementById('display-major').innerText = saved.major;
-            document.getElementById('info-loc').innerText = saved.loc;
 
             document.getElementById('input-school').value = saved.school || "";
             document.getElementById('input-major').value = saved.major || "";
-            document.getElementById('input-loc').value = saved.loc || "";
         }
 
         onAuthStateChanged(auth, (user) => {
@@ -305,7 +304,6 @@
             
             saved.school = document.getElementById('input-school').value;
             saved.major = document.getElementById('input-major').value;
-            saved.loc = document.getElementById('input-loc').value;
 
             localStorage.setItem('btec_user_profile', JSON.stringify(saved));
             loadProfileData();
