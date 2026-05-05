@@ -239,34 +239,70 @@
             </div>
 
             <!-- Sidebar -->
-            <div class="course-sidebar">
-                <!-- Assignments Widget -->
-                <div class="glass-panel widget">
-                    <h3 class="widget-title"><i class="fas fa-tasks"></i> <span id="w-assign">Assignments</span></h3>
-                    
-                    <div class="assignment-card">
-                        <div class="assign-title">Assignment 1: ERD Design</div>
-                        <div class="assign-due"><i class="far fa-clock"></i> Due: Oct 25, 11:59 PM</div>
-                        <button class="btn-submit"><i class="fas fa-upload"></i> <span class="submit-text">Submit Work</span></button>
-                    </div>
-
-                    <div class="assignment-card" style="border-left-color: var(--primary-glow);">
-                        <div class="assign-title">Lab Task: SQL Joins</div>
-                        <div class="assign-due" style="color: var(--primary-glow);"><i class="far fa-clock"></i> Due: Nov 02, 11:59 PM</div>
-                        <button class="btn-submit" style="background: rgba(0,168,252,0.1); color: var(--primary-glow); border-color: rgba(0,168,252,0.3);"><i class="fas fa-upload"></i> <span class="submit-text">Submit Work</span></button>
-                    </div>
-                </div>
-
-                <!-- Tools Widget -->
-                <div class="glass-panel widget">
-                    <h3 class="widget-title"><i class="fas fa-toolbox"></i> <span id="w-tools">Required Tools</span></h3>
-                    <a href="#" class="resource-link"><i class="fas fa-download"></i> Download XAMPP Server</a>
-                    <a href="#" class="resource-link"><i class="fas fa-download"></i> Download MySQL Workbench</a>
-                    <a href="#" class="resource-link"><i class="fas fa-link"></i> Draw.io (For ERD)</a>
-                </div>
+<div class="course-sidebar">
+    <!-- Assignments Widget -->
+    <div class="glass-panel widget">
+        <h3 class="widget-title"><i class="fas fa-tasks"></i> <span id="w-assign">Assignment & Submission</span></h3>
+        
+        <!-- كرت الواجب الذكي: لونه بيتغير برمجياً -->
+        <div id="dynamic-assign-card" class="assignment-card" style="border-left: 4px solid var(--primary-glow);">
+            <div class="assign-title" id="active-assign-title">Assignment 1: ERD Design</div>
+            <div class="assign-due" id="active-assign-due" style="color: var(--primary-glow);">
+                <i class="far fa-clock"></i> <span id="due-text">Due: May 06, 2026 11:59 PM</span>
             </div>
+            
+            <!-- ملف الواجب (المهمة) عشان الطالب يحمله -->
+            <div style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px;">Download Instructions:</div>
+                <a href="#" class="resource-link" style="padding: 0; font-size: 13px; color: white;">
+                    <i class="fas fa-file-download" style="color: #FFD700;"></i> Assignment_Brief.pdf
+                </a>
+            </div>
+
+            <!-- زر تسليم الواجب -->
+            <button class="btn-submit" id="main-submit-btn">
+                <i class="fas fa-upload"></i> <span class="submit-text">Submit Work</span>
+            </button>
         </div>
-    </main>
+    </div>
+
+    <!-- Tools Widget -->
+    <div class="glass-panel widget">
+        <h3 class="widget-title"><i class="fas fa-toolbox"></i> <span id="w-tools">Required Tools</span></h3>
+        <a href="#" class="resource-link"><i class="fas fa-download"></i> Download XAMPP Server</a>
+        <a href="#" class="resource-link"><i class="fas fa-download"></i> Download MySQL Workbench</a>
+        <a href="#" class="resource-link"><i class="fas fa-link"></i> Draw.io (For ERD)</a>
+    </div>
+</div>
+
+<script>
+    // كود ذكي لتغيير لون الكرت حسب الوقت (24 ساعة)
+    function updateAssignmentUrgency() {
+        const card = document.getElementById('dynamic-assign-card');
+        const dueText = document.getElementById('active-assign-due');
+        
+        // موعد التسليم (تقدر تغيره برمجياً بعدين)
+        const dueDate = new Date("2026-05-06T23:59:00"); 
+        const now = new Date();
+        
+        // حساب الفرق بالساعات
+        const diffInMs = dueDate - now;
+        const diffInHours = diffInMs / (1000 * 60 * 60);
+
+        if (diffInHours > 0 && diffInHours <= 24) {
+            // إذا ضايل أقل من 24 ساعة -> أحمر
+            card.style.borderLeftColor = "#ff4b2b";
+            dueText.style.color = "#ff4b2b";
+        } else {
+            // أكثر من 24 ساعة -> أزرق (اللون الأساسي)
+            card.style.borderLeftColor = "#00a8fc";
+            dueText.style.color = "#00a8fc";
+        }
+    }
+
+    // تشغيل الحسبة عند تحميل الصفحة
+    window.addEventListener('load', updateAssignmentUrgency);
+</script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
