@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard-style.css?v=7">
+    <link rel="stylesheet" href="dashboard-style.css?v=8">
     
     <style>
         .profile-container { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
@@ -119,9 +119,10 @@
                         <span class="info-label" id="label-school">School</span>
                         <div class="info-value" id="info-school">Not Set</div>
                     </div>
+                    <!-- السنة الدراسية صارت ثابتة وما بتتعدل -->
                     <div class="info-group">
                         <span class="info-label" id="label-grade">Academic Year / Grade</span>
-                        <div class="info-value" id="info-grade">Not Set</div>
+                        <div class="info-value" id="info-grade" style="color: #bbb;">Waiting for Sync...</div>
                     </div>
                     <div class="info-group">
                         <span class="info-label" id="label-loc">Location / Country</span>
@@ -143,10 +144,6 @@
             <div class="form-group">
                 <label id="modal-label-school">School</label>
                 <input type="text" id="input-school" placeholder="e.g. Ali Khalqi Al-Sharairi">
-            </div>
-            <div class="form-group">
-                <label id="modal-label-grade">Academic Year / Grade</label>
-                <input type="text" id="input-grade" placeholder="e.g. Grade 11">
             </div>
             <div class="form-group">
                 <label id="modal-label-major">Major</label>
@@ -224,9 +221,7 @@
             
             document.getElementById('modal-title-text').innerText = translations[lang].modalTitle;
             document.getElementById('modal-label-school').innerText = translations[lang].labelSchool;
-            document.getElementById('modal-label-grade').innerText = translations[lang].labelGrade;
             document.getElementById('modal-label-major').innerText = translations[lang].labelSchool + " Major";
-            document.getElementById('modal-label-loc').innerText = translations[lang].labelLoc;
             
             document.getElementById('cancel-btn').innerText = translations[lang].modalCancel;
             document.getElementById('save-btn').innerText = translations[lang].modalSave;
@@ -245,7 +240,6 @@
 
         const defaultData = {
             school: "",
-            grade: "",
             major: "BTEC Student",
         };
 
@@ -260,11 +254,9 @@
 
             document.getElementById('info-sid').innerText = sid;
             document.getElementById('info-school').innerText = saved.school || "Not Set";
-            document.getElementById('info-grade').innerText = saved.grade || "Not Set";
             document.getElementById('display-major').innerText = saved.major;
 
             document.getElementById('input-school').value = saved.school || "";
-            document.getElementById('input-grade').value = saved.grade || "";
             document.getElementById('input-major').value = saved.major || "";
         }
 
@@ -309,7 +301,6 @@
             let saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
             
             saved.school = document.getElementById('input-school').value;
-            saved.grade = document.getElementById('input-grade').value;
             saved.major = document.getElementById('input-major').value;
 
             localStorage.setItem('btec_user_profile', JSON.stringify(saved));
