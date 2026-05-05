@@ -7,35 +7,56 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard-style.css">
+    <link rel="stylesheet" href="dashboard-style.css?v=8">
+    
     <style>
-        .settings-container { max-width: 800px; margin: 0 auto; }
-        .settings-section { padding: 30px; margin-bottom: 25px; }
-        .settings-section h2 { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--primary-glow); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+        .settings-layout { display: flex; gap: 30px; margin-top: 20px; align-items: flex-start; flex-wrap: wrap; }
         
+        /* القائمة الجانبية للإعدادات */
+        .settings-sidebar { flex: 1; min-width: 250px; padding: 20px 0; }
+        .tab-btn { width: 100%; text-align: left; background: transparent; border: none; color: var(--text-muted); padding: 15px 25px; font-size: 15px; font-weight: 500; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; border-left: 3px solid transparent; }
+        html[dir="rtl"] .tab-btn { text-align: right; border-left: none; border-right: 3px solid transparent; }
+        .tab-btn:hover { color: white; background: rgba(255, 255, 255, 0.05); }
+        .tab-btn.active { color: var(--primary-glow); border-left-color: var(--primary-glow); background: rgba(0, 168, 252, 0.1); }
+        html[dir="rtl"] .tab-btn.active { border-right-color: var(--primary-glow); border-left-color: transparent; }
+
+        /* محتوى الإعدادات */
+        .settings-content { flex: 3; min-width: 300px; padding: 30px; min-height: 400px; }
+        .tab-pane { display: none; animation: fadeIn 0.4s ease; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .settings-section-title { font-size: 20px; font-weight: 600; color: white; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--glass-border); }
+        
+        /* تصميم الحقول والأزرار الانزلاقية (Toggle Switches) */
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .setting-item:last-child { border-bottom: none; }
-        .setting-info h3 { font-size: 15px; font-weight: 500; margin-bottom: 3px; color: white; }
-        .setting-info p { font-size: 12px; color: var(--text-muted); }
-        
-        /* تصميم زر التبديل (Toggle Switch) */
+        .setting-info h4 { margin: 0 0 5px 0; color: white; font-weight: 500; font-size: 15px; }
+        .setting-info p { margin: 0; color: var(--text-muted); font-size: 13px; }
+
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.3); transition: .4s; border-radius: 34px; border: 1px solid var(--glass-border); }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary-glow); }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary-glow); box-shadow: 0 0 10px rgba(0, 168, 252, 0.5); }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        .btn-danger { background: rgba(255, 75, 43, 0.1); color: #ff4b2b; border: 1px solid #ff4b2b; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.3s; }
-        .btn-danger:hover { background: #ff4b2b; color: white; }
-        
+        select.settings-select { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 10px 15px; border-radius: 8px; outline: none; font-family: 'Poppins', sans-serif; cursor: pointer; }
+        select.settings-select option { background: #1a1a2e; color: white; }
+
+        .btn-primary { background: var(--primary-glow); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary:hover { background: #0088cc; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
+        .btn-danger { background: transparent; border: 1px solid #ff4b2b; color: #ff4b2b; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-danger:hover { background: rgba(255, 75, 43, 0.1); }
+
         .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
         .back-link:hover { color: var(--primary-glow); }
     </style>
 </head>
-<body class="dashboard-body">
 
-    <nav class="navbar glass-panel">
+<body class="dashboard-body" style="display: block !important; width: 100% !important; height: auto !important; min-height: 100vh !important; overflow-y: auto !important;">
+
+    <nav class="navbar glass-panel" style="width: 100% !important; top: 0 !important; position: relative !important; display: flex !important;">
         <div class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00a8fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(0, 168, 252, 0.5));">
                 <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
@@ -45,95 +66,138 @@
         </div>
         <div class="nav-actions">
             <div class="dropdown-wrapper">
+                <span id="lang-display">🌐 EN ▾</span>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item" onclick="setLanguage('ar')">العربية (AR)</a>
+                    <a href="#" class="dropdown-item" onclick="setLanguage('en')">English (EN)</a>
+                </div>
+            </div>
+
+            <div class="dropdown-wrapper">
                 <div class="profile-pic" id="nav-profile-pic">U</div>
                 <div class="dropdown-menu">
-                    <a href="dashboard.html" class="dropdown-item"><i class="fas fa-home"></i> Dashboard</a>
-                    <a href="profile.html" class="dropdown-item"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="dashboard.html" class="dropdown-item" id="nav-dash"><i class="fas fa-home"></i> Dashboard</a>
+                    <a href="profile.html" class="dropdown-item" id="nav-prof"><i class="fas fa-user"></i> Profile</a>
                     <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i> <span id="nav-logout">Logout</span>
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="container settings-container">
-        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    <main class="container">
+        <a href="dashboard.html" class="back-link" id="back-link-text"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         
         <div class="welcome-section">
-            <h1>Settings</h1>
-            <p>Customize your portal experience and preferences.</p>
+            <h1 id="page-title">Settings</h1>
+            <p id="page-desc">Customize your portal experience and manage your preferences.</p>
         </div>
 
-        <!-- قسم الإشعارات -->
-        <div class="glass-panel settings-section">
-            <h2><i class="fas fa-bell"></i> Notifications</h2>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h3>Email Notifications</h3>
-                    <p>Receive updates about new courses and criteria.</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" checked>
-                    <span class="slider"></span>
-                </label>
+        <div class="settings-layout">
+            <!-- القائمة الجانبية للإعدادات -->
+            <div class="glass-panel settings-sidebar">
+                <button class="tab-btn active" data-target="pref-tab"><i class="fas fa-sliders-h"></i> <span class="tab-text-pref">Preferences</span></button>
+                <button class="tab-btn" data-target="notif-tab"><i class="fas fa-bell"></i> <span class="tab-text-notif">Notifications</span></button>
+                <button class="tab-btn" data-target="sec-tab"><i class="fas fa-shield-alt"></i> <span class="tab-text-sec">Security</span></button>
             </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h3>System Alerts</h3>
-                    <p>Show popup alerts within the dashboard.</p>
+
+            <!-- محتوى الإعدادات -->
+            <div class="glass-panel settings-content">
+                
+                <!-- 1. Preferences Tab -->
+                <div id="pref-tab" class="tab-pane active">
+                    <h2 class="settings-section-title" id="title-pref">System Preferences</h2>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4 id="st-lang-title">Display Language</h4>
+                            <p id="st-lang-desc">Choose your preferred language for the portal.</p>
+                        </div>
+                        <select class="settings-select" id="system-language" onchange="setLanguage(this.value)">
+                            <option value="en">English</option>
+                            <option value="ar">العربية</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4 id="st-anim-title">Smooth Animations</h4>
+                            <p id="st-anim-desc">Enable or disable visual animations (turn off for old devices).</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-anim" checked onchange="saveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" checked>
-                    <span class="slider"></span>
-                </label>
+
+                <!-- 2. Notifications Tab -->
+                <div id="notif-tab" class="tab-pane">
+                    <h2 class="settings-section-title" id="title-notif">Notification Settings</h2>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4 id="st-email-title">Email Alerts</h4>
+                            <p id="st-email-desc">Receive important updates and announcements via email.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-email" checked onchange="saveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4 id="st-grades-title">Grades Notifications</h4>
+                            <p id="st-grades-desc">Get notified immediately when new grades are posted.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-grades" checked onchange="saveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4 id="st-assign-title">Assignment Reminders</h4>
+                            <p id="st-assign-desc">Reminders 24 hours before an assignment is due.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-assign" onchange="saveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 3. Security Tab -->
+                <div id="sec-tab" class="tab-pane">
+                    <h2 class="settings-section-title" id="title-sec">Security & Privacy</h2>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4 id="st-pass-title">Password Management</h4>
+                            <p id="st-pass-desc">Send a secure link to your email to reset your password.</p>
+                        </div>
+                        <button class="btn-primary" id="reset-pass-btn"><i class="fas fa-key"></i> <span id="btn-pass-text">Reset Password</span></button>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4 id="st-devices-title">Active Devices</h4>
+                            <p id="st-devices-desc">Sign out of all other browsers and devices.</p>
+                        </div>
+                        <button class="btn-danger" id="logout-all-btn"><i class="fas fa-laptop-house"></i> <span id="btn-logout-all-text">Sign Out All</span></button>
+                    </div>
+                </div>
+
             </div>
         </div>
-
-        <!-- قسم التفضيلات -->
-        <div class="glass-panel settings-section">
-            <h2><i class="fas fa-sliders-h"></i> Preferences</h2>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h3>Dark Mode</h3>
-                    <p>Enable dark theme for the entire portal.</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" checked disabled title="Always enabled">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <!-- قسم الأمان -->
-        <div class="glass-panel settings-section">
-            <h2><i class="fas fa-shield-alt"></i> Security & Account</h2>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h3>Change Password</h3>
-                    <p>Update your account password securely.</p>
-                </div>
-                <button class="btn-danger" style="color: white; border-color: var(--primary-glow); background: transparent;">Change</button>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h3 style="color: #ff4b2b;">Delete Account</h3>
-                    <p>Permanently remove your account and data.</p>
-                </div>
-                <button class="btn-danger">Delete</button>
-            </div>
-        </div>
-
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -147,13 +211,150 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // ----------------- نظام التبويبات (Tabs Logic) -----------------
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // إزالة التفعيل عن الكل
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+                
+                // تفعيل الكبسة والقسم المطلوب
+                btn.classList.add('active');
+                document.getElementById(btn.getAttribute('data-target')).classList.add('active');
+            });
+        });
+
+        // ----------------- حفظ الإعدادات في المتصفح -----------------
+        const defaultSettings = { anim: true, email: true, grades: true, assign: false };
+        
+        function loadSettings() {
+            const saved = JSON.parse(localStorage.getItem('btec_user_settings')) || defaultSettings;
+            document.getElementById('toggle-anim').checked = saved.anim;
+            document.getElementById('toggle-email').checked = saved.email;
+            document.getElementById('toggle-grades').checked = saved.grades;
+            document.getElementById('toggle-assign').checked = saved.assign;
+        }
+
+        window.saveSettings = function() {
+            const currentSettings = {
+                anim: document.getElementById('toggle-anim').checked,
+                email: document.getElementById('toggle-email').checked,
+                grades: document.getElementById('toggle-grades').checked,
+                assign: document.getElementById('toggle-assign').checked
+            };
+            localStorage.setItem('btec_user_settings', JSON.stringify(currentSettings));
+        }
+
+        // ----------------- نظام الترجمة -----------------
+        const translations = {
+            en: {
+                langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", pageTitle: "Settings",
+                pageDesc: "Customize your portal experience and manage your preferences.",
+                tabPref: "Preferences", tabNotif: "Notifications", tabSec: "Security",
+                titlePref: "System Preferences", titleNotif: "Notification Settings", titleSec: "Security & Privacy",
+                stLangTitle: "Display Language", stLangDesc: "Choose your preferred language for the portal.",
+                stAnimTitle: "Smooth Animations", stAnimDesc: "Enable or disable visual animations.",
+                stEmailTitle: "Email Alerts", stEmailDesc: "Receive important updates and announcements via email.",
+                stGradesTitle: "Grades Notifications", stGradesDesc: "Get notified immediately when new grades are posted.",
+                stAssignTitle: "Assignment Reminders", stAssignDesc: "Reminders 24 hours before an assignment is due.",
+                stPassTitle: "Password Management", stPassDesc: "Send a secure link to your email to reset your password.",
+                stDevicesTitle: "Active Devices", stDevicesDesc: "Sign out of all other browsers and devices.",
+                btnPass: "Reset Password", btnLogoutAll: "Sign Out All", navDash: "Dashboard", navProf: "Profile", navLogout: "Logout",
+                alertPass: "Password reset link sent to your email!", alertLogoutAll: "This feature will be activated when database is connected."
+            },
+            ar: {
+                langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", pageTitle: "الإعدادات",
+                pageDesc: "قم بتخصيص تجربتك في المنصة وإدارة تفضيلاتك.",
+                tabPref: "التفضيلات", tabNotif: "الإشعارات", tabSec: "الأمان",
+                titlePref: "تفضيلات النظام", titleNotif: "إعدادات الإشعارات", titleSec: "الأمان والخصوصية",
+                stLangTitle: "لغة العرض", stLangDesc: "اختر لغتك المفضلة لعرض المنصة.",
+                stAnimTitle: "الحركات السلسة (الأنيميشن)", stAnimDesc: "تفعيل أو تعطيل الحركات البصرية (أغلقها للأجهزة الضعيفة).",
+                stEmailTitle: "تنبيهات البريد", stEmailDesc: "استلام التحديثات والإعلانات المهمة عبر البريد الإلكتروني.",
+                stGradesTitle: "إشعارات العلامات", stGradesDesc: "احصل على إشعار فور رصد علامات جديدة.",
+                stAssignTitle: "تذكيرات الواجبات", stAssignDesc: "تذكير قبل 24 ساعة من موعد تسليم الواجب.",
+                stPassTitle: "إدارة كلمة المرور", stPassDesc: "إرسال رابط آمن لبريدك الإلكتروني لتغيير كلمة المرور.",
+                stDevicesTitle: "الأجهزة النشطة", stDevicesDesc: "تسجيل الخروج من جميع المتصفحات والأجهزة الأخرى.",
+                btnPass: "تغيير كلمة المرور", btnLogoutAll: "خروج من الكل", navDash: "لوحة التحكم", navProf: "حسابي", navLogout: "تسجيل الخروج",
+                alertPass: "تم إرسال رابط تغيير كلمة المرور إلى إيميلك!", alertLogoutAll: "سيتم تفعيل هذه الميزة عند ربط قاعدة البيانات بشكل كامل."
+            }
+        };
+
+        window.setLanguage = function(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.getElementById('lang-display').innerText = translations[lang].langDisplay;
+            document.getElementById('back-link-text').innerHTML = `<i class="fas fa-${lang === 'ar' ? 'arrow-right' : 'arrow-left'}"></i> ${translations[lang].backDash}`;
+            document.getElementById('page-title').innerText = translations[lang].pageTitle;
+            document.getElementById('page-desc').innerText = translations[lang].pageDesc;
+            
+            document.querySelector('.tab-text-pref').innerText = translations[lang].tabPref;
+            document.querySelector('.tab-text-notif').innerText = translations[lang].tabNotif;
+            document.querySelector('.tab-text-sec').innerText = translations[lang].tabSec;
+            
+            document.getElementById('title-pref').innerText = translations[lang].titlePref;
+            document.getElementById('title-notif').innerText = translations[lang].titleNotif;
+            document.getElementById('title-sec').innerText = translations[lang].titleSec;
+
+            document.getElementById('st-lang-title').innerText = translations[lang].stLangTitle;
+            document.getElementById('st-lang-desc').innerText = translations[lang].stLangDesc;
+            document.getElementById('st-anim-title').innerText = translations[lang].stAnimTitle;
+            document.getElementById('st-anim-desc').innerText = translations[lang].stAnimDesc;
+            
+            document.getElementById('st-email-title').innerText = translations[lang].stEmailTitle;
+            document.getElementById('st-email-desc').innerText = translations[lang].stEmailDesc;
+            document.getElementById('st-grades-title').innerText = translations[lang].stGradesTitle;
+            document.getElementById('st-grades-desc').innerText = translations[lang].stGradesDesc;
+            document.getElementById('st-assign-title').innerText = translations[lang].stAssignTitle;
+            document.getElementById('st-assign-desc').innerText = translations[lang].stAssignDesc;
+
+            document.getElementById('st-pass-title').innerText = translations[lang].stPassTitle;
+            document.getElementById('st-pass-desc').innerText = translations[lang].stPassDesc;
+            document.getElementById('st-devices-title').innerText = translations[lang].stDevicesTitle;
+            document.getElementById('st-devices-desc').innerText = translations[lang].stDevicesDesc;
+
+            document.getElementById('btn-pass-text').innerText = translations[lang].btnPass;
+            document.getElementById('btn-logout-all-text').innerText = translations[lang].btnLogoutAll;
+            
+            document.getElementById('nav-dash').innerHTML = `<i class="fas fa-home"></i> ${translations[lang].navDash}`;
+            document.getElementById('nav-prof').innerHTML = `<i class="fas fa-user"></i> ${translations[lang].navProf}`;
+            document.getElementById('nav-logout').innerText = translations[lang].navLogout;
+
+            // تحديث القائمة المنسدلة للغة
+            document.getElementById('system-language').value = lang;
+            localStorage.setItem('preferredLang', lang);
+        };
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userName = user.displayName || "Student";
                 document.getElementById("nav-profile-pic").innerText = userName.charAt(0);
+
+                loadSettings();
+                const savedLang = localStorage.getItem('preferredLang') || 'en';
+                setLanguage(savedLang);
             } else {
-                window.location.href = "index.html";
+                window.location.href = "index.html"; 
             }
+        });
+
+        // دوال الأزرار
+        document.getElementById('reset-pass-btn').addEventListener('click', () => {
+            const userEmail = auth.currentUser.email;
+            const currentLang = localStorage.getItem('preferredLang') || 'en';
+            sendPasswordResetEmail(auth, userEmail).then(() => {
+                alert(translations[currentLang].alertPass);
+            }).catch((error) => {
+                alert("Error: " + error.message);
+            });
+        });
+
+        document.getElementById('logout-all-btn').addEventListener('click', () => {
+            const currentLang = localStorage.getItem('preferredLang') || 'en';
+            alert(translations[currentLang].alertLogoutAll);
         });
 
         document.getElementById('logout-btn').addEventListener('click', (e) => {
@@ -161,14 +362,17 @@
             signOut(auth).then(() => window.location.href = "index.html");
         });
 
-        // تشغيل القوائم المنسدلة
-        document.querySelector('.dropdown-wrapper').addEventListener('click', function(e) {
-            e.stopPropagation();
-            this.querySelector('.dropdown-menu').classList.toggle('show');
+        document.querySelectorAll('.dropdown-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if(menu !== this.querySelector('.dropdown-menu')) menu.classList.remove('show');
+                });
+                this.querySelector('.dropdown-menu').classList.toggle('show');
+            });
         });
         document.addEventListener('click', () => {
-            const menu = document.querySelector('.dropdown-menu');
-            if(menu) menu.classList.remove('show');
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
         });
     </script>
 </body>
