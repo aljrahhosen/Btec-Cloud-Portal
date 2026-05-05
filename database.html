@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEC Cloud - Database Systems</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard-style.css?v=10">
+    
+    <style>
+        .course-header { background: linear-gradient(135deg, rgba(0, 168, 252, 0.1), rgba(0, 86, 179, 0.2)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px; margin-bottom: 30px; position: relative; overflow: hidden; }
+        .course-header::after { content: '\f1c0'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: -20px; bottom: -40px; font-size: 200px; color: rgba(255, 255, 255, 0.03); transform: rotate(-15deg); }
+        .course-title { font-size: 32px; font-weight: 700; color: white; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; }
+        .course-title i { color: var(--primary-glow); }
+        .course-desc { color: var(--text-muted); max-width: 600px; margin-bottom: 25px; line-height: 1.6; }
+        
+        /* Progress Bar */
+        .progress-container { background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; width: 100%; max-width: 400px; overflow: hidden; position: relative; margin-top: 10px; }
+        .progress-bar { background: var(--primary-glow); height: 100%; width: 40%; border-radius: 10px; box-shadow: 0 0 10px var(--primary-glow); }
+        .progress-text { font-size: 13px; color: white; font-weight: 500; margin-bottom: 5px; display: inline-block; }
+
+        .course-layout { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
+        .course-main { flex: 2; min-width: 300px; }
+        .course-sidebar { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; }
+
+        /* Accordion (Syllabus) */
+        .module-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; transition: 0.3s; }
+        .module-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: white; font-weight: 600; font-size: 16px; background: rgba(0,0,0,0.2); }
+        .module-header:hover { background: rgba(0, 168, 252, 0.1); }
+        .module-icon { width: 35px; height: 35px; background: rgba(0, 168, 252, 0.15); color: var(--primary-glow); border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
+        html[dir="rtl"] .module-icon { margin-right: 0; margin-left: 15px; }
+        .header-left { display: flex; align-items: center; }
+        .toggle-icon { transition: transform 0.3s; color: var(--text-muted); }
+        
+        .module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; background: transparent; }
+        .module-card.active .module-content { padding: 20px; max-height: 500px; border-top: 1px solid var(--glass-border); }
+        .module-card.active .toggle-icon { transform: rotate(180deg); color: var(--primary-glow); }
+        .module-card.active { border-color: rgba(0, 168, 252, 0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        /* Material Items */
+        .material-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 10px; border: 1px solid transparent; transition: 0.2s; }
+        .material-item:hover { border-color: var(--glass-border); background: rgba(255,255,255,0.05); }
+        .material-info { display: flex; align-items: center; gap: 12px; color: white; font-size: 14px; }
+        .icon-pdf { color: #ff4b2b; }
+        .icon-code { color: #4CAF50; }
+        .icon-video { color: #00a8fc; }
+        .btn-download { background: transparent; color: var(--text-muted); border: none; cursor: pointer; transition: 0.2s; font-size: 16px; }
+        .btn-download:hover { color: white; transform: translateY(-2px); }
+
+        /* Sidebar Widgets */
+        .widget { padding: 25px; border-radius: 16px; }
+        .widget-title { font-size: 16px; font-weight: 600; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+        
+        .assignment-card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #ff4b2b; }
+        .assign-title { font-size: 14px; color: white; font-weight: 500; margin-bottom: 5px; }
+        .assign-due { font-size: 12px; color: #ff4b2b; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .btn-submit { background: rgba(255, 75, 43, 0.1); color: #ff4b2b; border: 1px solid rgba(255, 75, 43, 0.3); padding: 8px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; }
+        .btn-submit:hover { background: #ff4b2b; color: white; }
+
+        .resource-link { display: flex; align-items: center; gap: 12px; color: var(--text-muted); text-decoration: none; padding: 10px 0; font-size: 14px; transition: 0.2s; }
+        .resource-link:hover { color: var(--primary-glow); transform: translateX(5px); }
+        html[dir="rtl"] .resource-link:hover { transform: translateX(-5px); }
+
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
+        .back-link:hover { color: var(--primary-glow); }
+    </style>
+</head>
+
+<body class="dashboard-body" style="display: block !important; width: 100% !important; height: auto !important; min-height: 100vh !important; overflow-y: auto !important;">
+
+    <nav class="navbar glass-panel" style="width: 100% !important; top: 0 !important; position: relative !important; display: flex !important;">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00a8fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(0, 168, 252, 0.5));">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                <path d="M9 14l2 2 4-4"></path>
+            </svg>
+            BTEC Cloud
+        </div>
+        <div class="nav-actions">
+            <div class="dropdown-wrapper">
+                <span id="lang-display">🌐 EN ▾</span>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item" onclick="setLanguage('ar')">العربية (AR)</a>
+                    <a href="#" class="dropdown-item" onclick="setLanguage('en')">English (EN)</a>
+                </div>
+            </div>
+
+            <div class="dropdown-wrapper">
+                <div class="profile-pic" id="nav-profile-pic">U</div>
+                <div class="dropdown-menu">
+                    <a href="dashboard.html" class="dropdown-item" id="nav-dash"><i class="fas fa-home"></i> Dashboard</a>
+                    <a href="profile.html" class="dropdown-item" id="nav-prof"><i class="fas fa-user"></i> Profile</a>
+                    <a href="settings.html" class="dropdown-item" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
+                        <i class="fas fa-sign-out-alt"></i> <span id="nav-logout">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <a href="dashboard.html" class="back-link" id="back-link-text"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        
+        <!-- Course Header -->
+        <div class="course-header">
+            <h1 class="course-title"><i class="fas fa-database"></i> <span id="c-title">Database Systems</span></h1>
+            <p class="course-desc" id="c-desc">Learn the fundamentals of relational databases, SQL queries, Entity-Relationship Diagrams (ERD), and database management required for the BTEC IT curriculum.</p>
+            
+            <span class="progress-text" id="c-prog-text">Course Progress: 40%</span>
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+
+        <div class="course-layout">
+            <!-- Main Content (Modules) -->
+            <div class="course-main">
+                <h3 style="color: white; margin-bottom: 20px; font-weight: 600;" id="c-content-title">Course Content</h3>
+
+                <!-- Unit 1 -->
+                <div class="module-card">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <div class="header-left">
+                            <div class="module-icon"><i class="fas fa-layer-group"></i></div>
+                            <span class="u-title-1">Unit 1: Introduction to Databases</span>
+                        </div>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="module-content">
+                        <div class="material-item">
+                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> Ch1_Data_vs_Information.pdf</div>
+                            <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
+                        </div>
+                        <div class="material-item">
+                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> Ch2_DBMS_Architecture.pdf</div>
+                            <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
+                        </div>
+                        <div class="material-item">
+                            <div class="material-info"><i class="fas fa-play-circle icon-video"></i> Lecture 1 Recording (Link)</div>
+                            <button class="btn-download" title="Open"><i class="fas fa-external-link-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unit 2 -->
+                <div class="module-card">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <div class="header-left">
+                            <div class="module-icon"><i class="fas fa-project-diagram"></i></div>
+                            <span class="u-title-2">Unit 2: Entity-Relationship Diagrams (ERD)</span>
+                        </div>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="module-content">
+                        <div class="material-item">
+                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> Entities_and_Attributes.pdf</div>
+                            <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
+                        </div>
+                        <div class="material-item">
+                            <div class="material-info"><i class="fas fa-image icon-video"></i> ERD_Cheat_Sheet.png</div>
+                            <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unit 3 -->
+                <div class="module-card">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <div class="header-left">
+                            <div class="module-icon"><i class="fas fa-code"></i></div>
+                            <span class="u-title-3">Unit 3: SQL Fundamentals</span>
+                        </div>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="module-content">
+                        <div class="material-item">
+                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> SQL_Select_Insert_Update.pdf</div>
+                            <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
+                        </div>
+                        <div class="material-item">
+                            <div class="material-info"><i class="fas fa-file-code icon-code"></i> practice_queries.sql</div>
+                            <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar -->
+            <div class="course-sidebar">
+                <!-- Assignments Widget -->
+                <div class="glass-panel widget">
+                    <h3 class="widget-title"><i class="fas fa-tasks"></i> <span id="w-assign">Assignments</span></h3>
+                    
+                    <div class="assignment-card">
+                        <div class="assign-title">Assignment 1: ERD Design</div>
+                        <div class="assign-due"><i class="far fa-clock"></i> Due: Oct 25, 11:59 PM</div>
+                        <button class="btn-submit"><i class="fas fa-upload"></i> <span class="submit-text">Submit Work</span></button>
+                    </div>
+
+                    <div class="assignment-card" style="border-left-color: var(--primary-glow);">
+                        <div class="assign-title">Lab Task: SQL Joins</div>
+                        <div class="assign-due" style="color: var(--primary-glow);"><i class="far fa-clock"></i> Due: Nov 02, 11:59 PM</div>
+                        <button class="btn-submit" style="background: rgba(0,168,252,0.1); color: var(--primary-glow); border-color: rgba(0,168,252,0.3);"><i class="fas fa-upload"></i> <span class="submit-text">Submit Work</span></button>
+                    </div>
+                </div>
+
+                <!-- Tools Widget -->
+                <div class="glass-panel widget">
+                    <h3 class="widget-title"><i class="fas fa-toolbox"></i> <span id="w-tools">Required Tools</span></h3>
+                    <a href="#" class="resource-link"><i class="fas fa-download"></i> Download XAMPP Server</a>
+                    <a href="#" class="resource-link"><i class="fas fa-download"></i> Download MySQL Workbench</a>
+                    <a href="#" class="resource-link"><i class="fas fa-link"></i> Draw.io (For ERD)</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
+            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            projectId: "btec-cloud-portal-d6a93",
+            storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
+            messagingSenderId: "230354414241",
+            appId: "1:230354414241:web:b365524169fb815b449ee0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // ----------------- Accordion Logic -----------------
+        window.toggleModule = function(element) {
+            const card = element.parentElement;
+            // إذا بدك يفتح واحد ويسكر الباقي، شيل الكومنت عن السطرين اللي تحت
+            // document.querySelectorAll('.module-card').forEach(c => {
+            //    if(c !== card) c.classList.remove('active');
+            // });
+            card.classList.toggle('active');
+        };
+
+        // ----------------- نظام الترجمة -----------------
+        const translations = {
+            en: {
+                langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", navDash: "Dashboard", navProf: "Profile", navSettings: "Settings", navLogout: "Logout",
+                cTitle: "Database Systems",
+                cDesc: "Learn the fundamentals of relational databases, SQL queries, Entity-Relationship Diagrams (ERD), and database management required for the BTEC IT curriculum.",
+                cProg: "Course Progress: 40%", cContent: "Course Content",
+                u1: "Unit 1: Introduction to Databases", u2: "Unit 2: Entity-Relationship Diagrams (ERD)", u3: "Unit 3: SQL Fundamentals",
+                wAssign: "Assignments", btnSubmit: "Submit Work", wTools: "Required Tools"
+            },
+            ar: {
+                langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", navDash: "لوحة التحكم", navProf: "حسابي", navSettings: "الإعدادات", navLogout: "تسجيل الخروج",
+                cTitle: "أنظمة قواعد البيانات",
+                cDesc: "تعلم أساسيات قواعد البيانات العلائقية، استعلامات SQL، مخططات العلاقات (ERD)، وإدارة البيانات المطلوبة في منهج BTEC IT.",
+                cProg: "نسبة إنجاز المادة: 40%", cContent: "محتوى المادة",
+                u1: "الوحدة الأولى: مقدمة في قواعد البيانات", u2: "الوحدة الثانية: رسم المخططات (ERD)", u3: "الوحدة الثالثة: أساسيات لغة SQL",
+                wAssign: "الواجبات المطلوبة", btnSubmit: "تسليم الواجب", wTools: "الأدوات والبرامج"
+            }
+        };
+
+        window.setLanguage = function(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.getElementById('lang-display').innerText = translations[lang].langDisplay;
+            document.getElementById('back-link-text').innerHTML = `<i class="fas fa-${lang === 'ar' ? 'arrow-right' : 'arrow-left'}"></i> ${translations[lang].backDash}`;
+            
+            document.getElementById('nav-dash').innerHTML = `<i class="fas fa-home"></i> ${translations[lang].navDash}`;
+            document.getElementById('nav-prof').innerHTML = `<i class="fas fa-user"></i> ${translations[lang].navProf}`;
+            document.getElementById('nav-settings').innerHTML = `<i class="fas fa-cog"></i> ${translations[lang].navSettings}`;
+            document.getElementById('nav-logout').innerText = translations[lang].navLogout;
+
+            // Course texts
+            document.getElementById('c-title').innerText = translations[lang].cTitle;
+            document.getElementById('c-desc').innerText = translations[lang].cDesc;
+            document.getElementById('c-prog-text').innerText = translations[lang].cProg;
+            document.getElementById('c-content-title').innerText = translations[lang].cContent;
+            
+            document.querySelector('.u-title-1').innerText = translations[lang].u1;
+            document.querySelector('.u-title-2').innerText = translations[lang].u2;
+            document.querySelector('.u-title-3').innerText = translations[lang].u3;
+            
+            document.getElementById('w-assign').innerText = translations[lang].wAssign;
+            document.getElementById('w-tools').innerText = translations[lang].wTools;
+            
+            document.querySelectorAll('.submit-text').forEach(el => el.innerText = translations[lang].btnSubmit);
+
+            localStorage.setItem('preferredLang', lang);
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userName = user.displayName || "Student";
+                document.getElementById("nav-profile-pic").innerText = userName.charAt(0);
+
+                const savedLang = localStorage.getItem('preferredLang') || 'en';
+                setLanguage(savedLang);
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => window.location.href = "index.html");
+        });
+
+        document.querySelectorAll('.dropdown-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if(menu !== this.querySelector('.dropdown-menu')) menu.classList.remove('show');
+                });
+                this.querySelector('.dropdown-menu').classList.toggle('show');
+            });
+        });
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+        });
+    </script>
+</body>
+</html>
