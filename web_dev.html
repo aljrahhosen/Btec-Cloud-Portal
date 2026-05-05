@@ -131,8 +131,7 @@
             <!-- Main Content -->
             <div class="course-main">
                 
-                <!-- My Grades & Assessment (الفل مارك والعلامة النهائية) -->
-<div class="module-card active" style="border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1);">
+                <div class="module-card active" style="border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1);">
     <div class="module-header" onclick="toggleModule(this)" style="background: rgba(255, 215, 0, 0.05);">
         <div class="header-left">
             <div class="module-icon" style="color: #FFD700; background: rgba(255, 215, 0, 0.15);"><i class="fas fa-award"></i></div>
@@ -142,24 +141,20 @@
     </div>
     <div class="module-content">
         <div class="grade-box-container">
-            <!-- الواجب الأول: فل مارك -->
-            <div class="grade-box">
+            <div class="grade-box" style="border-color: rgba(76, 175, 80, 0.3);">
                 <h4 class="g-assign1">Assignment 1</h4>
-                <div class="grade-val val-dist">DISTINCTION</div>
+                <div class="grade-val val-pass">PASS</div>
             </div>
-            <!-- الواجب الثاني: فل مارك (شيلنا الـ PENDING) -->
-            <div class="grade-box">
+            <div class="grade-box" style="border-color: rgba(0, 168, 252, 0.3);">
                 <h4 class="g-assign2">Assignment 2</h4>
-                <div class="grade-val val-dist">DISTINCTION</div>
+                <div class="grade-val val-merit">MERIT</div>
             </div>
-            <!-- العلامة النهائية للمادة -->
             <div class="grade-box" style="border-color: rgba(255, 215, 0, 0.4); background: rgba(255,215,0,0.05);">
                 <h4 class="g-final">Final Grade</h4>
                 <div class="grade-val val-dist">DISTINCTION</div>
             </div>
         </div>
         
-        <!-- كل المعايير محققة (ألوان شغالة) -->
         <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" class="g-crit">Criteria Achieved:</h4>
         <div class="criteria-grid">
             <span class="crit-tag achieved-p">P1</span>
@@ -168,9 +163,9 @@
             <span class="crit-tag achieved-p">P4</span>
             <span class="crit-tag achieved-m">M1</span>
             <span class="crit-tag achieved-m">M2</span>
-            <span class="crit-tag achieved-m">M3</span>
+            <span class="crit-tag">M3</span>
             <span class="crit-tag achieved-d">D1</span>
-            <span class="crit-tag achieved-d">D2</span>
+            <span class="crit-tag">D2</span>
         </div>
     </div>
 </div>
