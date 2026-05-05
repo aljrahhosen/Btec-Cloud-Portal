@@ -82,19 +82,15 @@
             <div class="dropdown-wrapper">
                 <div class="profile-pic" id="profile-pic">U</div>
                 <div class="dropdown-menu">
-                    <!-- رابط صفحة الحساب -->
                     <a href="profile.html" class="dropdown-item" id="profile-btn"><i class="fas fa-user"></i> My Profile</a>
-                    
-                    <!-- رابط صفحة الإعدادات -->
                     <a href="settings.html" class="dropdown-item" id="settings-btn"><i class="fas fa-cog"></i> Settings</a>
-                    
                     <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
                         <i class="fas fa-sign-out-alt" style="color:#ff4b2b;"></i> Logout
                     </a>
                 </div>
             </div>
         </div>
-    </nav> 
+    </nav>
 
     <main class="container">
         <div class="welcome-section">
@@ -117,7 +113,7 @@
             
             <!-- ====== Semester 1 ====== -->
             
-            <!-- المادة الأولى -->
+            <!-- المادة الأولى: قواعد البيانات -->
             <div class="course-card glass-panel" data-semester="1" onclick="window.location.href='database.html'">
                 <div class="course-cover"></div>
                 <div class="course-content">
@@ -125,11 +121,11 @@
                     <div class="course-footer">
                         <span class="course-term" data-sem="1">Semester 1</span>
                     </div>
-                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 40%;"></div></div>
                 </div>
             </div>
 
-            <!-- المادة الثانية -->
+            <!-- المادة الثانية: الاتصالات -->
             <div class="course-card glass-panel" data-semester="1" onclick="window.location.href='it_support.html'">
                 <div class="course-cover"></div>
                 <div class="course-content">
@@ -137,11 +133,11 @@
                     <div class="course-footer">
                         <span class="course-term" data-sem="1">Semester 1</span>
                     </div>
-                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 25%;"></div></div>
                 </div>
             </div>
 
-            <!-- المادة الثالثة -->
+            <!-- المادة الثالثة: الجداول -->
             <div class="course-card glass-panel" data-semester="1" onclick="window.location.href='Data Modeling.html'">
                 <div class="course-cover"></div>
                 <div class="course-content">
@@ -149,19 +145,21 @@
                     <div class="course-footer">
                         <span class="course-term" data-sem="1">Semester 1</span>
                     </div>
-                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 15%;"></div></div>
                 </div>
             </div>
 
             <!-- ====== Semester 2 ====== -->
-            <div class="course-card glass-panel" data-semester="2" onclick="window.location.href='networks.html'"></div>
+            
+            <!-- المادة الرابعة: الشبكات -->
+            <div class="course-card glass-panel" data-semester="2" onclick="window.location.href='networks.html'">
                 <div class="course-cover"></div>
                 <div class="course-content">
                     <div class="course-title" id="c4-title">Introduction to Computer Networks</div>
                     <div class="course-footer">
                         <span class="course-term" data-sem="2">Semester 2</span>
                     </div>
-                    <div class="progress-container"><div class="progress-bar" style="width: 0%;"></div></div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 10%;"></div></div>
                 </div>
             </div>
 
@@ -234,8 +232,7 @@
             projectId: "btec-cloud-portal-d6a93",
             storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
             messagingSenderId: "230354414241",
-            appId: "1:230354414241:web:b365524169fb815b449ee0",
-            measurementId: "G-CVWMNZQNKQ"
+            appId: "1:230354414241:web:b365524169fb815b449ee0"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -258,6 +255,7 @@
                 logout: "Logout",
                 notifTitle: "Notifications",
                 notifEmpty: "No new notifications",
+                
                 c1: "Databases",
                 c2: "Using IT to Support Information and Communication in Organizations",
                 c3: "Data Modeling and Spreadsheets",
@@ -267,6 +265,7 @@
                 c7: "Introduction to Web Development",
                 c8: "Introduction to Applications",
                 c9: "Introduction to Game Design",
+                
                 cardSem1: "Semester 1",
                 cardSem2: "Semester 2",
                 cardSem3: "Semester 3"
@@ -285,6 +284,7 @@
                 logout: "تسجيل الخروج",
                 notifTitle: "الإشعارات",
                 notifEmpty: "لا توجد إشعارات جديدة",
+                
                 c1: "قواعد البيانات",
                 c2: "استخدام تكنولوجيا المعلومات لدعم المعلومات والاتصالات في المؤسسات",
                 c3: "نمذجة البيانات والجداول الإلكترونية",
@@ -294,6 +294,7 @@
                 c7: "مقدمة في تطوير الويب",
                 c8: "مقدمة في التطبيقات",
                 c9: "مقدمة في تصميم الألعاب",
+                
                 cardSem1: "الفصل الأول",
                 cardSem2: "الفصل الثاني",
                 cardSem3: "الفصل الثالث"
