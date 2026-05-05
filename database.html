@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard-style.css?v=12">
+    <link rel="stylesheet" href="dashboard-style.css?v=14">
     
     <style>
         .course-header { background: linear-gradient(135deg, rgba(0, 168, 252, 0.1), rgba(0, 86, 179, 0.2)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px; margin-bottom: 30px; position: relative; overflow: hidden; }
@@ -24,21 +24,23 @@
         .course-main { flex: 2; min-width: 300px; }
         .course-sidebar { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; }
 
-        /* Accordion (Syllabus) */
+        /* Accordion Style */
         .module-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; transition: 0.3s; }
         .module-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: white; font-weight: 600; font-size: 16px; background: rgba(0,0,0,0.2); }
         .module-header:hover { background: rgba(0, 168, 252, 0.1); }
         .module-icon { width: 35px; height: 35px; background: rgba(0, 168, 252, 0.15); color: var(--primary-glow); border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
         html[dir="rtl"] .module-icon { margin-right: 0; margin-left: 15px; }
         .header-left { display: flex; align-items: center; }
-        .toggle-icon { transition: transform 0.3s; color: var(--text-muted); }
         
-        .module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; background: transparent; }
-        .module-card.active .module-content { padding: 20px; max-height: 500px; border-top: 1px solid var(--glass-border); }
+        /* حركة الفتح والإغلاق الصافية */
+        .toggle-icon { transition: transform 0.4s ease; color: var(--text-muted); }
+        .module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.4s ease; background: transparent; }
+        
+        /* زدنا الـ max-height لـ 1500 عشان ياخذ راحته بالفتح مهما كان المحتوى طويل */
+        .module-card.active .module-content { padding: 20px; max-height: 1500px; border-top: 1px solid var(--glass-border); }
         .module-card.active .toggle-icon { transform: rotate(180deg); color: var(--primary-glow); }
-        .module-card.active { border-color: rgba(0, 168, 252, 0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-        /* Grades & BTEC Tracking Custom Styles */
+        /* BTEC Grades Layout */
         .grade-box-container { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
         .grade-box { flex: 1; min-width: 120px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 15px; border-radius: 10px; text-align: center; }
         .grade-box h4 { margin: 0 0 5px 0; color: var(--text-muted); font-size: 12px; font-weight: 500; }
@@ -51,7 +53,6 @@
         .crit-tag.achieved-m { background: rgba(0, 168, 252, 0.1); border-color: #00a8fc; color: #00a8fc; }
         .crit-tag.achieved-d { background: rgba(255, 215, 0, 0.1); border-color: #FFD700; color: #FFD700; }
 
-        /* Material Items */
         .material-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 10px; border: 1px solid transparent; transition: 0.2s; }
         .material-item:hover { border-color: var(--glass-border); background: rgba(255,255,255,0.05); }
         .material-info { display: flex; align-items: center; gap: 12px; color: white; font-size: 14px; }
@@ -65,11 +66,11 @@
         .widget { padding: 25px; border-radius: 16px; }
         .widget-title { font-size: 16px; font-weight: 600; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
         
-        .assignment-card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #ff4b2b; }
+        .assignment-card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #00a8fc; transition: 0.3s; }
         .assign-title { font-size: 14px; color: white; font-weight: 500; margin-bottom: 5px; }
-        .assign-due { font-size: 12px; color: #ff4b2b; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        .btn-submit { background: rgba(255, 75, 43, 0.1); color: #ff4b2b; border: 1px solid rgba(255, 75, 43, 0.3); padding: 8px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; }
-        .btn-submit:hover { background: #ff4b2b; color: white; }
+        .assign-due { font-size: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .btn-submit { background: rgba(0, 168, 252, 0.1); color: var(--primary-glow); border: 1px solid rgba(0, 168, 252, 0.3); padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; display: flex; justify-content: center; gap: 8px; align-items: center;}
+        .btn-submit:hover { background: var(--primary-glow); color: white; }
 
         .resource-link { display: flex; align-items: center; gap: 12px; color: var(--text-muted); text-decoration: none; padding: 10px 0; font-size: 14px; transition: 0.2s; }
         .resource-link:hover { color: var(--primary-glow); transform: translateX(5px); }
@@ -131,24 +132,25 @@
             <!-- Main Content (Modules) -->
             <div class="course-main">
                 
-                <!-- 🌟 الإضافة الجديدة: قسم العلامات وتقييم BTEC 🌟 -->
+                <!-- 🌟 قسم العلامات وتقييم BTEC 🌟 -->
                 <div class="module-card active" style="border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1);">
                     <div class="module-header" onclick="toggleModule(this)" style="background: rgba(255, 215, 0, 0.05);">
                         <div class="header-left">
                             <div class="module-icon" style="color: #FFD700; background: rgba(255, 215, 0, 0.15);"><i class="fas fa-award"></i></div>
                             <span class="u-title-grades" style="color: #FFD700;">My Grades & Assessment</span>
                         </div>
-                        <i class="fas fa-chevron-up toggle-icon" style="color: #FFD700;"></i>
+                        <!-- لاحظ أيقونة السهم ثابتة على down لأن الـ CSS رح يلفها تلقائياً -->
+                        <i class="fas fa-chevron-down toggle-icon" style="color: #FFD700;"></i>
                     </div>
                     <div class="module-content">
                         <div class="grade-box-container">
                             <div class="grade-box">
                                 <h4 class="g-assign1">Assignment 1</h4>
-                                <div class="grade-val val-merit">MERIT</div>
+                                <div class="grade-val val-pass">PASS</div>
                             </div>
                             <div class="grade-box">
                                 <h4 class="g-assign2">Assignment 2</h4>
-                                <div class="grade-val val-pend">PENDING</div>
+                                <div class="grade-val val-merit">MERIT</div>
                             </div>
                             <div class="grade-box" style="border-color: rgba(255, 215, 0, 0.4); background: rgba(255,215,0,0.05);">
                                 <h4 class="g-final">Target Grade</h4>
@@ -161,11 +163,11 @@
                             <span class="crit-tag achieved-p">P1</span>
                             <span class="crit-tag achieved-p">P2</span>
                             <span class="crit-tag achieved-p">P3</span>
+                            <span class="crit-tag achieved-p">P4</span>
                             <span class="crit-tag achieved-m">M1</span>
                             <span class="crit-tag achieved-m">M2</span>
-                            <span class="crit-tag achieved-d">D1</span>
-                            <span class="crit-tag">P4</span>
                             <span class="crit-tag">M3</span>
+                            <span class="crit-tag achieved-d">D1</span>
                             <span class="crit-tag">D2</span>
                         </div>
                     </div>
@@ -239,70 +241,43 @@
             </div>
 
             <!-- Sidebar -->
-<div class="course-sidebar">
-    <!-- Assignments Widget -->
-    <div class="glass-panel widget">
-        <h3 class="widget-title"><i class="fas fa-tasks"></i> <span id="w-assign">Assignment & Submission</span></h3>
-        
-        <!-- كرت الواجب الذكي: لونه بيتغير برمجياً -->
-        <div id="dynamic-assign-card" class="assignment-card" style="border-left: 4px solid var(--primary-glow);">
-            <div class="assign-title" id="active-assign-title">Assignment 1: ERD Design</div>
-            <div class="assign-due" id="active-assign-due" style="color: var(--primary-glow);">
-                <i class="far fa-clock"></i> <span id="due-text">Due: May 06, 2026 11:59 PM</span>
-            </div>
-            
-            <!-- ملف الواجب (المهمة) عشان الطالب يحمله -->
-            <div style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">
-                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px;">Download Instructions:</div>
-                <a href="#" class="resource-link" style="padding: 0; font-size: 13px; color: white;">
-                    <i class="fas fa-file-download" style="color: #FFD700;"></i> Assignment_Brief.pdf
-                </a>
-            </div>
+            <div class="course-sidebar">
+                <!-- Assignments Widget -->
+                <div class="glass-panel widget">
+                    <h3 class="widget-title"><i class="fas fa-tasks"></i> <span id="w-assign">Assignment & Submission</span></h3>
+                    
+                    <!-- كرت الواجب الذكي -->
+                    <div id="dynamic-assign-card" class="assignment-card">
+                        <div class="assign-title" id="active-assign-title">Assignment 1: ERD Design</div>
+                        <div class="assign-due" id="active-assign-due" style="color: var(--primary-glow);">
+                            <i class="far fa-clock"></i> <span id="due-text">Due: May 06, 2026 11:59 PM</span>
+                        </div>
+                        
+                        <!-- ملف الواجب (المهمة) عشان الطالب يحمله -->
+                        <div style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">
+                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px;">Download Instructions:</div>
+                            <a href="#" class="resource-link" style="padding: 0; font-size: 13px; color: white;">
+                                <i class="fas fa-file-download" style="color: #FFD700;"></i> Assignment_Brief.pdf
+                            </a>
+                        </div>
 
-            <!-- زر تسليم الواجب -->
-            <button class="btn-submit" id="main-submit-btn">
-                <i class="fas fa-upload"></i> <span class="submit-text">Submit Work</span>
-            </button>
+                        <!-- زر تسليم الواجب المتفاعل مع الألوان -->
+                        <button class="btn-submit" id="main-submit-btn">
+                            <i class="fas fa-upload"></i> <span class="submit-text">Submit Work</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tools Widget -->
+                <div class="glass-panel widget">
+                    <h3 class="widget-title"><i class="fas fa-toolbox"></i> <span id="w-tools">Required Tools</span></h3>
+                    <a href="#" class="resource-link"><i class="fas fa-download"></i> Download XAMPP Server</a>
+                    <a href="#" class="resource-link"><i class="fas fa-download"></i> Download MySQL Workbench</a>
+                    <a href="#" class="resource-link"><i class="fas fa-link"></i> Draw.io (For ERD)</a>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <!-- Tools Widget -->
-    <div class="glass-panel widget">
-        <h3 class="widget-title"><i class="fas fa-toolbox"></i> <span id="w-tools">Required Tools</span></h3>
-        <a href="#" class="resource-link"><i class="fas fa-download"></i> Download XAMPP Server</a>
-        <a href="#" class="resource-link"><i class="fas fa-download"></i> Download MySQL Workbench</a>
-        <a href="#" class="resource-link"><i class="fas fa-link"></i> Draw.io (For ERD)</a>
-    </div>
-</div>
-
-<script>
-    // كود ذكي لتغيير لون الكرت حسب الوقت (24 ساعة)
-    function updateAssignmentUrgency() {
-        const card = document.getElementById('dynamic-assign-card');
-        const dueText = document.getElementById('active-assign-due');
-        
-        // موعد التسليم (تقدر تغيره برمجياً بعدين)
-        const dueDate = new Date("2026-05-06T23:59:00"); 
-        const now = new Date();
-        
-        // حساب الفرق بالساعات
-        const diffInMs = dueDate - now;
-        const diffInHours = diffInMs / (1000 * 60 * 60);
-
-        if (diffInHours > 0 && diffInHours <= 24) {
-            // إذا ضايل أقل من 24 ساعة -> أحمر
-            card.style.borderLeftColor = "#ff4b2b";
-            dueText.style.color = "#ff4b2b";
-        } else {
-            // أكثر من 24 ساعة -> أزرق (اللون الأساسي)
-            card.style.borderLeftColor = "#00a8fc";
-            dueText.style.color = "#00a8fc";
-        }
-    }
-
-    // تشغيل الحسبة عند تحميل الصفحة
-    window.addEventListener('load', updateAssignmentUrgency);
-</script>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -320,19 +295,46 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // ----------------- Accordion Logic -----------------
+        // ----------------- Accordion Logic (تم التصليح والتنظيف) -----------------
         window.toggleModule = function(element) {
-            const card = element.parentElement;
+            // closest بتضمن إننا نمسك الكرت كامل حتى لو الطالب كبس على الأيقونة بالغلط
+            const card = element.closest('.module-card');
             card.classList.toggle('active');
-            const icon = element.querySelector('.toggle-icon');
-            if(card.classList.contains('active')){
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
+        };
+
+        // ----------------- Assignment Urgency Timer -----------------
+        window.updateAssignmentUrgency = function() {
+            const card = document.getElementById('dynamic-assign-card');
+            const dueText = document.getElementById('active-assign-due');
+            const submitBtn = document.getElementById('main-submit-btn');
+            
+            // تاريخ التسليم المبرمج
+            const dueDate = new Date("2026-05-06T23:59:00"); 
+            const now = new Date();
+            
+            const diffInMs = dueDate - now;
+            const diffInHours = diffInMs / (1000 * 60 * 60);
+
+            if (diffInHours > 0 && diffInHours <= 24) {
+                // أحمر: الطوارئ
+                card.style.borderLeftColor = "#ff4b2b";
+                dueText.style.color = "#ff4b2b";
+                submitBtn.style.background = "rgba(255, 75, 43, 0.1)";
+                submitBtn.style.color = "#ff4b2b";
+                submitBtn.style.borderColor = "rgba(255, 75, 43, 0.3)";
             } else {
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
+                // أزرق: الوضع الطبيعي
+                card.style.borderLeftColor = "#00a8fc";
+                dueText.style.color = "#00a8fc";
+                submitBtn.style.background = "rgba(0, 168, 252, 0.1)";
+                submitBtn.style.color = "#00a8fc";
+                submitBtn.style.borderColor = "rgba(0, 168, 252, 0.3)";
             }
         };
+
+        // تشغيل كود الوقت عند فتح الصفحة
+        window.updateAssignmentUrgency();
+
 
         // ----------------- نظام الترجمة -----------------
         const translations = {
@@ -342,13 +344,12 @@
                 cDesc: "Learn the fundamentals of relational databases, SQL queries, Entity-Relationship Diagrams (ERD), and database management required for the BTEC IT curriculum.",
                 cProg: "Unit Progress: 40%", cContent: "Learning Aims",
                 
-                // Grades section
                 uGrades: "My Grades & Assessment", gAssign1: "Assignment 1", gAssign2: "Assignment 2", gFinal: "Target Grade", gCrit: "Criteria Achieved:",
                 
                 u1: "Learning Aim A: Introduction to Databases", 
                 u2: "Learning Aim B: Entity-Relationship Diagrams (ERD)", 
                 u3: "Learning Aim C: SQL Fundamentals",
-                wAssign: "Assignments", btnSubmit: "Submit Work", wTools: "Required Tools"
+                wAssign: "Assignment & Submission", btnSubmit: "Submit Work", wTools: "Required Tools"
             },
             ar: {
                 langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", navDash: "لوحة التحكم", navProf: "حسابي", navSettings: "الإعدادات", navLogout: "تسجيل الخروج",
@@ -356,13 +357,12 @@
                 cDesc: "تعلم أساسيات قواعد البيانات العلائقية، استعلامات SQL، مخططات العلاقات (ERD)، وإدارة البيانات المطلوبة في منهج BTEC IT.",
                 cProg: "نسبة إنجاز المادة: 40%", cContent: "الأهداف التعليمية (Learning Aims)",
                 
-                // Grades section
                 uGrades: "علاماتي وتقييمي", gAssign1: "الواجب الأول", gAssign2: "الواجب الثاني", gFinal: "التقييم المستهدف", gCrit: "المعايير المنجزة:",
 
                 u1: "الهدف التعليمي A: مقدمة في قواعد البيانات", 
                 u2: "الهدف التعليمي B: رسم المخططات (ERD)", 
                 u3: "الهدف التعليمي C: أساسيات لغة SQL",
-                wAssign: "الواجبات المطلوبة", btnSubmit: "تسليم الواجب", wTools: "الأدوات والبرامج"
+                wAssign: "تسليم الواجبات", btnSubmit: "تسليم الواجب", wTools: "الأدوات والبرامج"
             }
         };
 
@@ -378,7 +378,6 @@
             document.getElementById('nav-settings').innerHTML = `<i class="fas fa-cog"></i> ${translations[lang].navSettings}`;
             document.getElementById('nav-logout').innerText = translations[lang].navLogout;
 
-            // Course texts
             document.getElementById('c-title').innerText = translations[lang].cTitle;
             document.getElementById('c-desc').innerText = translations[lang].cDesc;
             document.getElementById('c-prog-text').innerText = translations[lang].cProg;
