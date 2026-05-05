@@ -129,44 +129,49 @@
             <!-- Main Content -->
             <div class="course-main">
                 
-                <!-- My Grades -->
-                <div class="module-card active" style="border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1);">
-                    <div class="module-header" onclick="toggleModule(this)" style="background: rgba(255, 215, 0, 0.05);">
-                        <div class="header-left">
-                            <div class="module-icon" style="color: #FFD700; background: rgba(255, 215, 0, 0.15);"><i class="fas fa-award"></i></div>
-                            <span class="u-title-grades" style="color: #FFD700;">My Grades & Assessment</span>
-                        </div>
-                        <i class="fas fa-chevron-down toggle-icon" style="color: #FFD700;"></i>
-                    </div>
-                    <div class="module-content">
-                        <div class="grade-box-container">
-                            <div class="grade-box">
-                                <h4 class="g-assign1">Assignment 1</h4>
-                                <div class="grade-val val-pass">PASS</div>
-                            </div>
-                            <div class="grade-box">
-                                <h4 class="g-assign2">Assignment 2</h4>
-                                <div class="grade-val val-merit">MERIT</div>
-                            </div>
-                            <div class="grade-box" style="border-color: rgba(255, 215, 0, 0.4); background: rgba(255,215,0,0.05);">
-                                <h4 class="g-final">Target Grade</h4>
-                                <div class="grade-val val-dist">DISTINCTION</div>
-                            </div>
-                        </div>
-                        
-                        <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" class="g-crit">Criteria Achieved:</h4>
-                        <div class="criteria-grid">
-                            <span class="crit-tag achieved-p">P1</span>
-                            <span class="crit-tag">P2</span>
-                            <span class="crit-tag">P3</span>
-                            <span class="crit-tag">P4</span>
-                            <span class="crit-tag">M1</span>
-                            <span class="crit-tag">M2</span>
-                            <span class="crit-tag">D1</span>
-                            <span class="crit-tag">D2</span>
-                        </div>
-                    </div>
-                </div>
+                <!-- My Grades & Assessment (الفل مارك والعلامة النهائية) -->
+<div class="module-card active" style="border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1);">
+    <div class="module-header" onclick="toggleModule(this)" style="background: rgba(255, 215, 0, 0.05);">
+        <div class="header-left">
+            <div class="module-icon" style="color: #FFD700; background: rgba(255, 215, 0, 0.15);"><i class="fas fa-award"></i></div>
+            <span class="u-title-grades" style="color: #FFD700;">My Grades & Assessment</span>
+        </div>
+        <i class="fas fa-chevron-down toggle-icon" style="color: #FFD700;"></i>
+    </div>
+    <div class="module-content">
+        <div class="grade-box-container">
+            <!-- الواجب الأول: فل مارك -->
+            <div class="grade-box">
+                <h4 class="g-assign1">Assignment 1</h4>
+                <div class="grade-val val-dist">DISTINCTION</div>
+            </div>
+            <!-- الواجب الثاني: فل مارك (شيلنا الـ PENDING) -->
+            <div class="grade-box">
+                <h4 class="g-assign2">Assignment 2</h4>
+                <div class="grade-val val-dist">DISTINCTION</div>
+            </div>
+            <!-- العلامة النهائية للمادة -->
+            <div class="grade-box" style="border-color: rgba(255, 215, 0, 0.4); background: rgba(255,215,0,0.05);">
+                <h4 class="g-final">Final Grade</h4>
+                <div class="grade-val val-dist">DISTINCTION</div>
+            </div>
+        </div>
+        
+        <!-- كل المعايير محققة (ألوان شغالة) -->
+        <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" class="g-crit">Criteria Achieved:</h4>
+        <div class="criteria-grid">
+            <span class="crit-tag achieved-p">P1</span>
+            <span class="crit-tag achieved-p">P2</span>
+            <span class="crit-tag achieved-p">P3</span>
+            <span class="crit-tag achieved-p">P4</span>
+            <span class="crit-tag achieved-m">M1</span>
+            <span class="crit-tag achieved-m">M2</span>
+            <span class="crit-tag achieved-m">M3</span>
+            <span class="crit-tag achieved-d">D1</span>
+            <span class="crit-tag achieved-d">D2</span>
+        </div>
+    </div>
+</div>
 
                 <h3 style="color: white; margin-bottom: 20px; font-weight: 600; margin-top: 30px;" id="c-content-title">Learning Aims</h3>
 
