@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard-style.css?v=8">
+    <link rel="stylesheet" href="dashboard-style.css?v=9">
     
     <style>
         .profile-container { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
@@ -24,8 +24,7 @@
         
         .btn-primary { background: var(--primary-glow); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary:hover { background: #0088cc; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
-        .btn-danger-outline { background: transparent; border: 1px solid #ff4b2b; color: #ff4b2b; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: 600; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-danger-outline:hover { background: rgba(255, 75, 43, 0.1); }
+        
         .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
         .back-link:hover { color: var(--primary-glow); }
 
@@ -71,6 +70,7 @@
                 <div class="profile-pic" id="nav-profile-pic">U</div>
                 <div class="dropdown-menu">
                     <a href="dashboard.html" class="dropdown-item" id="nav-dash"><i class="fas fa-home"></i> Dashboard</a>
+                    <a href="settings.html" class="dropdown-item" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
                     <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
                         <i class="fas fa-sign-out-alt"></i> <span id="nav-logout">Logout</span>
                     </a>
@@ -94,7 +94,6 @@
                 <div class="profile-role" id="display-major">BTEC Student</div>
                 
                 <button class="btn-primary" id="open-edit-btn"><i class="fas fa-pen"></i> <span id="btn-edit-text">Edit Profile</span></button>
-                <button class="btn-danger-outline" id="reset-pass-btn"><i class="fas fa-key"></i> <span id="btn-pass-text">Change Password</span></button>
             </div>
 
             <div class="glass-panel profile-content">
@@ -119,7 +118,6 @@
                         <span class="info-label" id="label-school">School</span>
                         <div class="info-value" id="info-school">Not Set</div>
                     </div>
-                    <!-- السنة الدراسية صارت ثابتة وما بتتعدل -->
                     <div class="info-group">
                         <span class="info-label" id="label-grade">Academic Year / Grade</span>
                         <div class="info-value" id="info-grade" style="color: #bbb;">Waiting for Sync...</div>
@@ -163,7 +161,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -181,22 +179,22 @@
             en: {
                 langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", pageTitle: "My Profile",
                 pageDesc: "Manage your personal information, academic details, and identity.",
-                editBtn: "Edit Profile", passBtn: "Change Password",
+                editBtn: "Edit Profile",
                 labelName: "Full Name", labelEmail: "Email Address", labelNid: "National ID",
                 labelSid: "Student Number", labelSchool: "School", labelLoc: "Location / Country",
                 labelGrade: "Academic Year / Grade",
                 modalTitle: "Edit Profile Details", modalCancel: "Cancel", modalSave: "Save Changes",
-                navDash: "Dashboard", navLogout: "Logout", alertPass: "Password reset link sent to your email!"
+                navDash: "Dashboard", navSettings: "Settings", navLogout: "Logout"
             },
             ar: {
                 langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", pageTitle: "حسابي الشخصي",
                 pageDesc: "إدارة معلوماتك الشخصية، الأكاديمية، وهويتك.",
-                editBtn: "تعديل الحساب", passBtn: "تغيير كلمة المرور",
+                editBtn: "تعديل الحساب",
                 labelName: "الاسم الكامل", labelEmail: "البريد الإلكتروني", labelNid: "الرقم الوطني",
                 labelSid: "الرقم الطلابي", labelSchool: "المدرسة", labelLoc: "الموقع / الدولة",
                 labelGrade: "السنة الدراسية / الصف",
                 modalTitle: "تعديل بيانات الحساب", modalCancel: "إلغاء", modalSave: "حفظ التعديلات",
-                navDash: "لوحة التحكم", navLogout: "تسجيل الخروج", alertPass: "تم إرسال رابط تغيير كلمة المرور إلى إيميلك!"
+                navDash: "لوحة التحكم", navSettings: "الإعدادات", navLogout: "تسجيل الخروج"
             }
         };
 
@@ -209,7 +207,6 @@
             document.getElementById('page-title').innerText = translations[lang].pageTitle;
             document.getElementById('page-desc').innerText = translations[lang].pageDesc;
             document.getElementById('btn-edit-text').innerText = translations[lang].editBtn;
-            document.getElementById('btn-pass-text').innerText = translations[lang].passBtn;
             
             document.getElementById('label-name').innerText = translations[lang].labelName;
             document.getElementById('label-email').innerText = translations[lang].labelEmail;
@@ -226,6 +223,7 @@
             document.getElementById('cancel-btn').innerText = translations[lang].modalCancel;
             document.getElementById('save-btn').innerText = translations[lang].modalSave;
             document.getElementById('nav-dash').innerHTML = `<i class="fas fa-home"></i> ${translations[lang].navDash}`;
+            document.getElementById('nav-settings').innerHTML = `<i class="fas fa-cog"></i> ${translations[lang].navSettings}`;
             document.getElementById('nav-logout').innerText = translations[lang].navLogout;
 
             document.getElementById('info-loc').innerHTML = lang === 'ar' ? '<i class="fas fa-map-marker-alt"></i> الأردن - إربد' : '<i class="fas fa-map-marker-alt"></i> Jordan - Irbid';
@@ -277,17 +275,6 @@
             } else {
                 window.location.href = "index.html"; 
             }
-        });
-
-        document.getElementById('reset-pass-btn').addEventListener('click', () => {
-            const userEmail = auth.currentUser.email;
-            const currentLang = localStorage.getItem('preferredLang') || 'en';
-            
-            sendPasswordResetEmail(auth, userEmail).then(() => {
-                alert(translations[currentLang].alertPass);
-            }).catch((error) => {
-                alert("Error: " + error.message);
-            });
         });
 
         const modal = document.getElementById('edit-modal');
