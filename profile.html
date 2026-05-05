@@ -7,14 +7,14 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard-style.css?v=4">
+    <link rel="stylesheet" href="dashboard-style.css?v=7">
     
     <style>
         .profile-container { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
         .profile-sidebar { flex: 1; min-width: 250px; text-align: center; padding: 40px 20px; }
         .profile-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-glow), #0056b3); display: flex; justify-content: center; align-items: center; font-size: 48px; font-weight: bold; color: white; margin: 0 auto 20px auto; box-shadow: 0 10px 25px rgba(0, 168, 252, 0.4); text-transform: uppercase; }
         .profile-name { font-size: 24px; font-weight: 600; margin-bottom: 5px; }
-        .profile-role { color: var(--primary-glow); font-size: 14px; font-weight: 500; margin-bottom: 20px; }
+        .profile-role { color: var(--primary-glow); font-size: 14px; font-weight: 500; margin-bottom: 25px; }
         
         .profile-content { flex: 2; min-width: 300px; padding: 30px; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
@@ -24,10 +24,8 @@
         
         .btn-primary { background: var(--primary-glow); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary:hover { background: #0088cc; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
-        
         .btn-danger-outline { background: transparent; border: 1px solid #ff4b2b; color: #ff4b2b; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: 600; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-danger-outline:hover { background: rgba(255, 75, 43, 0.1); }
-
         .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
         .back-link:hover { color: var(--primary-glow); }
 
@@ -61,7 +59,6 @@
             BTEC Cloud
         </div>
         <div class="nav-actions">
-            <!-- Language Dropdown -->
             <div class="dropdown-wrapper">
                 <span id="lang-display">🌐 EN ▾</span>
                 <div class="dropdown-menu">
@@ -112,7 +109,7 @@
                     </div>
                     <div class="info-group">
                         <span class="info-label" id="label-nid">National ID</span>
-                        <div class="info-value" id="info-nid">Waiting for Sync...</div>
+                        <div class="info-value" id="info-nid" style="color: #bbb;">Waiting for Sync...</div>
                     </div>
                     <div class="info-group">
                         <span class="info-label" id="label-sid">Student Number</span>
@@ -121,6 +118,10 @@
                     <div class="info-group">
                         <span class="info-label" id="label-school">School</span>
                         <div class="info-value" id="info-school">Not Set</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label" id="label-grade">Academic Year / Grade</span>
+                        <div class="info-value" id="info-grade">Not Set</div>
                     </div>
                     <div class="info-group">
                         <span class="info-label" id="label-loc">Location / Country</span>
@@ -141,13 +142,16 @@
             
             <div class="form-group">
                 <label id="modal-label-school">School</label>
-                <input type="text" id="input-school" placeholder="e.g. BTEC High School">
+                <input type="text" id="input-school" placeholder="e.g. Ali Khalqi Al-Sharairi">
+            </div>
+            <div class="form-group">
+                <label id="modal-label-grade">Academic Year / Grade</label>
+                <input type="text" id="input-grade" placeholder="e.g. Grade 11">
             </div>
             <div class="form-group">
                 <label id="modal-label-major">Major</label>
                 <input type="text" id="input-major" placeholder="Your specialization">
             </div>
-            <!-- حقل الموقع معطل (ReadOnly) لأنه ثابت -->
             <div class="form-group">
                 <label id="modal-label-loc">Location</label>
                 <input type="text" id="input-loc" value="Jordan - Irbid" disabled>
@@ -176,7 +180,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // ----------------- نظام الترجمة -----------------
         const translations = {
             en: {
                 langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", pageTitle: "My Profile",
@@ -184,6 +187,7 @@
                 editBtn: "Edit Profile", passBtn: "Change Password",
                 labelName: "Full Name", labelEmail: "Email Address", labelNid: "National ID",
                 labelSid: "Student Number", labelSchool: "School", labelLoc: "Location / Country",
+                labelGrade: "Academic Year / Grade",
                 modalTitle: "Edit Profile Details", modalCancel: "Cancel", modalSave: "Save Changes",
                 navDash: "Dashboard", navLogout: "Logout", alertPass: "Password reset link sent to your email!"
             },
@@ -193,6 +197,7 @@
                 editBtn: "تعديل الحساب", passBtn: "تغيير كلمة المرور",
                 labelName: "الاسم الكامل", labelEmail: "البريد الإلكتروني", labelNid: "الرقم الوطني",
                 labelSid: "الرقم الطلابي", labelSchool: "المدرسة", labelLoc: "الموقع / الدولة",
+                labelGrade: "السنة الدراسية / الصف",
                 modalTitle: "تعديل بيانات الحساب", modalCancel: "إلغاء", modalSave: "حفظ التعديلات",
                 navDash: "لوحة التحكم", navLogout: "تسجيل الخروج", alertPass: "تم إرسال رابط تغيير كلمة المرور إلى إيميلك!"
             }
@@ -214,10 +219,12 @@
             document.getElementById('label-nid').innerText = translations[lang].labelNid;
             document.getElementById('label-sid').innerText = translations[lang].labelSid;
             document.getElementById('label-school').innerText = translations[lang].labelSchool;
+            document.getElementById('label-grade').innerText = translations[lang].labelGrade;
             document.getElementById('label-loc').innerText = translations[lang].labelLoc;
             
             document.getElementById('modal-title-text').innerText = translations[lang].modalTitle;
             document.getElementById('modal-label-school').innerText = translations[lang].labelSchool;
+            document.getElementById('modal-label-grade').innerText = translations[lang].labelGrade;
             document.getElementById('modal-label-major').innerText = translations[lang].labelSchool + " Major";
             document.getElementById('modal-label-loc').innerText = translations[lang].labelLoc;
             
@@ -226,20 +233,19 @@
             document.getElementById('nav-dash').innerHTML = `<i class="fas fa-home"></i> ${translations[lang].navDash}`;
             document.getElementById('nav-logout').innerText = translations[lang].navLogout;
 
-            // تغيير اسم الدولة للغة المحددة
             document.getElementById('info-loc').innerHTML = lang === 'ar' ? '<i class="fas fa-map-marker-alt"></i> الأردن - إربد' : '<i class="fas fa-map-marker-alt"></i> Jordan - Irbid';
             document.getElementById('input-loc').value = lang === 'ar' ? 'الأردن - إربد' : 'Jordan - Irbid';
 
             localStorage.setItem('preferredLang', lang);
         };
 
-        // ----------------- توليد وإدارة بيانات الطالب -----------------
         function generateStudentNumber() {
             return 'BTEC' + Math.floor(100000 + Math.random() * 900000);
         }
 
         const defaultData = {
             school: "",
+            grade: "",
             major: "BTEC Student",
         };
 
@@ -254,9 +260,11 @@
 
             document.getElementById('info-sid').innerText = sid;
             document.getElementById('info-school').innerText = saved.school || "Not Set";
+            document.getElementById('info-grade').innerText = saved.grade || "Not Set";
             document.getElementById('display-major').innerText = saved.major;
 
             document.getElementById('input-school').value = saved.school || "";
+            document.getElementById('input-grade').value = saved.grade || "";
             document.getElementById('input-major').value = saved.major || "";
         }
 
@@ -279,7 +287,6 @@
             }
         });
 
-        // ----------------- تغيير كلمة المرور -----------------
         document.getElementById('reset-pass-btn').addEventListener('click', () => {
             const userEmail = auth.currentUser.email;
             const currentLang = localStorage.getItem('preferredLang') || 'en';
@@ -291,7 +298,6 @@
             });
         });
 
-        // ----------------- نافذة التعديل (Modal) -----------------
         const modal = document.getElementById('edit-modal');
         document.getElementById('open-edit-btn').addEventListener('click', () => modal.classList.add('active'));
         
@@ -303,6 +309,7 @@
             let saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
             
             saved.school = document.getElementById('input-school').value;
+            saved.grade = document.getElementById('input-grade').value;
             saved.major = document.getElementById('input-major').value;
 
             localStorage.setItem('btec_user_profile', JSON.stringify(saved));
@@ -310,7 +317,6 @@
             closeModal();
         });
 
-        // ----------------- القوائم -----------------
         document.getElementById('logout-btn').addEventListener('click', (e) => {
             e.preventDefault();
             signOut(auth).then(() => window.location.href = "index.html");
