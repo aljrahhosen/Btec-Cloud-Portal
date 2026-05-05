@@ -167,12 +167,15 @@
         </div>
     </div>
 </div>
-<div class="final-outcome-container" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--glass-border);">
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <span class="g-final-text" style="color: var(--text-muted); font-size: 14px; font-weight: 500;">Overall Unit Grade:</span>
-        <div id="auto-final-grade" class="grade-val" style="font-size: 22px; text-shadow: 0 0 15px rgba(255,255,255,0.1);">---</div>
-    </div>
-</div>
+</div> <!-- هاي تسكيرة criteria-grid الأصلية -->
+        
+        <!-- حط الكود الجديد هون مباشرة -->
+        <div class="final-outcome-container" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span class="g-final-text" style="color: var(--text-muted); font-size: 14px; font-weight: 500;">Overall Unit Grade:</span>
+                <div id="auto-final-grade" class="grade-val" style="font-size: 22px; text-shadow: 0 0 15px rgba(255,255,255,0.1);">---</div>
+            </div>
+        </div>
                 <h3 style="color: white; margin-bottom: 20px; font-weight: 600; margin-top: 30px;" id="c-content-title">Learning Aims</h3>
 
                 <!-- Learning Aim A -->
@@ -292,6 +295,30 @@
             const card = element.closest('.module-card');
             card.classList.toggle('active');
         };
+        window.calculateFinalGrade = function() {
+            const badge = document.getElementById('auto-final-grade');
+            if(!badge) return;
+
+            const hasD = document.querySelector('.crit-tag.achieved-d');
+            const hasM = document.querySelector('.crit-tag.achieved-m');
+            const hasP = document.querySelector('.crit-tag.achieved-p');
+
+            if (hasD) {
+                badge.innerText = "DISTINCTION";
+                badge.className = "grade-val val-dist";
+            } else if (hasM) {
+                badge.innerText = "MERIT";
+                badge.className = "grade-val val-merit";
+            } else if (hasP) {
+                badge.innerText = "PASS";
+                badge.className = "grade-val val-pass";
+            } else {
+                badge.innerText = "NOT ACHIEVED";
+                badge.className = "grade-val val-pend";
+            }
+        };
+
+        window.addEventListener('load', window.calculateFinalGrade);
 
         window.updateAssignmentUrgency = function() {
             const card = document.getElementById('dynamic-assign-card');
@@ -316,33 +343,6 @@
                 submitBtn.style.background = "rgba(255, 71, 87, 0.1)";
                 submitBtn.style.color = "#ff4757";
                 submitBtn.style.borderColor = "rgba(255, 71, 87, 0.3)";
-                // وظيفة حساب العلامة النهائية بناءً على المعايير المحققة
-window.calculateFinalGrade = function() {
-    const badge = document.getElementById('auto-final-grade');
-    if(!badge) return;
-
-    // بنشوف إذا في أي معيار محقق من كل نوع
-    const hasD = document.querySelector('.crit-tag.achieved-d');
-    const hasM = document.querySelector('.crit-tag.achieved-m');
-    const hasP = document.querySelector('.crit-tag.achieved-p');
-
-    if (hasD) {
-        badge.innerText = "DISTINCTION";
-        badge.className = "grade-val val-dist";
-    } else if (hasM) {
-        badge.innerText = "MERIT";
-        badge.className = "grade-val val-merit";
-    } else if (hasP) {
-        badge.innerText = "PASS";
-        badge.className = "grade-val val-pass";
-    } else {
-        badge.innerText = "NOT ACHIEVED";
-        badge.className = "grade-val val-pend";
-    }
-};
-
-// تشغيل الحسبة فور تحميل الصفحة
-window.addEventListener('load', window.calculateFinalGrade);
             }
         };
 
@@ -397,6 +397,7 @@ window.addEventListener('load', window.calculateFinalGrade);
             document.getElementById('c-content-title').innerText = translations[lang].cContent;
             
             document.querySelector('.u-title-grades').innerText = translations[lang].uGrades;
+            document.querySelector('.g-final-text').innerText = translations[lang].overallGrade;
             document.querySelector('.g-assign1').innerText = translations[lang].gAssign1;
             document.querySelector('.g-assign2').innerText = translations[lang].gAssign2;
             document.querySelector('.g-final').innerText = translations[lang].gFinal;
