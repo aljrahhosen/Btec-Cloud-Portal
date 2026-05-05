@@ -53,6 +53,9 @@
         .crit-tag.achieved-m { background: rgba(0, 168, 252, 0.1); border-color: #00a8fc; color: #00a8fc; }
         .crit-tag.achieved-d { background: rgba(255, 215, 0, 0.1); border-color: #FFD700; color: #FFD700; }
 
+        .final-grade-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px 14px; margin-top: 15px; }
+        .final-grade-label { color: var(--text-muted); font-size: 13px; font-weight: 600; }
+
         .material-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 10px; border: 1px solid transparent; transition: 0.2s; }
         .material-item:hover { border-color: var(--glass-border); background: rgba(255,255,255,0.05); }
         .material-info { display: flex; align-items: center; gap: 12px; color: white; font-size: 14px; }
@@ -333,8 +336,32 @@
             }
         };
 
+        window.calculateFinalGrade = function() {
+            const badge = document.getElementById('auto-final-grade');
+            if (!badge) return;
+
+            const hasD = document.querySelector('.crit-tag.achieved-d');
+            const hasM = document.querySelector('.crit-tag.achieved-m');
+            const hasP = document.querySelector('.crit-tag.achieved-p');
+
+            if (hasD) {
+                badge.innerText = "DISTINCTION";
+                badge.className = "grade-val val-dist";
+            } else if (hasM) {
+                badge.innerText = "MERIT";
+                badge.className = "grade-val val-merit";
+            } else if (hasP) {
+                badge.innerText = "PASS";
+                badge.className = "grade-val val-pass";
+            } else {
+                badge.innerText = "NOT ACHIEVED";
+                badge.className = "grade-val val-pend";
+            }
+        };
+
         // تشغيل كود الوقت عند فتح الصفحة
         window.updateAssignmentUrgency();
+        window.addEventListener('load', window.calculateFinalGrade);
 
 
         // ----------------- نظام الترجمة -----------------
