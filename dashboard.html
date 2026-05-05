@@ -46,10 +46,8 @@
 </style>
 </head>
 
-<!-- هون فتحنا الـ body وخليناه مفتوح عشان يضم كل الصفحة -->
 <body class="dashboard-body" style="display: block !important; width: 100% !important; height: auto !important; min-height: 100vh !important; overflow-y: auto !important;">
 
-    <!-- هون فتحنا الـ nav وخليناه مفتوح عشان يضم اللوجو والكبسات -->
     <nav class="navbar glass-panel" style="width: 100% !important; top: 0 !important; position: relative !important; display: flex !important;">
         <div class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00a8fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(0, 168, 252, 0.5));">
@@ -96,7 +94,7 @@
                 </div>
             </div>
         </div>
-    </nav> <!-- هون سكرنا الـ nav بعد ما خلصنا محتوياته -->
+    </nav> 
 
     <main class="container">
         <div class="welcome-section">
@@ -118,7 +116,8 @@
         <div class="courses-grid" id="coursesContainer">
             
             <!-- ====== Semester 1 ====== -->
-            <!-- تم التعديل هون: ضفنا رابط الانتقال لصفحة database.html بدال رسالة التنبيه -->
+            
+            <!-- المادة الأولى -->
             <div class="course-card glass-panel" data-semester="1" onclick="window.location.href='database.html'">
                 <div class="course-cover"></div>
                 <div class="course-content">
@@ -130,7 +129,8 @@
                 </div>
             </div>
 
-            <div class="course-card glass-panel" data-semester="1" onclick="viewDetails('Data Modeling and Spreadsheets')"></div>
+            <!-- المادة الثانية -->
+            <div class="course-card glass-panel" data-semester="1" onclick="window.location.href='it_support.html'">
                 <div class="course-cover"></div>
                 <div class="course-content">
                     <div class="course-title" id="c2-title">Using IT to Support Information and Communication in Organizations</div>
@@ -141,7 +141,8 @@
                 </div>
             </div>
 
-            <div class="course-card glass-panel" data-semester="1" onclick="viewDetails('Data Modeling and Spreadsheets')">
+            <!-- المادة الثالثة -->
+            <div class="course-card glass-panel" data-semester="1" onclick="window.location.href='Data Modeling.html'">
                 <div class="course-cover"></div>
                 <div class="course-content">
                     <div class="course-title" id="c3-title">Data Modeling and Spreadsheets</div>
@@ -242,7 +243,6 @@
 
         window.currentUserDisplayName = "Student";
 
-        // قاموس الترجمة شامل أسماء المواد
         const translations = {
             en: {
                 langDisplay: "🌐 EN ▾",
@@ -258,8 +258,6 @@
                 logout: "Logout",
                 notifTitle: "Notifications",
                 notifEmpty: "No new notifications",
-                
-                // أسماء المواد بالإنجليزي
                 c1: "Databases",
                 c2: "Using IT to Support Information and Communication in Organizations",
                 c3: "Data Modeling and Spreadsheets",
@@ -269,8 +267,6 @@
                 c7: "Introduction to Web Development",
                 c8: "Introduction to Applications",
                 c9: "Introduction to Game Design",
-                
-                // التاج اللي جوا الكرت
                 cardSem1: "Semester 1",
                 cardSem2: "Semester 2",
                 cardSem3: "Semester 3"
@@ -289,8 +285,6 @@
                 logout: "تسجيل الخروج",
                 notifTitle: "الإشعارات",
                 notifEmpty: "لا توجد إشعارات جديدة",
-                
-                // أسماء المواد بالعربي
                 c1: "قواعد البيانات",
                 c2: "استخدام تكنولوجيا المعلومات لدعم المعلومات والاتصالات في المؤسسات",
                 c3: "نمذجة البيانات والجداول الإلكترونية",
@@ -300,8 +294,6 @@
                 c7: "مقدمة في تطوير الويب",
                 c8: "مقدمة في التطبيقات",
                 c9: "مقدمة في تصميم الألعاب",
-                
-                // التاج اللي جوا الكرت بالعربي
                 cardSem1: "الفصل الأول",
                 cardSem2: "الفصل الثاني",
                 cardSem3: "الفصل الثالث"
@@ -312,7 +304,6 @@
             document.documentElement.lang = lang;
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
-            // الواجهة الأساسية
             document.getElementById('lang-display').innerText = translations[lang].langDisplay;
             document.getElementById('overview-msg').innerText = translations[lang].overview;
             document.getElementById('searchInput').placeholder = translations[lang].search;
@@ -321,21 +312,18 @@
                 document.getElementById("welcome-msg").innerHTML = `${translations[lang].hello}, ${window.currentUserDisplayName}! 👋`;
             }
 
-            // الفلتر
             const options = document.getElementById('semesterFilter').options;
             options[0].text = translations[lang].allSem;
             options[1].text = translations[lang].sem1;
             options[2].text = translations[lang].sem2;
             options[3].text = translations[lang].sem3;
 
-            // القوائم
             document.getElementById('notif-title').innerText = translations[lang].notifTitle;
             document.getElementById('notif-empty').innerText = translations[lang].notifEmpty;
             document.getElementById('profile-btn').innerHTML = `<i class="fas fa-user"></i> ${translations[lang].profile}`;
             document.getElementById('settings-btn').innerHTML = `<i class="fas fa-cog"></i> ${translations[lang].settings}`;
             document.getElementById('logout-btn').innerHTML = `<i class="fas fa-sign-out-alt" style="color:#ff4b2b;"></i> ${translations[lang].logout}`;
 
-            // ترجمة أسماء المواد
             document.getElementById('c1-title').innerText = translations[lang].c1;
             document.getElementById('c2-title').innerText = translations[lang].c2;
             document.getElementById('c3-title').innerText = translations[lang].c3;
@@ -346,7 +334,6 @@
             document.getElementById('c8-title').innerText = translations[lang].c8;
             document.getElementById('c9-title').innerText = translations[lang].c9;
 
-            // ترجمة تاق الفصل جوا الكروت
             document.querySelectorAll('.course-term').forEach(term => {
                 const semValue = term.getAttribute('data-sem');
                 if (semValue === "1") term.innerText = translations[lang].cardSem1;
@@ -399,7 +386,6 @@
             });
         });
 
-        // تم التعديل هون عشان البحث يشتغل صح سواء المادة مكتوبة بالعربي أو الإنجليزي
         window.filterCourses = function() {
             const selectedSemester = document.getElementById("semesterFilter").value;
             const searchText = document.getElementById('searchInput').value.toLowerCase();
