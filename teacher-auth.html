@@ -52,13 +52,15 @@
         #register-form { display: none; }
     </style>
     <style>
-        :root { --bg-dark: #0f172a; --glass-bg: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); --primary: #00a8fc; --primary-hover: #008be6; --text-main: #f8fafc; --text-muted: #94a3b8; }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        :root { --glass-border: rgba(255, 255, 255, 0.1); --primary: #00a8fc; --primary-hover: #008be6; --text-muted: #94a3b8; }
         
-        .auth-container { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255,255,255,0.2); position: relative; z-index: 10; }
+        /* شلنا الخلفية الثابتة من هون عشان يسحبها من ملف style.css تبعك */
+        body { margin: 0; font-family: 'Poppins', sans-serif; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        
+        .auth-container { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255,255,255,0.2); position: relative; z-index: 10; }
         .logo-area { text-align: center; margin-bottom: 30px; }
         .logo-area svg { filter: drop-shadow(0 0 10px rgba(0, 168, 252, 0.6)); margin-bottom: 10px; }
-        .logo-area h2 { margin: 0; font-weight: 600; font-size: 24px; }
+        .logo-area h2 { margin: 0; font-weight: 600; font-size: 24px; color: white; }
         .logo-area p { color: var(--text-muted); font-size: 14px; margin-top: 5px; }
 
         .input-group { margin-bottom: 20px; position: relative; }
@@ -66,7 +68,7 @@
         .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); z-index: 2; }
         html[dir="rtl"] .input-group i { left: auto; right: 15px; }
         
-        /* إجبار الـ Padding والخلفية عشان ما يخربهم style.css */
+        /* إجبار الـ Padding عشان ما يخرب من style.css */
         .input-field { 
             width: 100%; 
             padding: 12px 15px 12px 45px !important; 
@@ -83,7 +85,7 @@
         .input-field:focus { outline: none; border-color: var(--primary) !important; background: rgba(0,0,0,0.4) !important; box-shadow: 0 0 15px rgba(0,168,252,0.2); }
         .input-field::placeholder { color: #64748b; }
 
-        /* حل سحري لمنع جوجل كروم من تبييض الخلفية عند التعبئة التلقائية */
+        /* حل لمنع جوجل كروم من تبييض المربعات */
         input:-webkit-autofill,
         input:-webkit-autofill:hover, 
         input:-webkit-autofill:focus, 
