@@ -9,12 +9,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* ستايل التنبيهات (Toasts) */
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; }
         .toast { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 15px 25px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); display: flex; align-items: center; gap: 12px; animation: slideIn 0.5s ease-out forwards; min-width: 300px; }
         .toast.error { border-left: 4px solid #ff4b2b; }
         .toast.success { border-left: 4px solid #00f2fe; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { to { transform: translateX(100%); opacity: 0; } }
+
+        /* ستايل إضافي لرابط المعلمين لضمان التناسق */
+        .teacher-section {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .teacher-link {
+            color: #00a8fc;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+            transition: 0.3s;
+        }
+        .teacher-link:hover {
+            color: #00f2fe;
+            text-shadow: 0 0 10px rgba(0, 168, 252, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -36,12 +56,6 @@
                 <span class="title">BTEC Cloud</span>
                 <span class="subtitle">IT Student Portal</span>
             </div>
-            <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-    <span style="color: var(--text-muted); font-size: 14px;">Are you a Teacher?</span>
-    <a href="teacher-auth.html" style="color: #00a8fc; text-decoration: none; font-weight: 600; margin-left: 5px;">
-        <i class="fas fa-chalkboard-teacher"></i> Teacher Portal
-    </a>
-</div>
         </div>
 
         <h2 class="login-title">Login</h2>
@@ -76,6 +90,13 @@
         <div class="register">
             Don't have an account? <a href="register.html">Register for free</a>
         </div>
+
+        <div class="teacher-section">
+            <span style="color: rgba(255,255,255,0.6); font-size: 14px;">Are you a Teacher?</span>
+            <a href="teacher-auth.html" class="teacher-link">
+                <i class="fas fa-chalkboard-teacher"></i> Teacher Portal
+            </a>
+        </div>
     </div>
 
     <script type="module">
@@ -108,6 +129,7 @@
             }, 4000);
         }
 
+        // تسجيل الدخول العادي
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -122,46 +144,38 @@
             btn.disabled = true;
 
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+                .then(() => {
                     showToast("Logged in successfully!", "success");
-                    setTimeout(() => {
-                        window.location.href = "dashboard.html"; 
-                    }, 1000);
+                    setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
                 })
-                .catch((error) => {
+                .catch(() => {
                     showToast("Invalid email or password!");
                     btn.innerHTML = 'Sign in';
                     btn.disabled = false;
                 });
         });
 
+        // تسجيل الدخول بجوجل
         document.getElementById('google-btn').addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider).then((result) => {
                 showToast("Welcome, " + result.user.displayName, "success");
-                setTimeout(() => {
-                    window.location.href = "dashboard.html"; 
-                }, 1000);
-            }).catch(() => {
-                showToast("Google login failed.");
-            });
+                setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
+            }).catch(() => { showToast("Google login failed."); });
         });
 
+        // تسجيل الدخول بجيت هب
         document.getElementById('github-btn').addEventListener('click', () => {
             const provider = new GithubAuthProvider();
             signInWithPopup(auth, provider).then((result) => {
                 showToast("Welcome, " + result.user.displayName, "success");
-                setTimeout(() => {
-                    window.location.href = "dashboard.html"; 
-                }, 1000);
-            }).catch(() => {
-                showToast("GitHub login failed.");
-            });
+                setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
+            }).catch(() => { showToast("GitHub login failed."); });
         });
 
+        // إظهار/إخفاء كلمة المرور
         const passwordInput = document.getElementById('login-password');
         const eyeIcon = document.getElementById('eye-icon');
-
         eyeIcon.addEventListener('click', () => {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
