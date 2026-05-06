@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* الألوان الأساسية مأخوذة من صورتك */
         :root {
             --bg-main: #0b1120;
             --card-bg: #131c31;
@@ -22,7 +21,6 @@
 
         body { margin: 0; background: var(--bg-main); color: var(--text-main); font-family: 'Poppins', sans-serif; overflow-x: hidden; }
         
-        /* الناف بار (مبسط زي صورتك) */
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); }
         .nav-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; }
         .nav-brand i { color: var(--primary); font-size: 24px; }
@@ -34,84 +32,78 @@
         .back-link { color: var(--text-muted); text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; transition: 0.3s; }
         .back-link:hover { color: white; }
 
-        /* البطاقات الأساسية */
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 25px; position: relative; margin-bottom: 20px; }
         
-        /* 🌟 زر التعديل السحري للأستاذ 🌟 */
+        /* زر التعديل (تم توحيد الأيقونات لحل مشكلة التداخل) */
         .edit-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: rgba(255, 215, 0, 0.1);
-            color: var(--accent-yellow);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
+            position: absolute; top: 15px; right: 15px; width: 36px; height: 36px;
+            border-radius: 8px; background: rgba(255, 215, 0, 0.1); color: var(--accent-yellow);
+            border: 1px solid rgba(255, 215, 0, 0.3); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 14px; transition: all 0.3s ease; z-index: 10;
         }
-        .edit-btn:hover { background: var(--accent-yellow); color: var(--bg-main); transform: translateY(-3px) scale(1.05); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
+        .edit-btn:hover { background: var(--accent-yellow); color: var(--bg-main); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
 
-        /* الهيرو سكشن (أزرق) */
         .hero-card { background: linear-gradient(135deg, #0f2038 0%, #081221 100%); border-left: 4px solid var(--primary); }
         .hero-title { font-size: 24px; font-weight: 700; margin: 0 0 10px 0; display: flex; align-items: center; gap: 10px; }
         .hero-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; max-width: 80%; }
         .progress-bar { width: 300px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 15px; overflow: hidden; }
         .progress-fill { width: 40%; height: 100%; background: var(--primary); border-radius: 10px; }
 
-        /* الجريد تبع المحتوى */
         .main-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: start; }
 
-        /* قسم العلامات (Grades) */
         .grades-card { border-color: rgba(255, 215, 0, 0.2); }
         .grades-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: var(--accent-yellow); font-weight: 600; font-size: 15px; }
         .grades-boxes { display: flex; gap: 15px; margin-bottom: 20px; }
         .g-box { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; padding: 15px; text-align: center; }
         .g-box .title { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
-        .g-box .value.pass { color: var(--accent-green); font-weight: 600; }
-        .g-box .value.merit { color: var(--primary); font-weight: 600; }
-        .g-box .value.distinction { color: var(--accent-yellow); font-weight: 600; }
+        .g-box .value { font-weight: 600; }
+        .g-box .value.pass { color: var(--accent-green); }
+        .g-box .value.merit { color: var(--primary); }
+        .g-box .value.distinction { color: var(--accent-yellow); }
         .criteria-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
         .crit-badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid var(--card-border); color: #555; }
         .crit-badge.p { border-color: var(--accent-green); color: var(--accent-green); }
         .crit-badge.m { border-color: var(--primary); color: var(--primary); }
         .crit-badge.d { border-color: var(--accent-yellow); color: var(--accent-yellow); }
 
-        /* قسم الواجبات (Assignment) */
+        /* ستايل الأهداف (Learning Aims Accordion) */
+        .aim-accordion { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+        .aim-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; font-size: 14px; font-weight: 500; }
+        .aim-header:hover { background: rgba(255,255,255,0.05); }
+        .aim-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.1); }
+        .aim-inner { padding: 15px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--card-border); }
+        .toggle-icon { transition: transform 0.3s; color: var(--text-muted); }
+
+        /* ستايل الروابط والأدوات */
         .assignment-card { border-left: 3px solid var(--accent-red); }
-        .assignment-card h3 { font-size: 15px; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px; }
         .assignment-inner { background: rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; border: 1px solid rgba(255, 71, 87, 0.2); }
         .due-date { font-size: 12px; color: var(--accent-red); margin: 5px 0 15px 0; }
-        .download-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
         .submit-btn { width: 100%; padding: 12px; background: rgba(255, 71, 87, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
 
-        /* 🌟 الشاشة المنبثقة (Modal) مع الأنيميشن الفخم 🌟 */
+        .tool-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--card-border); font-size: 13px; color: var(--text-muted); }
+        .tool-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .tool-actions { display: flex; gap: 10px; }
+        .tool-actions i { cursor: pointer; transition: 0.3s; padding: 5px; }
+        .tool-actions i.edit-icon:hover { color: var(--accent-yellow); }
+        .tool-actions i.delete-icon:hover { color: var(--accent-red); }
+
+        /* النافذة المنبثقة (Modal) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(8px);
             display: flex; justify-content: center; align-items: center;
-            z-index: 1000;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        
         .modal-box {
             background: #1e293b; border: 1px solid var(--card-border);
             border-radius: 16px; width: 90%; max-width: 450px; padding: 30px;
             position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            /* سر الأنيميشن الباونس (Bouncy Animation) */
-            transform: scale(0.8) translateY(30px);
-            opacity: 0;
+            transform: scale(0.8) translateY(30px); opacity: 0;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
-
+        
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 15px; }
         .modal-header h3 { margin: 0; font-size: 18px; color: var(--accent-yellow); display: flex; align-items: center; gap: 10px; }
         .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; }
@@ -128,13 +120,9 @@
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-brand"><i class="fas fa-cloud"></i> BTEC Cloud</div>
-        <div class="nav-profile">
-            <span>🌐 EN ▾</span>
-            <div class="avatar">M</div>
-        </div>
+        <div class="nav-profile"><span>🌐 EN ▾</span><div class="avatar">M</div></div>
     </nav>
 
     <div class="container">
@@ -150,11 +138,10 @@
         </div>
 
         <div class="main-grid">
-            <!-- Left Column -->
             <div class="left-col">
                 <!-- 2. Grades Card -->
                 <div class="card grades-card">
-                    <button class="edit-btn" onclick="openModal('grades')" title="Edit Assessment"><i class="fas fa-sliders-h"></i></button>
+                    <button class="edit-btn" onclick="openModal('grades')" title="Edit Assessment"><i class="fas fa-pen"></i></button>
                     <div class="grades-header"><i class="fas fa-medal"></i> My Grades & Assessment <i class="fas fa-chevron-up"></i></div>
                     
                     <div class="grades-boxes">
@@ -168,65 +155,106 @@
                         <span class="crit-badge p">P1</span> <span class="crit-badge p">P2</span> <span class="crit-badge p">P3</span> <span class="crit-badge p">P4</span>
                         <span class="crit-badge m">M1</span> <span class="crit-badge m">M2</span> <span class="crit-badge d">D1</span>
                     </div>
-
-                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--card-border); font-size: 14px;">
-                        Final Grade: <span style="color: var(--accent-yellow); font-weight: bold;">DISTINCTION</span>
-                    </div>
                 </div>
 
-                <!-- Learning Aims (No edit button needed here usually, but keeping the design) -->
-                <h3 style="font-size: 16px; margin-bottom: 15px;">Learning Aims</h3>
-                <div class="card" style="padding: 15px; display: flex; justify-content: space-between; margin-bottom: 10px; cursor: pointer;">
-                    <div style="font-size: 14px; font-weight: 500;"><i class="fas fa-layer-group" style="color: var(--primary); margin-right: 10px;"></i> Learning Aim A: Introduction to Databases</div>
-                    <i class="fas fa-chevron-down" style="color: var(--text-muted);"></i>
+                <!-- 3. Learning Aims (Accordion) -->
+                <div class="card" style="padding-top: 30px;">
+                    <button class="edit-btn" onclick="openModal('aims')" title="Edit Learning Aims"><i class="fas fa-pen"></i></button>
+                    <h3 style="font-size: 16px; margin: 0 0 15px 0;"><i class="fas fa-layer-group" style="color: var(--primary);"></i> Learning Aims</h3>
+                    
+                    <!-- Aim A -->
+                    <div class="aim-accordion">
+                        <div class="aim-header" onclick="toggleAim(this)">
+                            <div><span style="color: var(--primary); margin-right: 5px;">A.</span> Introduction to Databases</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="aim-content">
+                            <div class="aim-inner">Understand the core concepts of relational database systems, including tables, records, and data types.</div>
+                        </div>
+                    </div>
+
+                    <!-- Aim B -->
+                    <div class="aim-accordion">
+                        <div class="aim-header" onclick="toggleAim(this)">
+                            <div><span style="color: var(--primary); margin-right: 5px;">B.</span> Entity-Relationship Diagrams (ERD)</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="aim-content">
+                            <div class="aim-inner">Design and interpret ERDs to map out database structures, relationships, and cardinalities.</div>
+                        </div>
+                    </div>
+
+                    <!-- Aim C -->
+                    <div class="aim-accordion">
+                        <div class="aim-header" onclick="toggleAim(this)">
+                            <div><span style="color: var(--primary); margin-right: 5px;">C.</span> SQL Fundamentals</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="aim-content">
+                            <div class="aim-inner">Write foundational SQL queries including SELECT, INSERT, UPDATE, and DELETE statements.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Right Column -->
             <div class="right-col">
-                <!-- 3. Assignment Card -->
+                <!-- 4. Assignment Card -->
                 <div class="card assignment-card">
-                    <button class="edit-btn" onclick="openModal('assignment')" title="Edit Assignment"><i class="fas fa-file-signature"></i></button>
-                    <h3><i class="fas fa-list-ul"></i> Assignment & Submission</h3>
-                    
+                    <button class="edit-btn" onclick="openModal('assignment')" title="Edit Assignment"><i class="fas fa-pen"></i></button>
+                    <h3 style="font-size: 15px; margin: 0 0 20px 0;"><i class="fas fa-list-ul"></i> Assignment & Submission</h3>
                     <div class="assignment-inner">
                         <div style="font-weight: 600; font-size: 14px;">Assignment 1: ERD Design</div>
                         <div class="due-date"><i class="far fa-clock"></i> Due: May 20, 2026 11:59 PM</div>
-                        
-                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">Download Instructions:</div>
-                        <div class="download-box">
-                            <i class="fas fa-file-pdf" style="color: var(--accent-yellow);"></i> Assignment_Brief.pdf
-                        </div>
-                        
-                        <button class="submit-btn"><i class="fas fa-upload"></i> Submit Work</button>
+                        <button class="submit-btn"><i class="fas fa-upload"></i> Submissions Box</button>
                     </div>
                 </div>
 
-                <!-- 4. Required Tools Card -->
+                <!-- 5. Required Tools (Links) -->
                 <div class="card">
-                    <button class="edit-btn" onclick="openModal('tools')" title="Edit Tools"><i class="fas fa-wrench"></i></button>
-                    <h3 style="font-size: 15px; margin: 0 0 15px 0;"><i class="fas fa-lock"></i> Required Tools</h3>
-                    <div style="font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 15px;">
-                        <div><i class="fas fa-download" style="margin-right: 10px;"></i> Download XAMPP Server</div>
-                        <div><i class="fas fa-download" style="margin-right: 10px;"></i> Download MySQL Workbench</div>
-                        <div><i class="fas fa-link" style="margin-right: 10px;"></i> Draw.io (For ERD)</div>
+                    <!-- كبسة (إضافة) جديدة للملفات والروابط -->
+                    <button class="edit-btn" onclick="openModal('add-tool')" title="Add New Link" style="background: rgba(0, 168, 252, 0.1); color: var(--primary); border-color: rgba(0, 168, 252, 0.3);"><i class="fas fa-plus"></i></button>
+                    
+                    <h3 style="font-size: 15px; margin: 0 0 15px 0;"><i class="fas fa-link"></i> Required Tools & Links</h3>
+                    
+                    <div class="tools-list">
+                        <!-- الرابط الأول -->
+                        <div class="tool-item">
+                            <span><i class="fas fa-download" style="margin-right: 8px;"></i> Download XAMPP Server</span>
+                            <div class="tool-actions">
+                                <i class="fas fa-pen edit-icon" onclick="openModal('edit-tool')"></i>
+                                <i class="fas fa-trash delete-icon" onclick="deleteAlert()"></i>
+                            </div>
+                        </div>
+                        <!-- الرابط الثاني -->
+                        <div class="tool-item">
+                            <span><i class="fas fa-download" style="margin-right: 8px;"></i> Download MySQL Workbench</span>
+                            <div class="tool-actions">
+                                <i class="fas fa-pen edit-icon" onclick="openModal('edit-tool')"></i>
+                                <i class="fas fa-trash delete-icon" onclick="deleteAlert()"></i>
+                            </div>
+                        </div>
+                        <!-- الرابط الثالث -->
+                        <div class="tool-item">
+                            <span><i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> Draw.io (For ERD)</span>
+                            <div class="tool-actions">
+                                <i class="fas fa-pen edit-icon" onclick="openModal('edit-tool')"></i>
+                                <i class="fas fa-trash delete-icon" onclick="deleteAlert()"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 🌟 الشاشة المنبثقة الديناميكية (Modal) 🌟 -->
+    <!-- النافذة المنبثقة (Modal) -->
     <div id="dynamic-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 id="modal-title"><i class="fas fa-edit"></i> Edit Content</h3>
+                <h3 id="modal-title">Edit</h3>
                 <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
             </div>
-            
-            <!-- المحتوى بتغير حسب الكبسة بالجافاسكربت -->
             <div id="modal-body"></div>
-
             <button class="save-modal-btn" onclick="closeModal()"><i class="fas fa-save"></i> Save Changes</button>
         </div>
     </div>
@@ -236,88 +264,70 @@
         const modalTitle = document.getElementById('modal-title');
         const modalBody = document.getElementById('modal-body');
 
-        // دالة فتح الشاشة المنبثقة وتعبئة محتواها حسب المربع اللي كبسنا عليه
+        // كود تحريك الأهداف (Accordion)
+        function toggleAim(element) {
+            const content = element.nextElementSibling;
+            const icon = element.querySelector('.toggle-icon');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.style.transform = "rotate(0deg)";
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.style.transform = "rotate(180deg)";
+            }
+        }
+
+        // تنبيه الحذف المؤقت للروابط
+        function deleteAlert() {
+            if(confirm("Are you sure you want to delete this link?")) {
+                alert("Link deleted! (Will be connected to Firebase)");
+            }
+        }
+
         function openModal(section) {
-            // إضافة كلاس active لتشغيل الأنيميشن الفخم
             modal.classList.add('active');
 
             if (section === 'hero') {
                 modalTitle.innerHTML = '<i class="fas fa-database"></i> Edit Unit Details';
                 modalBody.innerHTML = `
-                    <div class="form-group">
-                        <label>Unit Title</label>
-                        <input type="text" class="form-input" value="Unit 1: Database Systems">
-                    </div>
-                    <div class="form-group">
-                        <label>Unit Description</label>
-                        <textarea class="form-input" rows="4">Learn the fundamentals of relational databases, SQL queries, Entity-Relationship Diagrams (ERD)...</textarea>
-                    </div>
+                    <div class="form-group"><label>Unit Title</label><input type="text" class="form-input" value="Unit 1: Database Systems"></div>
+                    <div class="form-group"><label>Description</label><textarea class="form-input" rows="4">Learn the fundamentals of relational databases...</textarea></div>
                 `;
-            } 
-            else if (section === 'grades') {
-                modalTitle.innerHTML = '<i class="fas fa-sliders-h"></i> Edit Assessment Criteria';
+            } else if (section === 'grades') {
+                modalTitle.innerHTML = '<i class="fas fa-sliders-h"></i> Edit Assessment';
                 modalBody.innerHTML = `
-                    <div class="form-group">
-                        <label>Target Grade for Students</label>
-                        <select class="form-input">
-                            <option value="pass">Pass</option>
-                            <option value="merit">Merit</option>
-                            <option value="distinction" selected>Distinction</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Unlock New Criteria (Enable for students)</label>
-                        <div style="display:flex; gap:10px; margin-top:5px;">
-                            <label style="color:white;"><input type="checkbox" checked> P1</label>
-                            <label style="color:white;"><input type="checkbox" checked> M1</label>
-                            <label style="color:white;"><input type="checkbox" checked> D1</label>
-                        </div>
-                    </div>
+                    <div class="form-group"><label>Target Grade</label><select class="form-input"><option value="pass">Pass</option><option value="merit">Merit</option><option value="distinction" selected>Distinction</option></select></div>
                 `;
-            }
-            else if (section === 'assignment') {
-                modalTitle.innerHTML = '<i class="fas fa-file-signature"></i> Edit Assignment Details';
+            } else if (section === 'assignment') {
+                modalTitle.innerHTML = '<i class="fas fa-file-signature"></i> Edit Assignment';
                 modalBody.innerHTML = `
-                    <div class="form-group">
-                        <label>Assignment Title</label>
-                        <input type="text" class="form-input" value="Assignment 1: ERD Design">
-                    </div>
-                    <div class="form-group">
-                        <label>Due Date</label>
-                        <input type="datetime-local" class="form-input" value="2026-05-20T23:59">
-                    </div>
-                    <div class="form-group">
-                        <label>Upload New PDF Brief</label>
-                        <input type="file" class="form-input" style="padding: 9px;">
-                    </div>
+                    <div class="form-group"><label>Title</label><input type="text" class="form-input" value="Assignment 1: ERD Design"></div>
+                    <div class="form-group"><label>Due Date</label><input type="datetime-local" class="form-input" value="2026-05-20T23:59"></div>
                 `;
-            }
-            else if (section === 'tools') {
-                modalTitle.innerHTML = '<i class="fas fa-wrench"></i> Edit Required Tools';
+            } else if (section === 'aims') {
+                modalTitle.innerHTML = '<i class="fas fa-layer-group"></i> Edit Learning Aims';
                 modalBody.innerHTML = `
-                    <div class="form-group">
-                        <label>Add New Tool Link</label>
-                        <input type="text" class="form-input" placeholder="e.g., https://draw.io">
-                    </div>
-                    <div class="form-group">
-                        <label>Tool Name</label>
-                        <input type="text" class="form-input" placeholder="e.g., Draw.io (For ERD)">
-                    </div>
+                    <div class="form-group"><label>Aim A Title</label><input type="text" class="form-input" value="Introduction to Databases"></div>
+                    <div class="form-group"><label>Aim B Title</label><input type="text" class="form-input" value="Entity-Relationship Diagrams (ERD)"></div>
+                    <div class="form-group"><label>Aim C Title</label><input type="text" class="form-input" value="SQL Fundamentals"></div>
+                `;
+            } else if (section === 'add-tool') {
+                modalTitle.innerHTML = '<i class="fas fa-plus"></i> Add New Link';
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>Title (e.g. Draw.io)</label><input type="text" class="form-input" placeholder="Enter link title"></div>
+                    <div class="form-group"><label>URL</label><input type="text" class="form-input" placeholder="https://..."></div>
+                `;
+            } else if (section === 'edit-tool') {
+                modalTitle.innerHTML = '<i class="fas fa-pen"></i> Edit Link';
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>Title</label><input type="text" class="form-input" value="Download XAMPP Server"></div>
+                    <div class="form-group"><label>URL</label><input type="text" class="form-input" value="https://www.apachefriends.org/"></div>
                 `;
             }
         }
 
-        // دالة إغلاق الشاشة
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-
-        // إغلاق الشاشة إذا كبس المستخدم برا المربع
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
+        function closeModal() { modal.classList.remove('active'); }
+        window.onclick = function(event) { if (event.target === modal) closeModal(); }
     </script>
 </body>
 </html>
