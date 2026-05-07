@@ -156,10 +156,10 @@
         <div class="card hero-card">
             <button class="edit-btn" onclick="openModal('hero')" title="Edit"><i class="fas fa-edit"></i></button>
             <h1 class="hero-title">
-                <i class="fas fa-database"></i> 
-                <span id="display-unit-title">Unit 1: Database Systems</span>
+                <i class="fas fa-laptop-code"></i> 
+                <span id="display-unit-title">Introduction to Programming</span>
             </h1>
-            <p class="hero-desc" id="display-unit-desc">Learn the fundamentals of relational databases, SQL queries, Entity-Relationship Diagrams (ERD), and database management required for the BTEC IT curriculum.</p>
+            <p class="hero-desc" id="display-unit-desc">Learn the fundamentals of programming, algorithms, and problem-solving using modern programming languages required for the BTEC IT curriculum.</p>
             <div style="font-size: 12px; color: var(--primary); margin-top: 20px;" id="t-progress">Unit Progress: 40%</div>
             <div class="progress-bar"><div class="progress-fill"></div></div>
         </div>
@@ -197,7 +197,7 @@
                         <div class="aim-accordion">
                             <div class="aim-header">
                                 <div style="flex-grow: 1; cursor: pointer;" onclick="toggleAim(this.parentElement)">
-                                    <span style="color: var(--primary); margin-right: 5px;">•</span> <span class="aim-title-text">Introduction to Databases</span>
+                                    <span style="color: var(--primary); margin-right: 5px;">•</span> <span class="aim-title-text">Introduction to Algorithms</span>
                                 </div>
                                 <div class="action-icons">
                                     <i class="fas fa-edit" onclick="openModal('edit-aim', this)"></i>
@@ -207,7 +207,7 @@
                             </div>
                             <div class="aim-content">
                                 <div class="aim-inner">
-                                    <div class="aim-desc-text">Understand the core concepts of relational database systems.</div>
+                                    <div class="aim-desc-text">Understand the core concepts of algorithms and flowchart design.</div>
                                     <div class="aim-extra" style="margin-top:10px;"></div>
                                 </div>
                             </div>
@@ -221,7 +221,7 @@
                     <button class="edit-btn" onclick="openModal('assignment')" title="Edit"><i class="fas fa-edit"></i></button>
                     <h3 style="font-size: 15px; margin: 0 0 20px 0;" id="t-assign-box"><i class="fas fa-list-ul"></i> Assignment & Submission</h3>
                     <div class="assignment-inner">
-                        <div style="font-weight: 600; font-size: 14px;" id="display-assign-title">Assignment 1: ERD Design</div>
+                        <div style="font-weight: 600; font-size: 14px;" id="display-assign-title">Assignment 1: Algorithms Design</div>
                         <div class="due-date"><i class="far fa-clock"></i> <span id="t-due">Due:</span> <span id="display-due-date">May 20, 2026 11:59 PM</span></div>
                         
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;" id="t-download">Download Instructions:</div>
@@ -239,7 +239,7 @@
                     
                     <div class="tools-list" id="tools-container">
                         <div class="tool-item">
-                            <span><i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> <a href="#" class="tool-title-link">Download XAMPP Server</a></span>
+                            <span><i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> <a href="#" class="tool-title-link">Download Python IDE</a></span>
                             <div class="action-icons">
                                 <i class="fas fa-edit" onclick="openModal('edit-tool', this)"></i>
                                 <i class="fas fa-trash" onclick="deleteElement(this)"></i>
@@ -271,7 +271,6 @@
         let currentEditElement = null;
         let activeLang = 'en';
 
-        // 🌟 تحديث قاموس الترجمة للأسماء الجديدة 🌟
         const t = {
             en: { 
                 langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", 
@@ -287,7 +286,8 @@
                 mUploadBrief: "Upload Assignment Brief (PDF)", mAddAim: "Add Learning Aim", mEditAim: "Edit Learning Aim",
                 mAimTitle: "Aim Title", mAimDesc: "Aim Description", mAttachFile: "Attach File",
                 mExtLink: "Or External Link", mAddTool: "Add Link", mEditTool: "Edit Link",
-                mToolTitle: "Tool Title", mUrlLink: "URL Link", mPass: "Pass", mMerit: "Merit", mDistinction: "Distinction"
+                mToolTitle: "Tool Title", mUrlLink: "URL Link", mPass: "Pass", mMerit: "Merit", mDistinction: "Distinction",
+                heroTitle: "Introduction to Programming", heroDesc: "Learn the fundamentals of programming, algorithms, and problem-solving using modern programming languages required for the BTEC IT curriculum."
             },
             ar: { 
                 langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", 
@@ -303,7 +303,8 @@
                 mUploadBrief: "رفع ملف الواجب (PDF)", mAddAim: "إضافة هدف تعليمي", mEditAim: "تعديل الهدف التعليمي",
                 mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف",
                 mExtLink: "أو رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل الرابط",
-                mToolTitle: "عنوان الرابط", mUrlLink: "الرابط (URL)", mPass: "اجتياز", mMerit: "جيد جداً", mDistinction: "امتياز"
+                mToolTitle: "عنوان الرابط", mUrlLink: "الرابط (URL)", mPass: "اجتياز", mMerit: "جيد جداً", mDistinction: "امتياز",
+                heroTitle: "مقدمة في البرمجة", heroDesc: "تعلم أساسيات البرمجة، الخوارزميات، وحل المشكلات باستخدام لغات البرمجة الحديثة المطلوبة في منهج BTEC IT."
             }
         };
 
@@ -316,6 +317,11 @@
             
             document.getElementById('t-portal').innerText = t[lang].portal;
             document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + t[lang].back;
+            
+            // 🌟 ترجمة المحتوى الأساسي للصفحة (العنوان والوصف) 🌟
+            document.getElementById('display-unit-title').innerText = t[lang].heroTitle;
+            document.getElementById('display-unit-desc').innerText = t[lang].heroDesc;
+
             document.getElementById('t-grades').innerHTML = `<i class="fas fa-medal"></i> ` + t[lang].grades;
             document.getElementById('t-assign1').innerText = t[lang].assign1;
             document.getElementById('t-assign2').innerText = t[lang].assign2;
