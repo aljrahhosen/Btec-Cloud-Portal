@@ -269,22 +269,20 @@
         
         let currentSection = "";
         let currentEditElement = null;
-        let activeLang = 'en'; // حفظ اللغة الحالية
+        let activeLang = 'en';
 
-        // 🌟 قاموس الترجمة الشامل جداً 🌟
+        // 🌟 تحديث قاموس الترجمة للأسماء الجديدة 🌟
         const t = {
             en: { 
                 langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", 
-                grades: "My Grades & Assessment", assign1: "Assignment 1", assign2: "Assignment 2", 
-                target: "Target Grade", criteria: "Criteria Achieved:", final: "Final Grade:", 
+                grades: "My Grades & Assessment", assign1: "First Mark", assign2: "Second Mark", 
+                target: "Unit Forecast", criteria: "Criteria Achieved:", final: "Final Grade:", 
                 aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", 
                 download: "Download Instructions:", viewSubs: "View Student Submissions", 
                 toolsBox: "Required Tools & Links", save: "Save Changes", progress: "Unit Progress: 40%",
-                // ترجمة كلمات العلامات
                 pass: "PASS", merit: "MERIT", distinction: "DISTINCTION",
-                // ترجمة نصوص الـ Modals
                 mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description",
-                mEditAssess: "Edit Assessment", mTargetGrade: "Target Grade", mFinalGrade: "Final Grade",
+                mEditAssess: "Edit Assessment", mTargetGrade: "Unit Forecast", mFinalGrade: "Final Grade",
                 mEditAssign: "Edit Assignment Details", mAssignTitle: "Assignment Title", mDueDate: "Due Date",
                 mUploadBrief: "Upload Assignment Brief (PDF)", mAddAim: "Add Learning Aim", mEditAim: "Edit Learning Aim",
                 mAimTitle: "Aim Title", mAimDesc: "Aim Description", mAttachFile: "Attach File",
@@ -293,16 +291,14 @@
             },
             ar: { 
                 langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", 
-                grades: "علاماتي والتقييم", assign1: "الواجب الأول", assign2: "الواجب الثاني", 
-                target: "الهدف المطلوب", criteria: "المعايير المنجزة:", final: "العلامة النهائية:", 
+                grades: "علاماتي والتقييم", assign1: "العلامة الأولى", assign2: "العلامة الثانية", 
+                target: "تقدير الوحدة", criteria: "المعايير المنجزة:", final: "العلامة النهائية:", 
                 aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", 
                 download: "تعليمات التحميل:", viewSubs: "عرض تسليمات الطلاب", 
                 toolsBox: "الأدوات والروابط المطلوبة", save: "حفظ التعديلات", progress: "تقدم الوحدة: 40%",
-                // ترجمة كلمات العلامات
                 pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز",
-                // ترجمة نصوص الـ Modals
                 mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف",
-                mEditAssess: "تعديل التقييم", mTargetGrade: "الهدف المطلوب", mFinalGrade: "العلامة النهائية",
+                mEditAssess: "تعديل التقييم", mTargetGrade: "تقدير الوحدة", mFinalGrade: "العلامة النهائية",
                 mEditAssign: "تعديل تفاصيل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم",
                 mUploadBrief: "رفع ملف الواجب (PDF)", mAddAim: "إضافة هدف تعليمي", mEditAim: "تعديل الهدف التعليمي",
                 mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف",
@@ -318,7 +314,6 @@
             document.getElementById('lang-display').innerText = t[lang].langStr;
             document.getElementById('lang-menu').classList.remove('show');
             
-            // تطبيق الترجمة على كامل الصفحة
             document.getElementById('t-portal').innerText = t[lang].portal;
             document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + t[lang].back;
             document.getElementById('t-grades').innerHTML = `<i class="fas fa-medal"></i> ` + t[lang].grades;
@@ -336,14 +331,12 @@
             document.getElementById('t-save').innerHTML = `<i class="fas fa-save"></i> ` + t[lang].save;
             document.getElementById('t-progress').innerText = t[lang].progress;
 
-            // تحديث نصوص العلامات الحالية بناءً على لغتها
             updateGradeTranslation('display-a1-grade');
             updateGradeTranslation('display-a2-grade');
             updateGradeTranslation('display-target-grade');
             updateGradeTranslation('display-final-grade');
         }
 
-        // دالة مساعدة لترجمة العلامات المعروضة
         function updateGradeTranslation(elementId) {
             let el = document.getElementById(elementId);
             if(el.className.includes('grade-pass')) el.innerText = t[activeLang].pass;
@@ -440,7 +433,6 @@
                 let fSelect = document.getElementById('input-final-grade');
                 document.getElementById('display-final-grade').className = fSelect.value; 
                 
-                // تحديث النصوص بناءً على اللغة المحددة حالياً
                 updateGradeTranslation('display-target-grade');
                 updateGradeTranslation('display-final-grade');
             }
