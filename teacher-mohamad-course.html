@@ -26,13 +26,12 @@
         .nav-profile { display: flex; align-items: center; gap: 15px; font-size: 14px; }
         .avatar { width: 35px; height: 35px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
 
-        /* ستايل قائمة الترجمة */
         .lang-dropdown { position: relative; cursor: pointer; }
         .lang-menu { display: none; position: absolute; top: 120%; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; z-index: 100; overflow: hidden; min-width: 110px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .lang-menu.show { display: block; }
         .lang-menu div { padding: 10px 15px; transition: 0.3s; }
         .lang-menu div:hover { background: rgba(255,255,255,0.1); color: var(--primary); }
-        html[dir="rtl"] .lang-menu { right: auto; left: 0; } /* ضبط القائمة بالعربي */
+        html[dir="rtl"] .lang-menu { right: auto; left: 0; }
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         
@@ -48,8 +47,6 @@
             cursor: pointer; font-size: 14px; transition: all 0.3s ease; z-index: 10; text-decoration: none !important; 
         }
         .edit-btn:hover { background: var(--accent-yellow); color: var(--bg-main); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
-        
-        /* نقل الأزرار لليسار في حالة اللغة العربية */
         html[dir="rtl"] .edit-btn { right: auto; left: 15px; }
 
         .add-btn { background: rgba(0, 168, 252, 0.1); color: var(--primary); border-color: rgba(0, 168, 252, 0.3); }
@@ -69,18 +66,18 @@
         .grades-boxes { display: flex; gap: 15px; margin-bottom: 20px; }
         .g-box { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; padding: 15px; text-align: center; }
         .g-box .title { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
-        .g-box .value { font-weight: 600; }
-        .g-box .value.pass { color: var(--accent-green); }
-        .g-box .value.merit { color: var(--primary); }
-        .g-box .value.distinction { color: var(--accent-yellow); }
         
+        /* ألوان العلامات */
+        .grade-pass { color: var(--accent-green) !important; font-weight: bold; }
+        .grade-merit { color: var(--primary) !important; font-weight: bold; }
+        .grade-distinction { color: var(--accent-yellow) !important; font-weight: bold; }
+
         .criteria-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
         .crit-badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid var(--card-border); color: #555; }
         .crit-badge.p { border-color: var(--accent-green); color: var(--accent-green); }
         .crit-badge.m { border-color: var(--primary); color: var(--primary); }
         .crit-badge.d { border-color: var(--accent-yellow); color: var(--accent-yellow); }
 
-        /* 🌟 مربع العلامة النهائية رجع 🌟 */
         .final-grade-box { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--card-border); font-size: 14px; display: flex; align-items: center; gap: 10px; }
 
         .aim-accordion { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
@@ -104,12 +101,13 @@
 
         .tool-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--card-border); font-size: 13px; color: var(--text-muted); }
         .tool-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .tool-title-link { color: inherit; text-decoration: none; transition: 0.3s; }
+        .tool-title-link:hover { color: var(--primary); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-box { background: #1e293b; border: 1px solid var(--card-border); border-radius: 16px; width: 90%; max-width: 450px; padding: 30px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: scale(0.8) translateY(30px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
-        
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 15px; }
         .modal-header h3 { margin: 0; font-size: 18px; color: var(--accent-yellow); display: flex; align-items: center; gap: 10px; }
         .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; }
@@ -117,11 +115,12 @@
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+        
         .form-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 8px; color: white; font-family: inherit; box-sizing: border-box; transition: 0.3s; }
         .form-input[type="file"] { padding: 9px; }
         .form-input:focus { outline: none; border-color: var(--accent-yellow); box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
         
-        select.form-input { appearance: none; -webkit-appearance: none; -moz-appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px; }
+        select.form-input { appearance: none; -webkit-appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px; }
         html[dir="rtl"] select.form-input { background-position: left 15px center; padding-right: 12px; padding-left: 40px; }
         select.form-input option { background-color: var(--card-bg); color: white; padding: 10px; }
 
@@ -140,7 +139,6 @@
             Teacher Portal
         </div>
         <div class="nav-profile">
-            <!-- 🌟 قائمة الترجمة 🌟 -->
             <div class="lang-dropdown">
                 <span id="lang-display" onclick="document.getElementById('lang-menu').classList.toggle('show')">🌐 EN ▾</span>
                 <div id="lang-menu" class="lang-menu">
@@ -170,10 +168,10 @@
                     <div class="grades-header" id="t-grades"><i class="fas fa-medal"></i> My Grades & Assessment</div>
                     
                     <div class="grades-boxes">
-                        <div class="g-box"><div class="title" id="t-assign1">Assignment 1</div><div class="value pass">PASS</div></div>
-                        <div class="g-box"><div class="title" id="t-assign2">Assignment 2</div><div class="value merit">MERIT</div></div>
+                        <div class="g-box"><div class="title" id="t-assign1">Assignment 1</div><div class="grade-pass">PASS</div></div>
+                        <div class="g-box"><div class="title" id="t-assign2">Assignment 2</div><div class="grade-merit">MERIT</div></div>
                         <div class="g-box" style="border-color: rgba(255,215,0,0.3);"><div class="title" id="t-target">Target Grade</div>
-                        <div class="value distinction" id="display-target-grade">DISTINCTION</div></div>
+                        <div class="grade-distinction" id="display-target-grade">DISTINCTION</div></div>
                     </div>
 
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;" id="t-criteria">Criteria Achieved:</div>
@@ -182,9 +180,9 @@
                         <span class="crit-badge m">M1</span> <span class="crit-badge m">M2</span> <span class="crit-badge d">D1</span>
                     </div>
 
-                    <!-- 🌟 العلامة النهائية رجعت لمكانها 🌟 -->
                     <div class="final-grade-box">
-                        <span id="t-final">Final Grade:</span> <span style="color: var(--accent-yellow); font-weight: bold;">DISTINCTION</span>
+                        <span id="t-final">Final Grade:</span> 
+                        <span id="display-final-grade" class="grade-distinction" style="margin-left: 5px;">DISTINCTION</span>
                     </div>
                 </div>
 
@@ -192,18 +190,25 @@
                     <button class="edit-btn add-btn" onclick="openModal('add-aim')" title="Add New Aim"><i class="fas fa-plus"></i></button>
                     <h3 style="font-size: 16px; margin: 0 0 15px 0;" id="t-aims"><i class="fas fa-layer-group" style="color: var(--primary);"></i> Learning Aims</h3>
                     
-                    <div class="aim-accordion">
-                        <div class="aim-header">
-                            <div style="flex-grow: 1; cursor: pointer;" onclick="toggleAim(this.parentElement)">
-                                <span style="color: var(--primary); margin-right: 5px;">A.</span> Introduction to Databases
+                    <div id="aims-container">
+                        <div class="aim-accordion">
+                            <div class="aim-header">
+                                <div style="flex-grow: 1; cursor: pointer;" onclick="toggleAim(this.parentElement)">
+                                    <span style="color: var(--primary); margin-right: 5px;">•</span> <span class="aim-title-text">Introduction to Databases</span>
+                                </div>
+                                <div class="action-icons">
+                                    <i class="fas fa-edit" onclick="openModal('edit-aim', this)"></i>
+                                    <i class="fas fa-trash" onclick="deleteElement(this)"></i>
+                                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleAim(this.parentElement)"></i>
+                                </div>
                             </div>
-                            <div class="action-icons">
-                                <i class="fas fa-edit" onclick="openModal('edit-aim')"></i>
-                                <i class="fas fa-trash" onclick="deleteAlert()"></i>
-                                <i class="fas fa-chevron-down toggle-icon" onclick="toggleAim(this.parentElement)"></i>
+                            <div class="aim-content">
+                                <div class="aim-inner">
+                                    <div class="aim-desc-text">Understand the core concepts of relational database systems.</div>
+                                    <div class="aim-extra" style="margin-top:10px;"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="aim-content"><div class="aim-inner">Understand the core concepts of relational database systems...</div></div>
                     </div>
                 </div>
             </div>
@@ -221,7 +226,6 @@
                             <i class="fas fa-file-pdf" style="color: var(--accent-yellow); font-size: 18px;"></i> 
                             <span id="display-assign-file">Assignment_Brief.pdf</span>
                         </div>
-
                         <button class="submit-btn" id="t-view-subs"><i class="fas fa-box-open"></i> View Student Submissions</button>
                     </div>
                 </div>
@@ -230,12 +234,12 @@
                     <button class="edit-btn add-btn" onclick="openModal('add-tool')" title="Add New Link"><i class="fas fa-plus"></i></button>
                     <h3 style="font-size: 15px; margin: 0 0 15px 0;" id="t-tools-box"><i class="fas fa-link"></i> Required Tools & Links</h3>
                     
-                    <div class="tools-list">
+                    <div class="tools-list" id="tools-container">
                         <div class="tool-item">
-                            <span><i class="fas fa-download" style="margin-right: 8px;"></i> Download XAMPP Server</span>
+                            <span><i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> <a href="#" class="tool-title-link">Download XAMPP Server</a></span>
                             <div class="action-icons">
-                                <i class="fas fa-edit" onclick="openModal('edit-tool')"></i>
-                                <i class="fas fa-trash" onclick="deleteAlert()"></i>
+                                <i class="fas fa-edit" onclick="openModal('edit-tool', this)"></i>
+                                <i class="fas fa-trash" onclick="deleteElement(this)"></i>
                             </div>
                         </div>
                     </div>
@@ -244,7 +248,6 @@
         </div>
     </div>
 
-    <!-- النافذة المنبثقة -->
     <div id="dynamic-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
@@ -260,26 +263,14 @@
         const modal = document.getElementById('dynamic-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalBody = document.getElementById('modal-body');
+        
         let currentSection = "";
+        let currentEditElement = null; // عشان نحفظ العنصر اللي بدنا نعدله (للروابط والأهداف)
 
         // 🌟 نظام الترجمة 🌟
         const dict = {
-            en: {
-                lang: "🌐 EN ▾", back: "Back to Dashboard", grades: "My Grades & Assessment", 
-                assign1: "Assignment 1", assign2: "Assignment 2", target: "Target Grade", 
-                criteria: "Criteria Achieved:", final: "Final Grade:", aims: "Learning Aims", 
-                assignBox: "Assignment & Submission", due: "Due:", download: "Download Instructions:", 
-                viewSubs: "View Student Submissions", toolsBox: "Required Tools & Links", 
-                save: "Save Changes", progress: "Unit Progress: 40%"
-            },
-            ar: {
-                lang: "🌐 AR ▾", back: "العودة للوحة التحكم", grades: "علاماتي والتقييم", 
-                assign1: "الواجب الأول", assign2: "الواجب الثاني", target: "الهدف المطلوب", 
-                criteria: "المعايير المنجزة:", final: "العلامة النهائية:", aims: "أهداف التعلم", 
-                assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", 
-                viewSubs: "عرض تسليمات الطلاب", toolsBox: "الأدوات والروابط المطلوبة", 
-                save: "حفظ التعديلات", progress: "تقدم الوحدة: 40%"
-            }
+            en: { lang: "🌐 EN ▾", back: "Back to Dashboard", grades: "My Grades & Assessment", assign1: "Assignment 1", assign2: "Assignment 2", target: "Target Grade", criteria: "Criteria Achieved:", final: "Final Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Download Instructions:", viewSubs: "View Student Submissions", toolsBox: "Required Tools & Links", save: "Save Changes", progress: "Unit Progress: 40%" },
+            ar: { lang: "🌐 AR ▾", back: "العودة للوحة التحكم", grades: "علاماتي والتقييم", assign1: "الواجب الأول", assign2: "الواجب الثاني", target: "الهدف المطلوب", criteria: "المعايير المنجزة:", final: "العلامة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض تسليمات الطلاب", toolsBox: "الأدوات والروابط المطلوبة", save: "حفظ التعديلات", progress: "تقدم الوحدة: 40%" }
         };
 
         function setLanguage(lang) {
@@ -287,7 +278,6 @@
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             document.getElementById('lang-display').innerText = dict[lang].lang;
             document.getElementById('lang-menu').classList.remove('show');
-            
             document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + dict[lang].back;
             document.getElementById('t-grades').innerHTML = `<i class="fas fa-medal"></i> ` + dict[lang].grades;
             document.getElementById('t-assign1').innerText = dict[lang].assign1;
@@ -305,11 +295,8 @@
             document.getElementById('t-progress').innerText = dict[lang].progress;
         }
 
-        // إغلاق القائمة المنسدلة عند النقر خارجها
         window.onclick = function(event) {
-            if (!event.target.matches('#lang-display')) {
-                document.getElementById('lang-menu').classList.remove('show');
-            }
+            if (!event.target.matches('#lang-display')) { document.getElementById('lang-menu').classList.remove('show'); }
             if (event.target === modal) closeModal();
         }
 
@@ -317,19 +304,20 @@
             const container = headerElement.parentElement;
             const content = container.querySelector('.aim-content');
             const icon = container.querySelector('.toggle-icon');
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-                icon.style.transform = "rotate(0deg)";
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-                icon.style.transform = "rotate(180deg)";
+            if (content.style.maxHeight) { content.style.maxHeight = null; icon.style.transform = "rotate(0deg)"; } 
+            else { content.style.maxHeight = content.scrollHeight + "px"; icon.style.transform = "rotate(180deg)"; }
+        }
+
+        function deleteElement(btn) {
+            if(confirm("Are you sure you want to delete this item?")) {
+                let item = btn.closest('.aim-accordion') || btn.closest('.tool-item');
+                item.remove();
             }
         }
 
-        function deleteAlert() { alert("Deleted! (Will be connected to Firebase)"); }
-
-        function openModal(section) {
+        function openModal(section, btnElement = null) {
             currentSection = section; 
+            currentEditElement = btnElement; // حفظ العنصر اللي انكبس عليه
             modal.classList.add('active');
 
             if (section === 'hero') {
@@ -337,19 +325,50 @@
                 let currentDesc = document.getElementById('display-unit-desc').innerText;
                 modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Details';
                 modalBody.innerHTML = `<div class="form-group"><label>Unit Title</label><input type="text" id="input-unit-title" class="form-input" value="${currentTitle}"></div><div class="form-group"><label>Description</label><textarea id="input-unit-desc" class="form-input" rows="4">${currentDesc}</textarea></div>`;
-            } else if (section === 'grades') {
+            } 
+            else if (section === 'grades') {
+                // 🌟 إضافة العلامة النهائية هون 🌟
                 modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Assessment';
-                modalBody.innerHTML = `<div class="form-group"><label>Target Grade</label><select id="input-target-grade" class="form-input"><option value="pass">Pass</option><option value="merit">Merit</option><option value="distinction" selected>Distinction</option></select></div>`;
-            } else if (section === 'assignment') {
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>Target Grade</label>
+                    <select id="input-target-grade" class="form-input"><option value="grade-pass">Pass</option><option value="grade-merit">Merit</option><option value="grade-distinction" selected>Distinction</option></select></div>
+                    <div class="form-group"><label>Final Grade</label>
+                    <select id="input-final-grade" class="form-input"><option value="grade-pass">Pass</option><option value="grade-merit">Merit</option><option value="grade-distinction" selected>Distinction</option></select></div>
+                `;
+            } 
+            else if (section === 'assignment') {
                 let currentAssignTitle = document.getElementById('display-assign-title').innerText;
                 modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Assignment Details';
                 modalBody.innerHTML = `<div class="form-group"><label>Assignment Title</label><input type="text" id="input-assign-title" class="form-input" value="${currentAssignTitle}"></div><div class="form-group"><label>Due Date</label><input type="datetime-local" id="input-due-date" class="form-input"></div><div class="form-group"><label style="color: var(--accent-yellow);"><i class="fas fa-upload"></i> Upload Assignment Brief (PDF)</label><input type="file" id="input-assign-file" class="form-input" accept=".pdf,.doc,.docx"></div>`;
-            } else if (section === 'add-aim' || section === 'add-tool') {
-                modalTitle.innerHTML = '<i class="fas fa-plus"></i> Add Item';
-                modalBody.innerHTML = `<div class="form-group"><label>Title</label><input type="text" class="form-input"></div>`;
-            } else if (section === 'edit-aim' || section === 'edit-tool') {
-                modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Item';
-                modalBody.innerHTML = `<div class="form-group"><label>Title</label><input type="text" class="form-input" value="Example"></div>`;
+            } 
+            else if (section === 'add-aim' || section === 'edit-aim') {
+                // 🌟 شاشة الأهداف (فيها رفع ملف أو رابط) 🌟
+                let title = "", desc = "";
+                if(section === 'edit-aim' && btnElement) {
+                    title = btnElement.closest('.aim-accordion').querySelector('.aim-title-text').innerText;
+                    desc = btnElement.closest('.aim-accordion').querySelector('.aim-desc-text').innerText;
+                }
+                modalTitle.innerHTML = section === 'add-aim' ? '<i class="fas fa-plus"></i> Add Learning Aim' : '<i class="fas fa-edit"></i> Edit Learning Aim';
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>Aim Title</label><input type="text" id="input-aim-title" class="form-input" placeholder="e.g. Intro to DB" value="${title}"></div>
+                    <div class="form-group"><label>Aim Description</label><textarea id="input-aim-desc" class="form-input" rows="3">${desc}</textarea></div>
+                    <div class="form-group"><label style="color:var(--primary);"><i class="fas fa-paperclip"></i> Attach File</label><input type="file" id="input-aim-file" class="form-input"></div>
+                    <div class="form-group"><label>Or External Link</label><input type="url" id="input-aim-url" class="form-input" placeholder="https://..."></div>
+                `;
+            } 
+            else if (section === 'add-tool' || section === 'edit-tool') {
+                // 🌟 شاشة الروابط (فيها Title و URL) 🌟
+                let title = "", url = "";
+                if(section === 'edit-tool' && btnElement) {
+                    let linkElem = btnElement.closest('.tool-item').querySelector('.tool-title-link');
+                    title = linkElem.innerText;
+                    url = linkElem.getAttribute('href');
+                }
+                modalTitle.innerHTML = section === 'add-tool' ? '<i class="fas fa-plus"></i> Add Link' : '<i class="fas fa-edit"></i> Edit Link';
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>Tool Title</label><input type="text" id="input-tool-title" class="form-input" placeholder="e.g. Draw.io" value="${title}"></div>
+                    <div class="form-group"><label>URL Link</label><input type="url" id="input-tool-url" class="form-input" placeholder="https://..." value="${url==='#'?'':url}"></div>
+                `;
             }
         }
 
@@ -359,10 +378,14 @@
                 document.getElementById('display-unit-desc').innerText = document.getElementById('input-unit-desc').value;
             } 
             else if (currentSection === 'grades') {
-                let selectElem = document.getElementById('input-target-grade');
-                let displayElem = document.getElementById('display-target-grade');
-                displayElem.innerText = selectElem.options[selectElem.selectedIndex].text.toUpperCase();
-                displayElem.className = 'value ' + selectElem.value;
+                // 🌟 تحديث الهدف والنهائي بشكل حقيقي 🌟
+                let tSelect = document.getElementById('input-target-grade');
+                document.getElementById('display-target-grade').innerText = tSelect.options[tSelect.selectedIndex].text.toUpperCase();
+                document.getElementById('display-target-grade').className = tSelect.value; // بيعطيه كلاس اللون الصح
+
+                let fSelect = document.getElementById('input-final-grade');
+                document.getElementById('display-final-grade').innerText = fSelect.options[fSelect.selectedIndex].text.toUpperCase();
+                document.getElementById('display-final-grade').className = fSelect.value; // بيعطيه كلاس اللون الصح
             }
             else if (currentSection === 'assignment') {
                 document.getElementById('display-assign-title').innerText = document.getElementById('input-assign-title').value;
@@ -371,6 +394,65 @@
                 let fileInput = document.getElementById('input-assign-file');
                 if(fileInput.files.length > 0) { document.getElementById('display-assign-file').innerText = fileInput.files[0].name; }
             }
+            else if (currentSection === 'add-tool') {
+                // 🌟 إضافة رابط جديد للصفحة بشكل حقيقي 🌟
+                let title = document.getElementById('input-tool-title').value;
+                let url = document.getElementById('input-tool-url').value;
+                if(title) {
+                    let newTool = `
+                    <div class="tool-item">
+                        <span><i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> <a href="${url}" class="tool-title-link" target="_blank">${title}</a></span>
+                        <div class="action-icons"><i class="fas fa-edit" onclick="openModal('edit-tool', this)"></i><i class="fas fa-trash" onclick="deleteElement(this)"></i></div>
+                    </div>`;
+                    document.getElementById('tools-container').insertAdjacentHTML('beforeend', newTool);
+                }
+            }
+            else if (currentSection === 'edit-tool' && currentEditElement) {
+                // 🌟 تعديل الرابط الحالي 🌟
+                let title = document.getElementById('input-tool-title').value;
+                let url = document.getElementById('input-tool-url').value;
+                let linkElem = currentEditElement.closest('.tool-item').querySelector('.tool-title-link');
+                linkElem.innerText = title;
+                linkElem.setAttribute('href', url);
+            }
+            else if (currentSection === 'add-aim') {
+                // 🌟 إضافة هدف كامل للصفحة 🌟
+                let title = document.getElementById('input-aim-title').value;
+                let desc = document.getElementById('input-aim-desc').value;
+                let fileInput = document.getElementById('input-aim-file');
+                let url = document.getElementById('input-aim-url').value;
+                
+                let extraHTML = '';
+                if(fileInput.files.length > 0) { extraHTML = `<div style="margin-top:10px; color:var(--primary);"><i class="fas fa-file-pdf"></i> Attached: ${fileInput.files[0].name}</div>`; }
+                else if(url) { extraHTML = `<div style="margin-top:10px; color:var(--primary);"><i class="fas fa-link"></i> Link: <a href="${url}" target="_blank" style="color:var(--primary);">${url}</a></div>`; }
+
+                if(title) {
+                    let newAim = `
+                    <div class="aim-accordion">
+                        <div class="aim-header">
+                            <div style="flex-grow: 1; cursor: pointer;" onclick="toggleAim(this.parentElement)">
+                                <span style="color: var(--primary); margin-right: 5px;">•</span> <span class="aim-title-text">${title}</span>
+                            </div>
+                            <div class="action-icons">
+                                <i class="fas fa-edit" onclick="openModal('edit-aim', this)"></i>
+                                <i class="fas fa-trash" onclick="deleteElement(this)"></i>
+                                <i class="fas fa-chevron-down toggle-icon" onclick="toggleAim(this.parentElement)"></i>
+                            </div>
+                        </div>
+                        <div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${desc}</div><div class="aim-extra">${extraHTML}</div></div></div>
+                    </div>`;
+                    document.getElementById('aims-container').insertAdjacentHTML('beforeend', newAim);
+                }
+            }
+            else if (currentSection === 'edit-aim' && currentEditElement) {
+                // 🌟 تعديل الهدف الحالي 🌟
+                let title = document.getElementById('input-aim-title').value;
+                let desc = document.getElementById('input-aim-desc').value;
+                let acc = currentEditElement.closest('.aim-accordion');
+                acc.querySelector('.aim-title-text').innerText = title;
+                acc.querySelector('.aim-desc-text').innerText = desc;
+            }
+
             closeModal();
         }
 
