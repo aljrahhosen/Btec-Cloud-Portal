@@ -156,7 +156,7 @@
         <div class="card hero-card">
             <button class="edit-btn" onclick="openModal('hero')" title="Edit"><i class="fas fa-edit"></i></button>
             <h1 class="hero-title">
-                <i class="fas fa-laptop-code"></i> 
+                <i id="display-unit-icon" class="fas fa-laptop-code"></i> 
                 <span id="display-unit-title">Introduction to Programming</span>
             </h1>
             <p class="hero-desc" id="display-unit-desc">Learn the fundamentals of programming, algorithms, and problem-solving using modern programming languages required for the BTEC IT curriculum.</p>
@@ -271,6 +271,37 @@
         let currentEditElement = null;
         let activeLang = 'en';
 
+        // 🌟 الداتا الوهمية (Mock Database) لدعم التوجيه الديناميكي 🌟
+        const coursesDB = {
+            "programming": {
+                icon: "fa-laptop-code",
+                title_en: "Introduction to Programming",
+                desc_en: "Learn the fundamentals of programming, algorithms, and problem-solving using modern programming languages required for the BTEC IT curriculum.",
+                title_ar: "مقدمة في البرمجة",
+                desc_ar: "تعلم أساسيات البرمجة، الخوارزميات، وحل المشكلات باستخدام لغات البرمجة الحديثة المطلوبة في منهج BTEC IT."
+            },
+            "database": {
+                icon: "fa-database",
+                title_en: "Unit 1: Database Systems",
+                desc_en: "Learn the fundamentals of relational databases, SQL queries, Entity-Relationship Diagrams (ERD), and database management required for the BTEC IT curriculum.",
+                title_ar: "الوحدة 1: أنظمة قواعد البيانات",
+                desc_ar: "تعلم أساسيات قواعد البيانات العلائقية، استعلامات SQL، ومخططات الكيانات (ERD) المطلوبة في منهج BTEC IT."
+            },
+            "web": {
+                icon: "fa-globe",
+                title_en: "Web Development",
+                desc_en: "Master HTML, CSS, and JavaScript to build responsive and modern websites.",
+                title_ar: "تطوير الويب",
+                desc_ar: "احترف HTML، CSS، وجافاسكريبت لبناء مواقع ويب متجاوبة وحديثة."
+            }
+        };
+
+        // 🌟 قراءة الرابط وجلب بيانات المادة 🌟
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('id') || 'programming'; 
+        const currentCourse = coursesDB[courseId] || coursesDB['programming']; 
+
+        // 🌟 قاموس الترجمة الشامل 🌟
         const t = {
             en: { 
                 langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", 
@@ -287,7 +318,7 @@
                 mAimTitle: "Aim Title", mAimDesc: "Aim Description", mAttachFile: "Attach File",
                 mExtLink: "Or External Link", mAddTool: "Add Link", mEditTool: "Edit Link",
                 mToolTitle: "Tool Title", mUrlLink: "URL Link", mPass: "Pass", mMerit: "Merit", mDistinction: "Distinction",
-                heroTitle: "Introduction to Programming", heroDesc: "Learn the fundamentals of programming, algorithms, and problem-solving using modern programming languages required for the BTEC IT curriculum."
+                heroTitle: currentCourse.title_en, heroDesc: currentCourse.desc_en // ديناميكي من قاعدة البيانات
             },
             ar: { 
                 langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", 
@@ -304,8 +335,14 @@
                 mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف",
                 mExtLink: "أو رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل الرابط",
                 mToolTitle: "عنوان الرابط", mUrlLink: "الرابط (URL)", mPass: "اجتياز", mMerit: "جيد جداً", mDistinction: "امتياز",
-                heroTitle: "مقدمة في البرمجة", heroDesc: "تعلم أساسيات البرمجة، الخوارزميات، وحل المشكلات باستخدام لغات البرمجة الحديثة المطلوبة في منهج BTEC IT."
+                heroTitle: currentCourse.title_ar, heroDesc: currentCourse.desc_ar // ديناميكي من قاعدة البيانات
             }
+        };
+
+        // 🌟 ضبط الأيقونة واللغة الافتراضية عند تحميل الصفحة 🌟
+        window.onload = function() {
+            document.getElementById('display-unit-icon').className = "fas " + currentCourse.icon;
+            setLanguage('en'); 
         };
 
         function setLanguage(lang) {
@@ -318,7 +355,7 @@
             document.getElementById('t-portal').innerText = t[lang].portal;
             document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + t[lang].back;
             
-            // 🌟 ترجمة المحتوى الأساسي للصفحة (العنوان والوصف) 🌟
+            // ترجمة المحتوى الأساسي (الديناميكي)
             document.getElementById('display-unit-title').innerText = t[lang].heroTitle;
             document.getElementById('display-unit-desc').innerText = t[lang].heroDesc;
 
@@ -431,6 +468,10 @@
             if (currentSection === 'hero') {
                 document.getElementById('display-unit-title').innerText = document.getElementById('input-unit-title').value;
                 document.getElementById('display-unit-desc').innerText = document.getElementById('input-unit-desc').value;
+                
+                // تحديث القاموس عشان الترجمة ما تخرب لو المستخدم بدل اللغة بعد ما عدل
+                t[activeLang].heroTitle = document.getElementById('input-unit-title').value;
+                t[activeLang].heroDesc = document.getElementById('input-unit-desc').value;
             } 
             else if (currentSection === 'grades') {
                 let tSelect = document.getElementById('input-target-grade');
