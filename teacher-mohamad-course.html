@@ -54,7 +54,10 @@
 
         .hero-card { background: linear-gradient(135deg, #0f2038 0%, #081221 100%); border-left: 4px solid var(--primary); }
         html[dir="rtl"] .hero-card { border-left: none; border-right: 4px solid var(--primary); }
-        .hero-title { font-size: 24px; font-weight: 700; margin: 0 0 10px 0; display: flex; align-items: center; gap: 10px; }
+        
+        /* 🌟 تم تضبيط شكل العنوان والأيقونة ليتناسق بكل اللغات 🌟 */
+        .hero-title { font-size: 24px; font-weight: 700; margin: 0 0 10px 0; display: inline-flex; align-items: center; gap: 12px; }
+        
         .hero-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; max-width: 80%; }
         .progress-bar { width: 300px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 15px; overflow: hidden; }
         .progress-fill { width: 40%; height: 100%; background: var(--primary); border-radius: 10px; }
@@ -67,7 +70,6 @@
         .g-box { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; padding: 15px; text-align: center; }
         .g-box .title { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
         
-        /* ألوان العلامات */
         .grade-pass { color: var(--accent-green) !important; font-weight: bold; }
         .grade-merit { color: var(--primary) !important; font-weight: bold; }
         .grade-distinction { color: var(--accent-yellow) !important; font-weight: bold; }
@@ -155,7 +157,10 @@
 
         <div class="card hero-card">
             <button class="edit-btn" onclick="openModal('hero')" title="Edit Unit Details"><i class="fas fa-edit"></i></button>
-            <h1 class="hero-title"><i class="fas fa-database"></i> <span id="display-unit-title">Unit 1: Database Systems</span></h1>
+            <h1 class="hero-title">
+                <i id="display-unit-icon" class="fas fa-database"></i> 
+                <span id="display-unit-title">Unit 1: Database Systems</span>
+            </h1>
             <p class="hero-desc" id="display-unit-desc">Learn the fundamentals of relational databases, SQL queries, Entity-Relationship Diagrams (ERD), and database management required for the BTEC IT curriculum.</p>
             <div style="font-size: 12px; color: var(--primary); margin-top: 20px;" id="t-progress">Unit Progress: 40%</div>
             <div class="progress-bar"><div class="progress-fill"></div></div>
@@ -265,9 +270,8 @@
         const modalBody = document.getElementById('modal-body');
         
         let currentSection = "";
-        let currentEditElement = null; // عشان نحفظ العنصر اللي بدنا نعدله (للروابط والأهداف)
+        let currentEditElement = null;
 
-        // 🌟 نظام الترجمة 🌟
         const dict = {
             en: { lang: "🌐 EN ▾", back: "Back to Dashboard", grades: "My Grades & Assessment", assign1: "Assignment 1", assign2: "Assignment 2", target: "Target Grade", criteria: "Criteria Achieved:", final: "Final Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Download Instructions:", viewSubs: "View Student Submissions", toolsBox: "Required Tools & Links", save: "Save Changes", progress: "Unit Progress: 40%" },
             ar: { lang: "🌐 AR ▾", back: "العودة للوحة التحكم", grades: "علاماتي والتقييم", assign1: "الواجب الأول", assign2: "الواجب الثاني", target: "الهدف المطلوب", criteria: "المعايير المنجزة:", final: "العلامة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض تسليمات الطلاب", toolsBox: "الأدوات والروابط المطلوبة", save: "حفظ التعديلات", progress: "تقدم الوحدة: 40%" }
@@ -317,17 +321,31 @@
 
         function openModal(section, btnElement = null) {
             currentSection = section; 
-            currentEditElement = btnElement; // حفظ العنصر اللي انكبس عليه
+            currentEditElement = btnElement; 
             modal.classList.add('active');
 
             if (section === 'hero') {
                 let currentTitle = document.getElementById('display-unit-title').innerText;
                 let currentDesc = document.getElementById('display-unit-desc').innerText;
+                let currentIcon = document.getElementById('display-unit-icon').className.split(' ')[1]; // استخراج الكلاس الحالي للأيقونة
+                
                 modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Details';
-                modalBody.innerHTML = `<div class="form-group"><label>Unit Title</label><input type="text" id="input-unit-title" class="form-input" value="${currentTitle}"></div><div class="form-group"><label>Description</label><textarea id="input-unit-desc" class="form-input" rows="4">${currentDesc}</textarea></div>`;
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>Unit Title</label><input type="text" id="input-unit-title" class="form-input" value="${currentTitle}"></div>
+                    <div class="form-group">
+                        <label>Course Icon (Dynamic)</label>
+                        <select id="input-unit-icon" class="form-input">
+                            <option value="fa-database" ${currentIcon === 'fa-database' ? 'selected' : ''}>Database</option>
+                            <option value="fa-code" ${currentIcon === 'fa-code' ? 'selected' : ''}>Programming</option>
+                            <option value="fa-laptop-code" ${currentIcon === 'fa-laptop-code' ? 'selected' : ''}>Web Design</option>
+                            <option value="fa-network-wired" ${currentIcon === 'fa-network-wired' ? 'selected' : ''}>Networking</option>
+                            <option value="fa-book" ${currentIcon === 'fa-book' ? 'selected' : ''}>General Subject</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Description</label><textarea id="input-unit-desc" class="form-input" rows="4">${currentDesc}</textarea></div>
+                `;
             } 
             else if (section === 'grades') {
-                // 🌟 إضافة العلامة النهائية هون 🌟
                 modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Assessment';
                 modalBody.innerHTML = `
                     <div class="form-group"><label>Target Grade</label>
@@ -342,7 +360,6 @@
                 modalBody.innerHTML = `<div class="form-group"><label>Assignment Title</label><input type="text" id="input-assign-title" class="form-input" value="${currentAssignTitle}"></div><div class="form-group"><label>Due Date</label><input type="datetime-local" id="input-due-date" class="form-input"></div><div class="form-group"><label style="color: var(--accent-yellow);"><i class="fas fa-upload"></i> Upload Assignment Brief (PDF)</label><input type="file" id="input-assign-file" class="form-input" accept=".pdf,.doc,.docx"></div>`;
             } 
             else if (section === 'add-aim' || section === 'edit-aim') {
-                // 🌟 شاشة الأهداف (فيها رفع ملف أو رابط) 🌟
                 let title = "", desc = "";
                 if(section === 'edit-aim' && btnElement) {
                     title = btnElement.closest('.aim-accordion').querySelector('.aim-title-text').innerText;
@@ -357,7 +374,6 @@
                 `;
             } 
             else if (section === 'add-tool' || section === 'edit-tool') {
-                // 🌟 شاشة الروابط (فيها Title و URL) 🌟
                 let title = "", url = "";
                 if(section === 'edit-tool' && btnElement) {
                     let linkElem = btnElement.closest('.tool-item').querySelector('.tool-title-link');
@@ -376,16 +392,17 @@
             if (currentSection === 'hero') {
                 document.getElementById('display-unit-title').innerText = document.getElementById('input-unit-title').value;
                 document.getElementById('display-unit-desc').innerText = document.getElementById('input-unit-desc').value;
+                // 🌟 تغيير الأيقونة الحقيقي 🌟
+                document.getElementById('display-unit-icon').className = 'fas ' + document.getElementById('input-unit-icon').value;
             } 
             else if (currentSection === 'grades') {
-                // 🌟 تحديث الهدف والنهائي بشكل حقيقي 🌟
                 let tSelect = document.getElementById('input-target-grade');
                 document.getElementById('display-target-grade').innerText = tSelect.options[tSelect.selectedIndex].text.toUpperCase();
-                document.getElementById('display-target-grade').className = tSelect.value; // بيعطيه كلاس اللون الصح
+                document.getElementById('display-target-grade').className = tSelect.value; 
 
                 let fSelect = document.getElementById('input-final-grade');
                 document.getElementById('display-final-grade').innerText = fSelect.options[fSelect.selectedIndex].text.toUpperCase();
-                document.getElementById('display-final-grade').className = fSelect.value; // بيعطيه كلاس اللون الصح
+                document.getElementById('display-final-grade').className = fSelect.value; 
             }
             else if (currentSection === 'assignment') {
                 document.getElementById('display-assign-title').innerText = document.getElementById('input-assign-title').value;
@@ -395,7 +412,6 @@
                 if(fileInput.files.length > 0) { document.getElementById('display-assign-file').innerText = fileInput.files[0].name; }
             }
             else if (currentSection === 'add-tool') {
-                // 🌟 إضافة رابط جديد للصفحة بشكل حقيقي 🌟
                 let title = document.getElementById('input-tool-title').value;
                 let url = document.getElementById('input-tool-url').value;
                 if(title) {
@@ -408,7 +424,6 @@
                 }
             }
             else if (currentSection === 'edit-tool' && currentEditElement) {
-                // 🌟 تعديل الرابط الحالي 🌟
                 let title = document.getElementById('input-tool-title').value;
                 let url = document.getElementById('input-tool-url').value;
                 let linkElem = currentEditElement.closest('.tool-item').querySelector('.tool-title-link');
@@ -416,7 +431,6 @@
                 linkElem.setAttribute('href', url);
             }
             else if (currentSection === 'add-aim') {
-                // 🌟 إضافة هدف كامل للصفحة 🌟
                 let title = document.getElementById('input-aim-title').value;
                 let desc = document.getElementById('input-aim-desc').value;
                 let fileInput = document.getElementById('input-aim-file');
@@ -445,7 +459,6 @@
                 }
             }
             else if (currentSection === 'edit-aim' && currentEditElement) {
-                // 🌟 تعديل الهدف الحالي 🌟
                 let title = document.getElementById('input-aim-title').value;
                 let desc = document.getElementById('input-aim-desc').value;
                 let acc = currentEditElement.closest('.aim-accordion');
