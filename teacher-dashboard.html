@@ -81,38 +81,38 @@
         const db = getFirestore(app);
 
         // ==========================================
-        // 🌟 تحديث قاعدة بيانات المواد لتتطابق مع الروابط الديناميكية 🌟
+        // 🌟 تحديث قاعدة بيانات المواد لتتطابق مع طلبك 🌟
         // ==========================================
         const courseDatabase = {
+            'it-systems': { 
+                unit_num: 2, 
+                title_en: 'Using IT in Organizations', 
+                title_ar: 'استخدام تكنولوجيا المعلومات في المؤسسات', 
+                term_en: 'Semester 1', 
+                term_ar: 'الفصل الأول' 
+            },
             'programming': { 
                 unit_num: 5, 
                 title_en: 'Introduction to Programming', 
                 title_ar: 'مقدمة في البرمجة', 
-                term_en: 'Semester 1', 
-                term_ar: 'الفصل الأول' 
+                term_en: 'Semester 2', 
+                term_ar: 'الفصل الثاني' 
             },
             'web-design': { 
                 unit_num: 7, 
                 title_en: 'Introduction to Web Design', 
                 title_ar: 'مقدمة في تصميم المواقع', 
-                term_en: 'Semester 2', 
-                term_ar: 'الفصل الثاني' 
-            },
-            'it-systems': { 
-                unit_num: 2, 
-                title_en: 'Using IT in Organizations', 
-                title_ar: 'استخدام تكنولوجيا المعلومات في المؤسسات', 
                 term_en: 'Semester 3', 
                 term_ar: 'الفصل الثالث' 
             }
         };
 
         // ==========================================
-        // 🌟 توزيع المواد المحدث حسب كود الأستاذ 🌟
+        // 🌟 توزيع المواد بالترتيب المطلوب (تكنولوجيا، برمجة، ويب) 🌟
         // ==========================================
         const teacherAssignments = {
-            'MOHAMAD-T-20245': ['programming', 'web-design', 'it-systems'],
-            'Musa-T-65248': [], // يمكنك إضافة مواد أخرى هنا مستقبلاً
+            'MOHAMAD-T-20245': ['it-systems', 'programming', 'web-design'],
+            'Musa-T-65248': [], 
             'HAMZA-T-54624': []
         };
 
@@ -135,7 +135,6 @@
                 const cardTitle = (lang === 'ar') ? data.title_ar : data.title_en;
                 const cardSem = (lang === 'ar') ? data.term_ar : data.term_en;
 
-                // 🌟 الرابط تم توجيهه إلى teacher-mohamad-course.html مع الـ id الديناميكي 🌟
                 const courseCardHtml = `
                     <div class="course-card glass-panel teacher-card" onclick="window.location.href='teacher-mohamad-course.html?id=${unitId}'" style="border-left:4px solid #FFD700; position: relative;">
                         <div class="course-cover"></div>
