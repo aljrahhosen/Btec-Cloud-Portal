@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTEC Cloud - Teacher Course Editor</title>
+    <title>BTEC Cloud - Teacher Course</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -197,7 +197,7 @@
                         <div class="aim-accordion">
                             <div class="aim-header">
                                 <div style="flex-grow: 1; cursor: pointer;" onclick="toggleAim(this.parentElement)">
-                                    <span style="color: var(--primary); margin-right: 5px;">•</span> <span class="aim-title-text">Introduction to Algorithms</span>
+                                    <span style="color: var(--primary); margin-right: 5px;">•</span> <span class="aim-title-text">Aim A: Fundamental Concepts</span>
                                 </div>
                                 <div class="action-icons">
                                     <i class="fas fa-edit" onclick="openModal('edit-aim', this)"></i>
@@ -207,7 +207,7 @@
                             </div>
                             <div class="aim-content">
                                 <div class="aim-inner">
-                                    <div class="aim-desc-text">Understand the core concepts of algorithms and flowchart design.</div>
+                                    <div class="aim-desc-text">Understand the core principles required for this unit.</div>
                                     <div class="aim-extra" style="margin-top:10px;"></div>
                                 </div>
                             </div>
@@ -221,7 +221,7 @@
                     <button class="edit-btn" onclick="openModal('assignment')" title="Edit"><i class="fas fa-edit"></i></button>
                     <h3 style="font-size: 15px; margin: 0 0 20px 0;" id="t-assign-box"><i class="fas fa-list-ul"></i> Assignment & Submission</h3>
                     <div class="assignment-inner">
-                        <div style="font-weight: 600; font-size: 14px;" id="display-assign-title">Assignment 1: Algorithms Design</div>
+                        <div style="font-weight: 600; font-size: 14px;" id="display-assign-title">Assignment 1: Task Details</div>
                         <div class="due-date"><i class="far fa-clock"></i> <span id="t-due">Due:</span> <span id="display-due-date">May 20, 2026 11:59 PM</span></div>
                         
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;" id="t-download">Download Instructions:</div>
@@ -239,7 +239,7 @@
                     
                     <div class="tools-list" id="tools-container">
                         <div class="tool-item">
-                            <span><i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> <a href="#" class="tool-title-link">Download Python IDE</a></span>
+                            <span><i class="fas fa-external-link-alt" style="margin-right: 8px;"></i> <a href="#" class="tool-title-link">Required Software / Link</a></span>
                             <div class="action-icons">
                                 <i class="fas fa-edit" onclick="openModal('edit-tool', this)"></i>
                                 <i class="fas fa-trash" onclick="deleteElement(this)"></i>
@@ -271,7 +271,7 @@
         let currentEditElement = null;
         let activeLang = 'en';
 
-        // 🌟 الداتا الوهمية (Mock Database) لدعم التوجيه الديناميكي 🌟
+        // 🌟 قاعدة بيانات مصغرة (جاهزة وحقيقية لمواد الأستاذ محمد الـ 3) 🌟
         const coursesDB = {
             "programming": {
                 icon: "fa-laptop-code",
@@ -280,23 +280,23 @@
                 title_ar: "مقدمة في البرمجة",
                 desc_ar: "تعلم أساسيات البرمجة، الخوارزميات، وحل المشكلات باستخدام لغات البرمجة الحديثة المطلوبة في منهج BTEC IT."
             },
-            "database": {
-                icon: "fa-database",
-                title_en: "Unit 1: Database Systems",
-                desc_en: "Learn the fundamentals of relational databases, SQL queries, Entity-Relationship Diagrams (ERD), and database management required for the BTEC IT curriculum.",
-                title_ar: "الوحدة 1: أنظمة قواعد البيانات",
-                desc_ar: "تعلم أساسيات قواعد البيانات العلائقية، استعلامات SQL، ومخططات الكيانات (ERD) المطلوبة في منهج BTEC IT."
-            },
-            "web": {
+            "web-design": {
                 icon: "fa-globe",
-                title_en: "Web Development",
-                desc_en: "Master HTML, CSS, and JavaScript to build responsive and modern websites.",
-                title_ar: "تطوير الويب",
-                desc_ar: "احترف HTML، CSS، وجافاسكريبت لبناء مواقع ويب متجاوبة وحديثة."
+                title_en: "Introduction to Web Design",
+                desc_en: "Master the principles of web design, HTML, CSS, and user experience (UX) to build responsive and modern websites.",
+                title_ar: "مقدمة في تصميم المواقع",
+                desc_ar: "احترف مبادئ تصميم الويب، HTML، CSS، وتجربة المستخدم (UX) لبناء مواقع ويب متجاوبة وحديثة."
+            },
+            "it-systems": {
+                icon: "fa-sitemap",
+                title_en: "Using IT in Organizations",
+                desc_en: "Explore how organizations use Information Technology to achieve their goals, manage data, and improve operational efficiency.",
+                title_ar: "استخدام تكنولوجيا المعلومات في المؤسسات",
+                desc_ar: "استكشف كيف تستخدم المؤسسات تكنولوجيا المعلومات لتحقيق أهدافها، إدارة البيانات، وتحسين الكفاءة التشغيلية."
             }
         };
 
-        // 🌟 قراءة الرابط وجلب بيانات المادة 🌟
+        // قراءة الرابط وجلب بيانات المادة المحددة (الديفولت برمجة)
         const urlParams = new URLSearchParams(window.location.search);
         const courseId = urlParams.get('id') || 'programming'; 
         const currentCourse = coursesDB[courseId] || coursesDB['programming']; 
@@ -317,8 +317,7 @@
                 mUploadBrief: "Upload Assignment Brief (PDF)", mAddAim: "Add Learning Aim", mEditAim: "Edit Learning Aim",
                 mAimTitle: "Aim Title", mAimDesc: "Aim Description", mAttachFile: "Attach File",
                 mExtLink: "Or External Link", mAddTool: "Add Link", mEditTool: "Edit Link",
-                mToolTitle: "Tool Title", mUrlLink: "URL Link", mPass: "Pass", mMerit: "Merit", mDistinction: "Distinction",
-                heroTitle: currentCourse.title_en, heroDesc: currentCourse.desc_en // ديناميكي من قاعدة البيانات
+                mToolTitle: "Tool Title", mUrlLink: "URL Link", mPass: "Pass", mMerit: "Merit", mDistinction: "Distinction"
             },
             ar: { 
                 langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", 
@@ -334,12 +333,11 @@
                 mUploadBrief: "رفع ملف الواجب (PDF)", mAddAim: "إضافة هدف تعليمي", mEditAim: "تعديل الهدف التعليمي",
                 mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف",
                 mExtLink: "أو رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل الرابط",
-                mToolTitle: "عنوان الرابط", mUrlLink: "الرابط (URL)", mPass: "اجتياز", mMerit: "جيد جداً", mDistinction: "امتياز",
-                heroTitle: currentCourse.title_ar, heroDesc: currentCourse.desc_ar // ديناميكي من قاعدة البيانات
+                mToolTitle: "عنوان الرابط", mUrlLink: "الرابط (URL)", mPass: "اجتياز", mMerit: "جيد جداً", mDistinction: "امتياز"
             }
         };
 
-        // 🌟 ضبط الأيقونة واللغة الافتراضية عند تحميل الصفحة 🌟
+        // تشغيل البيانات عند فتح الصفحة
         window.onload = function() {
             document.getElementById('display-unit-icon').className = "fas " + currentCourse.icon;
             setLanguage('en'); 
@@ -355,9 +353,9 @@
             document.getElementById('t-portal').innerText = t[lang].portal;
             document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + t[lang].back;
             
-            // ترجمة المحتوى الأساسي (الديناميكي)
-            document.getElementById('display-unit-title').innerText = t[lang].heroTitle;
-            document.getElementById('display-unit-desc').innerText = t[lang].heroDesc;
+            // 🌟 إعطاء العنوان والوصف المناسب للغة المحددة من قاعدة البيانات 🌟
+            document.getElementById('display-unit-title').innerText = lang === 'ar' ? currentCourse.title_ar : currentCourse.title_en;
+            document.getElementById('display-unit-desc').innerText = lang === 'ar' ? currentCourse.desc_ar : currentCourse.desc_en;
 
             document.getElementById('t-grades').innerHTML = `<i class="fas fa-medal"></i> ` + t[lang].grades;
             document.getElementById('t-assign1').innerText = t[lang].assign1;
@@ -466,12 +464,18 @@
 
         function saveChanges() {
             if (currentSection === 'hero') {
-                document.getElementById('display-unit-title').innerText = document.getElementById('input-unit-title').value;
-                document.getElementById('display-unit-desc').innerText = document.getElementById('input-unit-desc').value;
-                
-                // تحديث القاموس عشان الترجمة ما تخرب لو المستخدم بدل اللغة بعد ما عدل
-                t[activeLang].heroTitle = document.getElementById('input-unit-title').value;
-                t[activeLang].heroDesc = document.getElementById('input-unit-desc').value;
+                // حفظ التعديلات وحفظها بالقاعدة المصغرة عشان ما تخرب عند تبديل اللغة
+                let newTitle = document.getElementById('input-unit-title').value;
+                let newDesc = document.getElementById('input-unit-desc').value;
+                if(activeLang === 'ar') {
+                    currentCourse.title_ar = newTitle;
+                    currentCourse.desc_ar = newDesc;
+                } else {
+                    currentCourse.title_en = newTitle;
+                    currentCourse.desc_en = newDesc;
+                }
+                document.getElementById('display-unit-title').innerText = newTitle;
+                document.getElementById('display-unit-desc').innerText = newDesc;
             } 
             else if (currentSection === 'grades') {
                 let tSelect = document.getElementById('input-target-grade');
