@@ -33,23 +33,28 @@
         .header-left { display: flex; align-items: center; }
         
         .toggle-icon { transition: transform 0.2s ease; color: var(--text-muted); }
-.module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.2s ease-in-out; background: transparent; }
-.module-card.active .module-content { padding: 20px; max-height: 800px; border-top: 1px solid var(--glass-border); }
+        .module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.2s ease-in-out; background: transparent; }
+        .module-card.active .module-content { padding: 20px; max-height: 800px; border-top: 1px solid var(--glass-border); }
 
         /* BTEC Grades Layout */
         .grade-box-container { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
         .grade-box { flex: 1; min-width: 120px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 15px; border-radius: 10px; text-align: center; }
         .grade-box h4 { margin: 0 0 5px 0; color: var(--text-muted); font-size: 12px; font-weight: 500; }
         .grade-val { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
-        .val-pass { color: #4CAF50; } .val-merit { color: #00a8fc; } .val-dist { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.4); } .val-pend { color: #888; }
+        .val-pass { color: #4CAF50; text-shadow: 0 0 10px rgba(76,175,80,0.4); } 
+        .val-merit { color: #00a8fc; text-shadow: 0 0 10px rgba(0,168,252,0.4); } 
+        .val-dist { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.4); } 
+        .val-pend { color: #888; }
         
         .criteria-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .crit-tag { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #555; }
-        .crit-tag.achieved-p { background: rgba(76, 175, 80, 0.1); border-color: #4CAF50; color: #4CAF50; }
-        .crit-tag.achieved-m { background: rgba(0, 168, 252, 0.1); border-color: #00a8fc; color: #00a8fc; }
-        .crit-tag.achieved-d { background: rgba(255, 215, 0, 0.1); border-color: #FFD700; color: #FFD700; }
+        .crit-tag { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #555; transition: 0.3s; opacity: 0.4; }
+        
+        /* كلاسات التفعيل لما تيجي العلامة */
+        .crit-tag.achieved-p { background: rgba(76, 175, 80, 0.1); border-color: #4CAF50; color: #4CAF50; opacity: 1; box-shadow: 0 0 8px rgba(76,175,80,0.3); }
+        .crit-tag.achieved-m { background: rgba(0, 168, 252, 0.1); border-color: #00a8fc; color: #00a8fc; opacity: 1; box-shadow: 0 0 8px rgba(0,168,252,0.3); }
+        .crit-tag.achieved-d { background: rgba(255, 215, 0, 0.1); border-color: #FFD700; color: #FFD700; opacity: 1; box-shadow: 0 0 8px rgba(255,215,0,0.3); }
 
-        .final-grade-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px 14px; margin-top: 15px; }
+        .final-grade-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px 14px; margin-top: 15px; transition: 0.3s; }
         .final-grade-label { color: var(--text-muted); font-size: 13px; font-weight: 600; }
 
         .material-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 10px; border: 1px solid transparent; transition: 0.2s; }
@@ -131,47 +136,36 @@
             <div class="course-main">
                 
                 <div class="module-card active" style="border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1);">
-    <div class="module-header" onclick="toggleModule(this)" style="background: rgba(255, 215, 0, 0.05);">
-        <div class="header-left">
-            <div class="module-icon" style="color: #FFD700; background: rgba(255, 215, 0, 0.15);"><i class="fas fa-award"></i></div>
-            <span class="u-title-grades" style="color: #FFD700;">My Grades & Assessment</span>
-        </div>
-        <i class="fas fa-chevron-down toggle-icon" style="color: #FFD700;"></i>
-    </div>
-    <div class="module-content">
-        <div class="grade-box-container">
-            <div class="grade-box" style="border-color: rgba(76, 175, 80, 0.3);">
-                <h4 class="g-assign1">Assignment 1</h4>
-                <div class="grade-val val-pass">PASS</div>
-            </div>
-            <div class="grade-box" style="border-color: rgba(0, 168, 252, 0.3);">
-                <h4 class="g-assign2">Assignment 2</h4>
-                <div class="grade-val val-merit">MERIT</div>
-            </div>
-            <div class="grade-box" style="border-color: rgba(255, 215, 0, 0.4); background: rgba(255,215,0,0.05);">
-                <h4 class="g-final">Final Grade</h4>
-                <div class="grade-val val-dist">DISTINCTION</div>
-            </div>
-        </div>
-        
-        <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" class="g-crit">Criteria Achieved:</h4>
-        <div class="criteria-grid">
-            <span class="crit-tag achieved-p">P1</span>
-            <span class="crit-tag achieved-p">P2</span>
-            <span class="crit-tag achieved-p">P3</span>
-            <span class="crit-tag achieved-p">P4</span>
-            <span class="crit-tag achieved-m">M1</span>
-            <span class="crit-tag achieved-m">M2</span>
-            <span class="crit-tag">M3</span>
-            <span class="crit-tag achieved-d">D1</span>
-            <span class="crit-tag">D2</span>
-        </div>
-        <div class="final-grade-summary">
-            <span class="final-grade-label">Final Grade:</span>
-            <span id="auto-final-grade" class="grade-val val-pend">PASS</span>
-        </div>
-    </div>
-</div>
+                    <div class="module-header" onclick="toggleModule(this)" style="background: rgba(255, 215, 0, 0.05);">
+                        <div class="header-left">
+                            <div class="module-icon" style="color: #FFD700; background: rgba(255, 215, 0, 0.15);"><i class="fas fa-award"></i></div>
+                            <span class="u-title-grades" style="color: #FFD700;">My Grades & Assessment</span>
+                        </div>
+                        <i class="fas fa-chevron-down toggle-icon" style="color: #FFD700;"></i>
+                    </div>
+                    <div class="module-content">
+                        
+                        <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" class="g-crit">Criteria Achieved:</h4>
+                        
+                        <!-- تم إزالة الألوان الثابتة، الكود رح يضويها حسب الداتابيز -->
+                        <div class="criteria-grid" id="criteria-container">
+                            <span class="crit-tag" data-type="p">P1</span>
+                            <span class="crit-tag" data-type="p">P2</span>
+                            <span class="crit-tag" data-type="p">P3</span>
+                            <span class="crit-tag" data-type="p">P4</span>
+                            <span class="crit-tag" data-type="m">M1</span>
+                            <span class="crit-tag" data-type="m">M2</span>
+                            <span class="crit-tag" data-type="m">M3</span>
+                            <span class="crit-tag" data-type="d">D1</span>
+                            <span class="crit-tag" data-type="d">D2</span>
+                        </div>
+
+                        <div class="final-grade-summary" id="final-summary-box">
+                            <span class="final-grade-label" id="final-label-text">Final Grade:</span>
+                            <span id="auto-final-grade" class="grade-val val-pend"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="module-card">
                     <div class="module-header" onclick="toggleModule(this)">
@@ -193,7 +187,6 @@
                     </div>
                 </div>
 
-                <!-- Learning Aim B -->
                 <div class="module-card">
                     <div class="module-header" onclick="toggleModule(this)">
                         <div class="header-left">
@@ -214,7 +207,6 @@
                     </div>
                 </div>
 
-                <!-- Learning Aim C -->
                 <div class="module-card">
                     <div class="module-header" onclick="toggleModule(this)">
                         <div class="header-left">
@@ -235,7 +227,6 @@
 
             <!-- Sidebar -->
             <div class="course-sidebar">
-                <!-- Assignments Widget -->
                 <div class="glass-panel widget">
                     <h3 class="widget-title"><i class="fas fa-tasks"></i> <span id="w-assign">Assignment & Submission</span></h3>
                     
@@ -258,7 +249,6 @@
                     </div>
                 </div>
 
-                <!-- Tools Widget -->
                 <div class="glass-panel widget">
                     <h3 class="widget-title"><i class="fas fa-toolbox"></i> <span id="w-tools">Required Software</span></h3>
                     <a href="#" class="resource-link"><i class="fab fa-microsoft"></i> MS Office 365 (Student)</a>
@@ -271,6 +261,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        // 🌟 استيراد أوامر قراءة الداتابيز 🌟
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -283,6 +275,14 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // متغير لتخزين علامة الطالب عشان تترجم فوراً لو غير اللغة
+        window.currentStudentGrade = null;
+        
+        // جلب اسم المادة من الرابط (أو افتراضياً it-systems بما إنها هاي الصفحة)
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('id') || 'it-systems';
 
         window.toggleModule = function(element) {
             const card = element.closest('.module-card');
@@ -294,79 +294,91 @@
             const dueText = document.getElementById('active-assign-due');
             const submitBtn = document.getElementById('main-submit-btn');
             
-            // تاريخ التسليم المبرمج: 6 مايو 2026 (يعني أقل من 24 ساعة من اليوم)
             const dueDate = new Date("2026-05-06T23:59:00"); 
             const now = new Date();
-            
-            const diffInMs = dueDate - now;
-            const diffInHours = diffInMs / (1000 * 60 * 60);
+            const diffInHours = (dueDate - now) / (1000 * 60 * 60);
 
             if (diffInHours > 0 && diffInHours <= 24) {
-                card.style.borderLeftColor = "#ff4b2b";
-                dueText.style.color = "#ff4b2b";
-                submitBtn.style.background = "rgba(255, 75, 43, 0.1)";
-                submitBtn.style.color = "#ff4b2b";
-                submitBtn.style.borderColor = "rgba(255, 75, 43, 0.3)";
+                card.style.borderLeftColor = "#ff4b2b"; dueText.style.color = "#ff4b2b";
+                submitBtn.style.background = "rgba(255, 75, 43, 0.1)"; submitBtn.style.color = "#ff4b2b"; submitBtn.style.borderColor = "rgba(255, 75, 43, 0.3)";
             } else {
-                card.style.borderLeftColor = "#4CAF50";
-                dueText.style.color = "#4CAF50";
-                submitBtn.style.background = "rgba(76, 175, 80, 0.1)";
-                submitBtn.style.color = "#4CAF50";
-                submitBtn.style.borderColor = "rgba(76, 175, 80, 0.3)";
+                card.style.borderLeftColor = "#4CAF50"; dueText.style.color = "#4CAF50";
+                submitBtn.style.background = "rgba(76, 175, 80, 0.1)"; submitBtn.style.color = "#4CAF50"; submitBtn.style.borderColor = "rgba(76, 175, 80, 0.3)";
             }
         };
-
         window.updateAssignmentUrgency();
-        window.calculateFinalGrade = function() {
-            const badge = document.getElementById('auto-final-grade');
-            if (!badge) return;
-
-            const hasD = document.querySelector('.crit-tag.achieved-d');
-            const hasM = document.querySelector('.crit-tag.achieved-m');
-            const hasP = document.querySelector('.crit-tag.achieved-p');
-
-            if (hasD) {
-                badge.innerText = "DISTINCTION";
-                badge.className = "grade-val val-dist";
-            } else if (hasM) {
-                badge.innerText = "MERIT";
-                badge.className = "grade-val val-merit";
-            } else if (hasP) {
-                badge.innerText = "PASS";
-                badge.className = "grade-val val-pass";
-            } else {
-                badge.innerText = "NOT ACHIEVED";
-                badge.className = "grade-val val-pend";
-            }
-        };
-        window.addEventListener('load', window.calculateFinalGrade);
 
         const translations = {
             en: {
                 langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", navDash: "Dashboard", navProf: "Profile", navSettings: "Settings", navLogout: "Logout",
-                cTitle: "Unit 2: IT Support & Communication",
-                cDesc: "Explore how organizations use Information Technology to communicate effectively, manage data, and support daily business operations.",
+                cTitle: "Unit 2: IT Support & Communication", cDesc: "Explore how organizations use Information Technology to communicate effectively, manage data, and support daily business operations.",
                 cProg: "Unit Progress: 25%", cContent: "Learning Aims",
-                
-                uGrades: "My Grades & Assessment", gAssign1: "Assignment 1", gAssign2: "Assignment 2", gFinal: "Target Grade", gCrit: "Criteria Achieved:",
-                
-                u1: "Learning Aim A: Impact of IT on Organizations", 
-                u2: "Learning Aim B: IT Communication Tools", 
-                u3: "Learning Aim C: Managing Information Securely",
-                wAssign: "Assignment & Submission", btnSubmit: "Submit Work", wTools: "Required Software"
+                uGrades: "My Grades & Assessment", gFinal: "Final Grade", gCrit: "Criteria Achieved:",
+                u1: "Learning Aim A: Impact of IT on Organizations", u2: "Learning Aim B: IT Communication Tools", u3: "Learning Aim C: Managing Information Securely",
+                wAssign: "Assignment & Submission", btnSubmit: "Submit Work", wTools: "Required Software",
+                // تقييمات العلامات بالانجليزي
+                valDist: "DISTINCTION", valMerit: "MERIT", valPass: "PASS", valFail: "FAIL", valPend: "PENDING"
             },
             ar: {
                 langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", navDash: "لوحة التحكم", navProf: "حسابي", navSettings: "الإعدادات", navLogout: "تسجيل الخروج",
-                cTitle: "دعم تكنولوجيا المعلومات",
-                cDesc: "تعرف على كيفية استخدام المؤسسات لتكنولوجيا المعلومات للتواصل الفعال، وإدارة البيانات، ودعم العمليات التجارية اليومية.",
-                cProg: "نسبة إنجاز المادة: 25%", cContent: "الأهداف التعليمية (Learning Aims)",
-                
-                uGrades: "علاماتي وتقييمي", gAssign1: "الواجب الأول", gAssign2: "الواجب الثاني", gFinal: "التقييم المستهدف", gCrit: "المعايير المنجزة:",
+                cTitle: "دعم تكنولوجيا المعلومات", cDesc: "تعرف على كيفية استخدام المؤسسات لتكنولوجيا المعلومات للتواصل الفعال، وإدارة البيانات، ودعم العمليات التجارية اليومية.",
+                cProg: "نسبة إنجاز المادة: 25%", cContent: "الأهداف التعليمية",
+                uGrades: "علاماتي وتقييمي", gFinal: "العلامة النهائية", gCrit: "المعايير المنجزة:",
+                u1: "الهدف التعليمي A: أثر التكنولوجيا على المؤسسات", u2: "الهدف التعليمي B: أدوات التواصل التكنولوجية", u3: "الهدف التعليمي C: إدارة المعلومات بأمان",
+                wAssign: "تسليم الواجبات", btnSubmit: "تسليم الواجب", wTools: "البرامج المطلوبة",
+                // تقييمات العلامات بالعربي
+                valDist: "امتياز (Distinction)", valMerit: "جيد جداً (Merit)", valPass: "اجتياز (Pass)", valFail: "رسوب", valPend: "قيد التقييم"
+            }
+        };
 
-                u1: "الهدف التعليمي A: أثر التكنولوجيا على المؤسسات", 
-                u2: "الهدف التعليمي B: أدوات التواصل التكنولوجية", 
-                u3: "الهدف التعليمي C: إدارة المعلومات بأمان",
-                wAssign: "تسليم الواجبات", btnSubmit: "تسليم الواجب", wTools: "البرامج المطلوبة"
+        // 🌟 دالة الإظهار الذكي للعلامات والمعايير بناءً على الفايربيس 🌟
+        window.displayStudentGrade = function(grade) {
+            window.currentStudentGrade = grade; // نحتفظ فيها للترجمة
+            const finalBadge = document.getElementById('auto-final-grade');
+            const summaryBox = document.getElementById('final-summary-box');
+            const tags = document.querySelectorAll('.crit-tag');
+
+            // تصفير كل الإضاءات
+            tags.forEach(tag => { tag.className = 'crit-tag'; });
+            summaryBox.style.borderColor = "rgba(255,255,255,0.08)";
+
+            const lang = document.documentElement.lang || 'en';
+
+            if (grade === "D") {
+                tags.forEach(t => { 
+                    if(t.dataset.type === 'p') t.classList.add('achieved-p');
+                    if(t.dataset.type === 'm') t.classList.add('achieved-m');
+                    if(t.dataset.type === 'd') t.classList.add('achieved-d');
+                });
+                finalBadge.innerText = translations[lang].valDist;
+                finalBadge.className = "grade-val val-dist";
+                summaryBox.style.borderColor = "rgba(255, 215, 0, 0.4)";
+            } 
+            else if (grade === "M") {
+                tags.forEach(t => { 
+                    if(t.dataset.type === 'p') t.classList.add('achieved-p');
+                    if(t.dataset.type === 'm') t.classList.add('achieved-m');
+                });
+                finalBadge.innerText = translations[lang].valMerit;
+                finalBadge.className = "grade-val val-merit";
+                summaryBox.style.borderColor = "rgba(0, 168, 252, 0.4)";
+            } 
+            else if (grade === "P") {
+                tags.forEach(t => { 
+                    if(t.dataset.type === 'p') t.classList.add('achieved-p');
+                });
+                finalBadge.innerText = translations[lang].valPass;
+                finalBadge.className = "grade-val val-pass";
+                summaryBox.style.borderColor = "rgba(76, 175, 80, 0.4)";
+            } 
+            else if (grade === "F") {
+                finalBadge.innerText = translations[lang].valFail;
+                finalBadge.className = "grade-val val-pend";
+            } 
+            else {
+                // إذا الأستاذ لسه ما حط علامة
+                finalBadge.innerText = translations[lang].valPend;
+                finalBadge.className = "grade-val val-pend";
             }
         };
 
@@ -385,12 +397,9 @@
             document.getElementById('c-title').innerText = translations[lang].cTitle;
             document.getElementById('c-desc').innerText = translations[lang].cDesc;
             document.getElementById('c-prog-text').innerText = translations[lang].cProg;
-            document.getElementById('c-content-title').innerText = translations[lang].cContent;
             
             document.querySelector('.u-title-grades').innerText = translations[lang].uGrades;
-            document.querySelector('.g-assign1').innerText = translations[lang].gAssign1;
-            document.querySelector('.g-assign2').innerText = translations[lang].gAssign2;
-            document.querySelector('.g-final').innerText = translations[lang].gFinal;
+            document.getElementById('final-label-text').innerText = translations[lang].gFinal;
             document.querySelector('.g-crit').innerText = translations[lang].gCrit;
 
             document.querySelector('.u-title-1').innerText = translations[lang].u1;
@@ -403,15 +412,37 @@
             document.querySelectorAll('.submit-text').forEach(el => el.innerText = translations[lang].btnSubmit);
 
             localStorage.setItem('preferredLang', lang);
+
+            // تحديث نص العلامة للغة الجديدة
+            window.displayStudentGrade(window.currentStudentGrade);
         };
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userName = user.displayName || "Student";
                 document.getElementById("nav-profile-pic").innerText = userName.charAt(0);
 
                 const savedLang = localStorage.getItem('preferredLang') || 'en';
                 setLanguage(savedLang);
+
+                // 🌟 سحب العلامة من Firebase 🌟
+                try {
+                    const userDocRef = doc(db, "Users", user.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const grades = data.grades || {};
+                        const myGradeForThisCourse = grades[courseId]; // جلب علامة it-systems
+                        window.displayStudentGrade(myGradeForThisCourse);
+                    } else {
+                        window.displayStudentGrade(null); // طالب ماله بيانات
+                    }
+                } catch (error) {
+                    console.error("Error reading grade:", error);
+                    window.displayStudentGrade(null);
+                }
+
             } else {
                 window.location.href = "index.html"; 
             }
