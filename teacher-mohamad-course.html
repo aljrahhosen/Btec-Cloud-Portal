@@ -62,7 +62,6 @@
         .criteria-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; transition: 0.3s; }
         .crit-badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid var(--gray-out); color: var(--text-muted); transition: 0.4s ease; opacity: 0.4; }
         
-        /* كلاسات الألوان للمعايير المحققة */
         .crit-badge.active.p { border-color: var(--accent-green); color: var(--accent-green); opacity: 1; box-shadow: 0 0 8px rgba(76, 175, 80, 0.3); }
         .crit-badge.active.m { border-color: var(--primary); color: var(--primary); opacity: 1; box-shadow: 0 0 8px rgba(0, 168, 252, 0.3); }
         .crit-badge.active.d { border-color: var(--accent-yellow); color: var(--accent-yellow); opacity: 1; box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
@@ -171,8 +170,6 @@
 
         <div class="main-grid">
             <div class="left-col">
-                
-                <!-- 🌟 بطاقة التقييم الذكية (نظام العلامة الموحدة والمعايير التلقائية) 🌟 -->
                 <div class="card grades-card" id="grades-card-container">
                     <div class="grades-header" id="t-grades"><i class="fas fa-user-graduate"></i> Student Grading</div>
                     
@@ -262,7 +259,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        // 🌟 استيراد doc و setDoc عشان نقدر نكتب بالداتابيز 🌟
+        import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -333,7 +331,7 @@
             document.getElementById('t-progress').innerText = t[lang].progress;
             
             window.updateGradeOptions();
-            window.autoFillCriteria(); // تحديث النص للعلامة المختارة لو تغيرت اللغة
+            window.autoFillCriteria(); 
 
             localStorage.setItem('preferredLang', lang);
         }
@@ -379,43 +377,39 @@
         window.onCardStudentSelect = function() {
             const animContainer = document.getElementById('card-grades-anim');
             animContainer.classList.add('show');
-            // إعادة تصفير التقييم لما يختار طالب جديد
             document.getElementById('card-master-grade').value = "";
             window.autoFillCriteria();
         }
 
-        // 🌟 النظام السحري لتعبئة المعايير والعلامة النهائية بناءً على الاختيار 🌟
         window.autoFillCriteria = function() {
             const grade = document.getElementById('card-master-grade').value;
             const badges = document.querySelectorAll('.crit-badge');
             const displayFinal = document.getElementById('display-final-grade');
             const resultBox = document.getElementById('result-box');
             
-            // تصفير كل المعايير أولاً
             badges.forEach(b => b.classList.remove('active'));
             displayFinal.className = "";
             resultBox.style.borderColor = "rgba(255,255,255,0.1)";
 
             if(grade === "D") {
-                badges.forEach(b => b.classList.add('active')); // تفعيل الكل
+                badges.forEach(b => b.classList.add('active')); 
                 displayFinal.innerText = t[window.activeLang].distinction;
                 displayFinal.className = "grade-distinction";
                 resultBox.style.borderColor = "var(--accent-yellow)";
             } 
             else if(grade === "M") {
-                badges.forEach(b => { if(b.dataset.type === 'p' || b.dataset.type === 'm') b.classList.add('active'); }); // P + M فقط
+                badges.forEach(b => { if(b.dataset.type === 'p' || b.dataset.type === 'm') b.classList.add('active'); }); 
                 displayFinal.innerText = t[window.activeLang].merit;
                 displayFinal.className = "grade-merit";
                 resultBox.style.borderColor = "var(--primary)";
             } 
             else if(grade === "P") {
-                badges.forEach(b => { if(b.dataset.type === 'p') b.classList.add('active'); }); // P فقط
+                badges.forEach(b => { if(b.dataset.type === 'p') b.classList.add('active'); }); 
                 displayFinal.innerText = t[window.activeLang].pass;
                 displayFinal.className = "grade-pass";
                 resultBox.style.borderColor = "var(--accent-green)";
             } 
             else if(grade === "F") {
-                // مفيش ولا معيار مفعل
                 displayFinal.innerText = t[window.activeLang].fail;
                 displayFinal.className = "grade-fail";
                 resultBox.style.borderColor = "var(--card-border)";
@@ -426,24 +420,45 @@
             }
         }
 
-        window.saveCardGrades = function() {
+        // 🌟 دالة الحفظ المرتبطة بقاعدة البيانات الفايربيس (Firestore) 🌟
+        window.saveCardGrades = async function() {
+            const studentId = document.getElementById('card-student-select').value;
             const grade = document.getElementById('card-master-grade').value;
+            
+            if(!studentId) { alert("Please select a student first!"); return; }
             if(!grade) { alert("Please select a grade before saving!"); return; }
 
             const btn = document.getElementById('btn-save-card-grades');
             const originalHTML = btn.innerHTML;
             
-            btn.innerHTML = `<i class="fas fa-check"></i> ${window.activeLang === 'ar' ? 'تم حفظ العلامة!' : 'Grade Saved!'}`;
-            btn.style.background = 'var(--accent-green)';
-            btn.style.color = 'white';
-            
-            // مستقبلاً هون بتكتب كود رفع العلامة (grade) للفايربيس
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
 
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.style.background = '';
-                btn.style.color = '';
-            }, 2000);
+            try {
+                // حفظ العلامة جوا حقل "grades" وباسم المادة الحالية للمستخدم المختار
+                const studentRef = doc(db, "Users", studentId);
+                await setDoc(studentRef, {
+                    grades: {
+                        [courseId]: grade // مثلاً grades.programming = 'D'
+                    }
+                }, { merge: true }); // Merge بتخلينا نحافظ على بياناته القديمة ونضيف بس العلامة
+
+                // تأثير النجاح
+                btn.innerHTML = `<i class="fas fa-check"></i> ${window.activeLang === 'ar' ? 'تم حفظ العلامة!' : 'Grade Saved!'}`;
+                btn.style.background = 'var(--accent-green)';
+                btn.style.color = 'white';
+                
+            } catch (error) {
+                console.error("Error updating grade: ", error);
+                alert("Failed to save grade to database. Check console for details.");
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2000);
+            }
         }
 
         window.toggleAim = function(headerElement) {
