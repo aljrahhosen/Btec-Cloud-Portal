@@ -3,265 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTEC Cloud - Teacher Course</title>
+    <title>BTEC Cloud - IT Support & Communication</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard-style.css?v=15">
+    
     <style>
-        :root {
-            --bg-main: #0b1120;
-            --card-bg: #131c31;
-            --card-border: rgba(255, 255, 255, 0.05);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #00a8fc;
-            --accent-yellow: #FFD700;
-            --accent-green: #4CAF50;
-            --accent-red: #ff4757;
-            --gray-out: rgba(255, 255, 255, 0.1);
-        }
-
-        body { margin: 0; background: var(--bg-main); color: var(--text-main); font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+        .course-header { background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(0, 168, 252, 0.2)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px; margin-bottom: 30px; position: relative; overflow: hidden; }
+        .course-header::after { content: '\f108'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: -20px; bottom: -40px; font-size: 200px; color: rgba(255, 255, 255, 0.03); transform: rotate(-15deg); }
+        .course-title { font-size: 32px; font-weight: 700; color: white; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; }
+        .course-title i { color: #4CAF50; }
+        .course-desc { color: var(--text-muted); max-width: 700px; margin-bottom: 25px; line-height: 1.6; }
         
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); }
-        .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; color: var(--accent-yellow); }
-        .nav-profile { display: flex; align-items: center; gap: 15px; font-size: 14px; }
-        .avatar { width: 35px; height: 35px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+        .progress-container { background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; width: 100%; max-width: 400px; overflow: hidden; position: relative; margin-top: 10px; }
+        .progress-bar { background: #4CAF50; height: 100%; width: 25%; border-radius: 10px; box-shadow: 0 0 10px rgba(76, 175, 80, 0.6); }
+        .progress-text { font-size: 13px; color: white; font-weight: 500; margin-bottom: 5px; display: inline-block; }
 
-        .lang-dropdown { position: relative; cursor: pointer; }
-        .lang-menu { display: none; position: absolute; top: 120%; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; z-index: 100; overflow: hidden; min-width: 110px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .lang-menu.show { display: block; }
-        .lang-menu div { padding: 10px 15px; transition: 0.3s; }
-        .lang-menu div:hover { background: rgba(255,255,255,0.1); color: var(--primary); }
-        html[dir="rtl"] .lang-menu { right: auto; left: 0; }
+        .course-layout { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
+        .course-main { flex: 2; min-width: 300px; }
+        .course-sidebar { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px; }
 
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .module-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; transition: 0.3s; }
+        .module-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: white; font-weight: 600; font-size: 16px; background: rgba(0,0,0,0.2); }
+        .module-header:hover { background: rgba(76, 175, 80, 0.1); }
+        .module-icon { width: 35px; height: 35px; background: rgba(76, 175, 80, 0.15); color: #4CAF50; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
+        html[dir="rtl"] .module-icon { margin-right: 0; margin-left: 15px; }
+        .header-left { display: flex; align-items: center; }
         
-        .back-link { color: var(--text-muted); text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; transition: 0.3s; }
-        .back-link:hover { color: white; }
+        .toggle-icon { transition: transform 0.2s ease; color: var(--text-muted); }
+        .module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.2s ease-in-out; background: transparent; }
+        .module-card.active .module-content { padding: 20px; max-height: 800px; border-top: 1px solid var(--glass-border); }
 
-        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 25px; position: relative; margin-bottom: 20px; }
+        .grade-val { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+        .val-pass { color: #4CAF50; text-shadow: 0 0 10px rgba(76,175,80,0.4); } 
+        .val-merit { color: #00a8fc; text-shadow: 0 0 10px rgba(0,168,252,0.4); } 
+        .val-dist { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.4); } 
+        .val-pend { color: #888; }
         
-        .edit-btn { position: absolute; top: 15px; right: 15px; width: 36px; height: 36px; border-radius: 8px; background: rgba(255, 215, 0, 0.1); color: var(--accent-yellow); border: 1px solid rgba(255, 215, 0, 0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: all 0.3s ease; z-index: 10; text-decoration: none !important; }
-        .edit-btn:hover { background: var(--accent-yellow); color: var(--bg-main); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
-        html[dir="rtl"] .edit-btn { right: auto; left: 15px; }
-        .add-btn { background: rgba(0, 168, 252, 0.1); color: var(--primary); border-color: rgba(0, 168, 252, 0.3); }
-        .add-btn:hover { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
+        .criteria-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .crit-tag { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #555; transition: 0.3s; opacity: 0.4; }
+        .crit-tag.achieved-p { background: rgba(76, 175, 80, 0.1); border-color: #4CAF50; color: #4CAF50; opacity: 1; box-shadow: 0 0 8px rgba(76,175,80,0.3); }
+        .crit-tag.achieved-m { background: rgba(0, 168, 252, 0.1); border-color: #00a8fc; color: #00a8fc; opacity: 1; box-shadow: 0 0 8px rgba(0,168,252,0.3); }
+        .crit-tag.achieved-d { background: rgba(255, 215, 0, 0.1); border-color: #FFD700; color: #FFD700; opacity: 1; box-shadow: 0 0 8px rgba(255,215,0,0.3); }
 
-        .hero-card { background: linear-gradient(135deg, #0f2038 0%, #081221 100%); border-left: 4px solid var(--primary); }
-        html[dir="rtl"] .hero-card { border-left: none; border-right: 4px solid var(--primary); }
-        .hero-title { font-size: 24px; font-weight: 700; margin: 0 0 10px 0; display: inline-flex; align-items: center; gap: 12px; }
-        .hero-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; max-width: 80%; }
-        .progress-bar { width: 300px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 15px; overflow: hidden; }
-        .progress-fill { width: 40%; height: 100%; background: var(--primary); border-radius: 10px; }
+        .final-grade-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px 14px; margin-top: 15px; transition: 0.3s; }
+        .final-grade-label { color: var(--text-muted); font-size: 13px; font-weight: 600; }
 
-        .main-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: start; }
-
-        .grades-card { border-color: rgba(255, 215, 0, 0.3); box-shadow: 0 5px 20px rgba(0,0,0,0.2); transition: 0.3s; }
-        .grades-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--accent-yellow); font-weight: 600; font-size: 16px; } 
+        /* 🌟 ستايلات جديدة مأخوذة من صفحة الأستاذ 🌟 */
+        .card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 25px; margin-bottom: 20px; }
         
-        .criteria-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; transition: 0.3s; }
-        .crit-badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid var(--gray-out); color: var(--text-muted); transition: 0.4s ease; opacity: 0.4; }
-        
-        .crit-badge.active.p { border-color: var(--accent-green); color: var(--accent-green); opacity: 1; box-shadow: 0 0 8px rgba(76, 175, 80, 0.3); }
-        .crit-badge.active.m { border-color: var(--primary); color: var(--primary); opacity: 1; box-shadow: 0 0 8px rgba(0, 168, 252, 0.3); }
-        .crit-badge.active.d { border-color: var(--accent-yellow); color: var(--accent-yellow); opacity: 1; box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
-
-        .final-grade-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--card-border); font-size: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; transition: 0.3s; }
-
-        .grade-pass { color: var(--accent-green) !important; text-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
-        .grade-merit { color: var(--primary) !important; text-shadow: 0 0 10px rgba(0, 168, 252, 0.4); }
-        .grade-distinction { color: var(--accent-yellow) !important; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
-        .grade-fail { color: var(--text-muted) !important; }
-
-        .aim-accordion { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
-        .aim-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; }
+        .aim-accordion { background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+        .aim-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; cursor: pointer; }
         .aim-header:hover { background: rgba(255,255,255,0.05); }
         .aim-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.1); }
-        .aim-inner { padding: 15px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--card-border); }
+        .aim-inner { padding: 15px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--glass-border); }
         
-        .action-icons { display: flex; gap: 12px; align-items: center; }
-        .action-icons i { cursor: pointer; transition: 0.3s; font-size: 14px; color: var(--text-muted); }
-        .action-icons i.fa-edit:hover { color: var(--accent-yellow); }
-        .action-icons i.fa-trash:hover { color: var(--accent-red); }
-        .action-icons i.toggle-icon:hover { color: white; }
-
-        .assignment-card { border-left: 3px solid var(--accent-red); }
-        html[dir="rtl"] .assignment-card { border-left: none; border-right: 3px solid var(--accent-red); }
-        .assignment-inner { background: rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; border: 1px solid rgba(255, 71, 87, 0.2); }
-        .due-date { font-size: 12px; color: var(--accent-red); margin: 5px 0 15px 0; }
-        .download-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border: 1px solid var(--card-border); }
-        .submit-btn { width: 100%; padding: 12px; background: rgba(255, 71, 87, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-
-        .tool-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--card-border); font-size: 13px; color: var(--text-muted); }
+        .tool-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--glass-border); font-size: 13px; color: var(--text-muted); }
         .tool-item:last-child { border-bottom: none; padding-bottom: 0; }
         .tool-title-link { color: inherit; text-decoration: none; transition: 0.3s; }
-        .tool-title-link:hover { color: var(--primary); }
+        .tool-title-link:hover { color: #00a8fc; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-box { background: #1e293b; border: 1px solid var(--card-border); border-radius: 16px; width: 90%; max-width: 450px; padding: 30px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: scale(0.8) translateY(30px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 15px; }
-        .modal-header h3 { margin: 0; font-size: 18px; color: var(--accent-yellow); display: flex; align-items: center; gap: 10px; }
-        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; }
-        .close-btn:hover { color: var(--accent-red); transform: rotate(90deg); }
+        .assignment-card { border-left: 3px solid #ff4757; }
+        html[dir="rtl"] .assignment-card { border-left: none; border-right: 3px solid #ff4757; }
+        .assignment-inner { background: rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; border: 1px solid rgba(255, 71, 87, 0.2); }
+        .due-date { font-size: 12px; color: #ff4757; margin: 5px 0 15px 0; }
+        .download-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border: 1px solid var(--glass-border); }
+        .submit-btn { width: 100%; padding: 12px; background: rgba(255, 71, 87, 0.1); color: #ff4757; border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .submit-btn:hover { background: #ff4757; color: white; }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
-        
-        .form-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 8px; color: white; font-family: inherit; box-sizing: border-box; transition: 0.3s; }
-        .form-input[type="file"] { padding: 9px; }
-        .form-input:focus { outline: none; border-color: var(--accent-yellow); box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
-        
-        select.form-input { appearance: none; -webkit-appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px; }
-        html[dir="rtl"] select.form-input { background-position: left 15px center; padding-right: 12px; padding-left: 40px; }
-        select.form-input option { background-color: var(--card-bg); color: white; padding: 10px; }
-
-        .save-modal-btn { width: 100%; padding: 12px; background: var(--accent-yellow); color: var(--bg-main); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; margin-top: 10px; transition: 0.3s; }
-        .save-modal-btn:hover { background: #e6c200; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2); }
-        .save-modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .card-grades-anim { max-height: 0; opacity: 0; overflow: hidden; transform: scaleY(0); transform-origin: top; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .card-grades-anim.show { max-height: 400px; opacity: 1; transform: scaleY(1); margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(255, 215, 0, 0.2); }
-        
-        .grade-select { text-align: center; font-weight: 700; font-size: 14px; padding: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.5); color: white; border-radius: 6px; }
-        .grade-select:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 168, 252, 0.3); }
-        
-        .grade-select option[value="D"] { color: var(--accent-yellow); font-weight: bold; }
-        .grade-select option[value="M"] { color: var(--primary); font-weight: bold; }
-        .grade-select option[value="P"] { color: var(--accent-green); font-weight: bold; }
-        .grade-select option[value="F"] { color: var(--text-muted); }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
+        .back-link:hover { color: #4CAF50; }
     </style>
 </head>
-<body>
 
-    <nav class="navbar">
+<body class="dashboard-body" style="display: block !important; width: 100% !important; height: auto !important; min-height: 100vh !important; overflow-y: auto !important;">
+
+    <nav class="navbar glass-panel" style="width: 100% !important; top: 0 !important; position: relative !important; display: flex !important;">
         <div class="logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00a8fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(0, 168, 252, 0.5));">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                <path d="M9 14l2 2 4-4"></path>
             </svg>
-            <span id="t-portal">Teacher Portal</span>
+            BTEC Cloud
         </div>
-        <div class="nav-profile">
-            <div class="lang-dropdown">
-                <span id="lang-display" onclick="document.getElementById('lang-menu').classList.toggle('show')">🌐 EN ▾</span>
-                <div id="lang-menu" class="lang-menu">
-                    <div onclick="window.setLanguage('en')">English (EN)</div>
-                    <div onclick="window.setLanguage('ar')">العربية (AR)</div>
+        <div class="nav-actions">
+            <div class="dropdown-wrapper">
+                <span id="lang-display">🌐 EN ▾</span>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item" onclick="setLanguage('ar')">العربية (AR)</a>
+                    <a href="#" class="dropdown-item" onclick="setLanguage('en')">English (EN)</a>
                 </div>
             </div>
-            <div class="avatar">M</div>
+
+            <div class="dropdown-wrapper">
+                <div class="profile-pic" id="nav-profile-pic">U</div>
+                <div class="dropdown-menu">
+                    <a href="dashboard.html" class="dropdown-item" id="nav-dash"><i class="fas fa-home"></i> Dashboard</a>
+                    <a href="profile.html" class="dropdown-item" id="nav-prof"><i class="fas fa-user"></i> Profile</a>
+                    <a href="settings.html" class="dropdown-item" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
+                        <i class="fas fa-sign-out-alt"></i> <span id="nav-logout">Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <a href="javascript:history.back()" class="back-link" id="t-back"><i class="fas fa-arrow-left" id="back-icon"></i> Back to Dashboard</a>
-
-        <div class="card hero-card">
-            <button class="edit-btn" onclick="window.openModal('hero')" title="Edit"><i class="fas fa-edit"></i></button>
-            <h1 class="hero-title">
-                <i id="display-unit-icon" class="fas fa-spinner fa-spin"></i> 
-                <span id="display-unit-title">Loading...</span>
-            </h1>
-            <p class="hero-desc" id="display-unit-desc">...</p>
-            <div style="font-size: 12px; color: var(--primary); margin-top: 20px;" id="t-progress">Unit Progress: 40%</div>
-            <div class="progress-bar"><div class="progress-fill"></div></div>
+    <main class="container">
+        <a href="dashboard.html" class="back-link" id="back-link-text"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        
+        <div class="course-header">
+            <h1 class="course-title"><i class="fas fa-desktop"></i> <span id="c-title">Using IT to Support Information...</span></h1>
+            <p class="course-desc" id="c-desc">Explore how organizations use Information Technology to communicate effectively, manage data, and support daily business operations.</p>
+            
+            <span class="progress-text" id="c-prog-text">Unit Progress: 25%</span>
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+            </div>
         </div>
 
-        <div class="main-grid">
-            <div class="left-col">
-                <div class="card grades-card" id="grades-card-container">
-                    <div class="grades-header" id="t-grades"><i class="fas fa-user-graduate"></i> Student Grading</div>
-                    
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <select id="card-student-select" class="form-input" onchange="window.onCardStudentSelect()" style="border-color: rgba(255, 215, 0, 0.5); background: rgba(255, 215, 0, 0.05); color: var(--accent-yellow); font-weight: 600; font-size: 15px;">
-                            <option value="" disabled selected>Loading students...</option>
-                        </select>
+        <div class="course-layout">
+            <!-- 🌟 الجانب الأيسر 🌟 -->
+            <div class="course-main">
+                
+                <div class="module-card active" style="border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1);">
+                    <div class="module-header" onclick="window.toggleModule(this)" style="background: rgba(255, 215, 0, 0.05);">
+                        <div class="header-left">
+                            <div class="module-icon" style="color: #FFD700; background: rgba(255, 215, 0, 0.15);"><i class="fas fa-award"></i></div>
+                            <span class="u-title-grades" style="color: #FFD700;">My Grades & Assessment</span>
+                        </div>
+                        <i class="fas fa-chevron-down toggle-icon" style="color: #FFD700;"></i>
                     </div>
-
-                    <div id="card-grades-anim" class="card-grades-anim">
+                    <div class="module-content">
                         
-                        <div class="final-grade-box" style="justify-content: center; flex-direction: column; gap: 15px; border-color: rgba(255, 255, 255, 0.1);">
-                            <div style="font-weight: 600; color: white;" id="t-select-grade">Select Final Grade:</div> 
-                            <select id="card-master-grade" class="form-input grade-select" style="width: 100%; max-width: 250px; font-size: 16px; padding: 10px;" onchange="window.autoFillCriteria()">
-                                <option value="" disabled selected>-- Choose Grade --</option>
-                                <option value="D">DISTINCTION</option>
-                                <option value="M">MERIT</option>
-                                <option value="P">PASS</option>
-                                <option value="F">FAIL (Unclassified)</option>
-                            </select>
+                        <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;" class="g-crit">Criteria Achieved:</h4>
+                        
+                        <div class="criteria-grid" id="criteria-container">
+                            <span class="crit-tag" data-type="p">P1</span>
+                            <span class="crit-tag" data-type="p">P2</span>
+                            <span class="crit-tag" data-type="p">P3</span>
+                            <span class="crit-tag" data-type="p">P4</span>
+                            <span class="crit-tag" data-type="m">M1</span>
+                            <span class="crit-tag" data-type="m">M2</span>
+                            <span class="crit-tag" data-type="m">M3</span>
+                            <span class="crit-tag" data-type="d">D1</span>
+                            <span class="crit-tag" data-type="d">D2</span>
                         </div>
 
-                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;" id="t-criteria">Criteria Achieved:</div>
-                        <div class="criteria-row" id="criteria-container">
-                            <span class="crit-badge p" data-type="p">P1</span> 
-                            <span class="crit-badge p" data-type="p">P2</span> 
-                            <span class="crit-badge p" data-type="p">P3</span> 
-                            <span class="crit-badge p" data-type="p">P4</span>
-                            <span class="crit-badge m" data-type="m">M1</span> 
-                            <span class="crit-badge m" data-type="m">M2</span> 
-                            <span class="crit-badge d" data-type="d">D1</span>
+                        <div class="final-grade-summary" id="final-summary-box">
+                            <span class="final-grade-label" id="final-label-text">Final Grade:</span>
+                            <span id="auto-final-grade" class="grade-val val-pend"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
                         </div>
-
-                        <div class="final-grade-box" id="result-box">
-                            <span id="t-final" style="font-weight: 600;">Resulting Grade:</span> 
-                            <span id="display-final-grade" class="grade-fail" style="font-weight: bold; font-size: 16px;">PENDING</span>
-                        </div>
-
-                        <button class="save-modal-btn" id="btn-save-card-grades" onclick="window.saveCardGrades()"><i class="fas fa-save"></i> <span id="t-save-grades">Save Grade</span></button>
                     </div>
                 </div>
 
-                <div class="card" style="padding-top: 30px;">
-                    <button class="edit-btn add-btn" onclick="window.openModal('add-aim')" title="Add"><i class="fas fa-plus"></i></button>
-                    <h3 style="font-size: 16px; margin: 0 0 15px 0;" id="t-aims"><i class="fas fa-layer-group" style="color: var(--primary);"></i> Learning Aims</h3>
-                    <div id="aims-container"></div>
+                <!-- 🌟 بطاقة الأهداف نسخة طبق الأصل عن الأستاذ 🌟 -->
+                <div class="card" style="padding-top: 30px; border-color: rgba(255,255,255,0.05);">
+                    <h3 style="font-size: 16px; margin: 0 0 15px 0;" id="t-aims"><i class="fas fa-layer-group" style="color: #00a8fc;"></i> Learning Aims</h3>
+                    <div id="aims-container">
+                        <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;" id="t-no-aims">No learning aims added by the teacher yet.</div>
+                    </div>
                 </div>
+
             </div>
 
-            <div class="right-col">
-                <div class="card assignment-card">
-                    <button class="edit-btn" onclick="window.openModal('assignment')" title="Edit"><i class="fas fa-edit"></i></button>
+            <!-- 🌟 الجانب الأيمن 🌟 -->
+            <div class="course-sidebar">
+                
+                <!-- 🌟 بطاقة الواجب نسخة طبق الأصل عن الأستاذ 🌟 -->
+                <div class="card assignment-card" id="dynamic-assign-card" style="margin-bottom: 0;">
                     <h3 style="font-size: 15px; margin: 0 0 20px 0;" id="t-assign-box"><i class="fas fa-list-ul"></i> Assignment & Submission</h3>
                     <div class="assignment-inner">
                         <div style="font-weight: 600; font-size: 14px;" id="display-assign-title">Assignment 1</div>
-                        <div class="due-date"><i class="far fa-clock"></i> <span id="t-due">Due:</span> <span id="display-due-date">May 20, 2026</span></div>
+                        <div class="due-date" id="active-assign-due"><i class="far fa-clock"></i> <span id="t-due">Due:</span> <span id="display-due-date">May 20, 2026</span></div>
                         
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;" id="t-download">Download Instructions:</div>
                         <div class="download-box">
-                            <i class="fas fa-file-pdf" style="color: var(--accent-yellow); font-size: 18px;"></i> 
+                            <i class="fas fa-file-pdf" style="color: #FFD700; font-size: 18px;"></i> 
                             <span id="display-assign-file">Assignment_Brief.pdf</span>
                         </div>
-                        <button class="submit-btn" id="t-view-subs"><i class="fas fa-box-open"></i> View Student Submissions</button>
+                        <button class="submit-btn" id="main-submit-btn"><i class="fas fa-upload"></i> <span class="submit-text">Submit Work</span></button>
                     </div>
                 </div>
 
-                <div class="card">
-                    <button class="edit-btn add-btn" onclick="window.openModal('add-tool')" title="Add"><i class="fas fa-plus"></i></button>
+                <!-- 🌟 بطاقة الروابط نسخة طبق الأصل عن الأستاذ 🌟 -->
+                <div class="card" style="margin-top: 20px;">
                     <h3 style="font-size: 15px; margin: 0 0 20px 0;" id="t-tools-box"><i class="fas fa-link"></i> Required Tools & Links</h3>
-                    <div class="tools-list" id="tools-container"></div>
+                    <div class="tools-list" id="tools-container">
+                        <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;" id="t-no-tools">No tools added yet.</div>
+                    </div>
                 </div>
+
             </div>
         </div>
-    </div>
+    </main>
 
-    <div id="dynamic-modal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3 id="modal-title">Edit</h3>
-                <button class="close-btn" onclick="window.closeModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <div id="modal-body"></div>
-            <button class="save-modal-btn" onclick="window.saveChanges()" id="t-save-modal"><i class="fas fa-save"></i> Save Changes</button>
-        </div>
-    </div>
-
-    <!-- 🌟 تم استخدام updateDoc بدلاً من setDoc للتحديث 🌟 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -273,256 +214,198 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app); 
+        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const modal = document.getElementById('dynamic-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalBody = document.getElementById('modal-body');
-        
-        window.activeLang = 'en';
-        window.currentSection = "";
-
-        const coursesDB = {
-            "programming": { icon: "fa-laptop-code", title_en: "Introduction to Programming", desc_en: "Learn the fundamentals of programming.", title_ar: "مقدمة في البرمجة", desc_ar: "تعلم أساسيات البرمجة، الخوارزميات، وحل المشكلات." },
-            "web-design": { icon: "fa-globe", title_en: "Introduction to Web Design", desc_en: "Master HTML, CSS, and user experience.", title_ar: "مقدمة في تصميم المواقع", desc_ar: "احترف مبادئ تصميم الويب وبناء المواقع." },
-            "it-systems": { icon: "fa-sitemap", title_en: "Using IT in Organizations", desc_en: "Explore how organizations use Information Technology.", title_ar: "استخدام تكنولوجيا المعلومات في المؤسسات", desc_ar: "استكشف كيف تستخدم المؤسسات تكنولوجيا المعلومات لتحقيق أهدافها." }
-        };
-
+        window.currentStudentGrade = null;
         const urlParams = new URLSearchParams(window.location.search);
-        const courseId = urlParams.get('id') || 'programming'; 
-        const currentCourse = coursesDB[courseId] || coursesDB['programming']; 
+        const courseId = urlParams.get('id') || 'it-systems';
 
-        const t = {
-            en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload PDF", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --" },
-            ar: { langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", studentGrading: "تقييم الطلاب", criteria: "المعايير المنجزة:", final: "النتيجة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض التسليمات", toolsBox: "الأدوات والروابط", save: "حفظ التعديلات", saveGrades: "حفظ العلامة", progress: "تقدم الوحدة: 40%", pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز", fail: "رسوب (غير مصنف)", pending: "قيد الانتظار", selectGrade: "حدد العلامة النهائية:", chooseGrade: "-- اختر العلامة --", mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف", mEditAssign: "تعديل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم", mUploadBrief: "رفع ملف", mAddAim: "إضافة هدف", mEditAim: "تعديل هدف", mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف", mExtLink: "رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل رابط", mToolTitle: "عنوان الرابط", mUrlLink: "الرابط", chooseStudent: "-- اختر طالباً --" }
+        window.toggleModule = function(element) {
+            const card = element.closest('.module-card');
+            if(card) card.classList.toggle('active');
         };
 
-        window.onload = function() {
-            document.getElementById('display-unit-icon').className = "fas " + currentCourse.icon;
-            const savedLang = localStorage.getItem('preferredLang') || 'en';
-            window.setLanguage(savedLang); 
-            window.fetchStudentsForCard(); 
-        };
-
-        window.setLanguage = function(lang) {
-            window.activeLang = lang;
-            document.documentElement.lang = lang;
-            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-            document.getElementById('lang-display').innerText = t[lang].langStr;
-            document.getElementById('lang-menu').classList.remove('show');
-            
-            document.getElementById('t-portal').innerText = t[lang].portal;
-            document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + t[lang].back;
-            document.getElementById('display-unit-title').innerText = lang === 'ar' ? currentCourse.title_ar : currentCourse.title_en;
-            document.getElementById('display-unit-desc').innerText = lang === 'ar' ? currentCourse.desc_ar : currentCourse.desc_en;
-            
-            document.getElementById('t-grades').innerHTML = `<i class="fas fa-user-graduate"></i> ` + t[lang].studentGrading;
-            document.getElementById('t-criteria').innerText = t[lang].criteria;
-            document.getElementById('t-final').innerText = t[lang].final;
-            document.getElementById('t-select-grade').innerText = t[lang].selectGrade;
-            document.getElementById('t-aims').innerHTML = `<i class="fas fa-layer-group" style="color: var(--primary);"></i> ` + t[lang].aims;
-            document.getElementById('t-assign-box').innerHTML = `<i class="fas fa-list-ul"></i> ` + t[lang].assignBox;
-            document.getElementById('t-due').innerText = t[lang].due;
-            document.getElementById('t-download').innerText = t[lang].download;
-            document.getElementById('t-view-subs').innerHTML = `<i class="fas fa-box-open"></i> ` + t[lang].viewSubs;
-            document.getElementById('t-tools-box').innerHTML = `<i class="fas fa-link"></i> ` + t[lang].toolsBox;
-            document.getElementById('t-save-modal').innerHTML = `<i class="fas fa-save"></i> ` + t[lang].save;
-            document.getElementById('t-save-grades').innerText = t[lang].saveGrades;
-            document.getElementById('t-progress').innerText = t[lang].progress;
-            
-            window.updateGradeOptions();
-            window.autoFillCriteria(); 
-
-            localStorage.setItem('preferredLang', lang);
-        }
-
-        window.updateGradeOptions = function() {
-            const masterSelect = document.getElementById('card-master-grade');
-            if(masterSelect) {
-                masterSelect.options[0].text = t[window.activeLang].chooseGrade;
-                masterSelect.options[1].text = t[window.activeLang].distinction;
-                masterSelect.options[2].text = t[window.activeLang].merit;
-                masterSelect.options[3].text = t[window.activeLang].pass;
-                masterSelect.options[4].text = t[window.activeLang].fail;
-            }
-            const studentSelect = document.getElementById('card-student-select');
-            if(studentSelect && studentSelect.options.length > 0 && studentSelect.options[0].disabled) {
-                studentSelect.options[0].text = t[window.activeLang].chooseStudent;
-            }
-        }
-
-        window.fetchStudentsForCard = async function() {
-            const select = document.getElementById('card-student-select');
-            try {
-                const querySnapshot = await getDocs(collection(db, "Users"));
-                let options = `<option value="" disabled selected>${t[window.activeLang].chooseStudent}</option>`;
-                let found = false;
-
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if(!data.teacherId) { 
-                        found = true;
-                        const name = data.name || data.fullName || "Student";
-                        options += `<option value="${doc.id}">👤 ${name}</option>`;
-                    }
-                });
-                
-                select.innerHTML = found ? options : `<option value="" disabled>No students found</option>`;
-            } catch (error) {
-                console.error("Error:", error);
-                select.innerHTML = `<option value="" disabled>Auth Error / Loading...</option>`;
-            }
-        }
-
-        window.onCardStudentSelect = function() {
-            const animContainer = document.getElementById('card-grades-anim');
-            animContainer.classList.add('show');
-            document.getElementById('card-master-grade').value = "";
-            window.autoFillCriteria();
-        }
-
-        window.autoFillCriteria = function() {
-            const grade = document.getElementById('card-master-grade').value;
-            const badges = document.querySelectorAll('.crit-badge');
-            const displayFinal = document.getElementById('display-final-grade');
-            const resultBox = document.getElementById('result-box');
-            
-            badges.forEach(b => b.classList.remove('active'));
-            displayFinal.className = "";
-            resultBox.style.borderColor = "rgba(255,255,255,0.1)";
-
-            if(grade === "D") {
-                badges.forEach(b => b.classList.add('active')); 
-                displayFinal.innerText = t[window.activeLang].distinction;
-                displayFinal.className = "grade-distinction";
-                resultBox.style.borderColor = "var(--accent-yellow)";
-            } 
-            else if(grade === "M") {
-                badges.forEach(b => { if(b.dataset.type === 'p' || b.dataset.type === 'm') b.classList.add('active'); }); 
-                displayFinal.innerText = t[window.activeLang].merit;
-                displayFinal.className = "grade-merit";
-                resultBox.style.borderColor = "var(--primary)";
-            } 
-            else if(grade === "P") {
-                badges.forEach(b => { if(b.dataset.type === 'p') b.classList.add('active'); }); 
-                displayFinal.innerText = t[window.activeLang].pass;
-                displayFinal.className = "grade-pass";
-                resultBox.style.borderColor = "var(--accent-green)";
-            } 
-            else if(grade === "F") {
-                displayFinal.innerText = t[window.activeLang].fail;
-                displayFinal.className = "grade-fail";
-                resultBox.style.borderColor = "var(--card-border)";
-            } 
-            else {
-                displayFinal.innerText = t[window.activeLang].pending;
-                displayFinal.className = "grade-fail";
-            }
-        }
-
-        // 🌟 دالة الحفظ مع تنبيه للأخطاء لمعرفة سبب المشكلة 🌟
-        window.saveCardGrades = async function() {
-            const studentId = document.getElementById('card-student-select').value;
-            const grade = document.getElementById('card-master-grade').value;
-            
-            if(!studentId) { alert("Please select a student first!"); return; }
-            if(!grade) { alert("Please select a grade before saving!"); return; }
-
-            const btn = document.getElementById('btn-save-card-grades');
-            const originalHTML = btn.innerHTML;
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            btn.disabled = true;
-
-            try {
-                const studentRef = doc(db, "Users", studentId);
-                
-                // استخدام مسار النقطة للتحديث بدلاً من setDoc لتفادي حذف البيانات الأخرى
-                await updateDoc(studentRef, {
-                    [`grades.${courseId}`]: grade
-                });
-
-                btn.innerHTML = `<i class="fas fa-check"></i> ${window.activeLang === 'ar' ? 'تم حفظ العلامة!' : 'Grade Saved!'}`;
-                btn.style.background = 'var(--accent-green)';
-                btn.style.color = 'white';
-                
-            } catch (error) {
-                console.error("Error updating grade: ", error);
-                
-                // 🌟 هذا التنبيه سيظهر إذا رفض Firebase الحفظ 🌟
-                alert("فشل الحفظ بسبب قاعدة بيانات Firebase ❌\n\nالسبب: " + error.message + "\n\n(يرجى التأكد من الـ Firestore Rules)");
-                
-            } finally {
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.style.background = '';
-                    btn.style.color = '';
-                    btn.disabled = false;
-                }, 3000);
-            }
-        }
-
+        // دالة لتبديل الأهداف لو ضفناها مستقبلاً
         window.toggleAim = function(headerElement) {
             const container = headerElement.parentElement;
             const content = container.querySelector('.aim-content');
-            const icon = container.querySelector('.toggle-icon');
-            if (content.style.maxHeight) { content.style.maxHeight = null; icon.style.transform = "rotate(0deg)"; } 
-            else { content.style.maxHeight = content.scrollHeight + "px"; icon.style.transform = "rotate(180deg)"; }
-        }
+            if (content.style.maxHeight) { content.style.maxHeight = null; } 
+            else { content.style.maxHeight = content.scrollHeight + "px"; }
+        };
 
-        window.deleteElement = function(btn) {
-            if(confirm("Are you sure?")) { btn.closest('.aim-accordion, .tool-item').remove(); }
-        }
-
-        window.openModal = function(section, btnElement = null) {
-            window.currentSection = section; window.currentEditElement = btnElement; modal.classList.add('active');
+        window.updateAssignmentUrgency = function() {
+            const card = document.getElementById('dynamic-assign-card');
+            const dueText = document.getElementById('active-assign-due');
+            const submitBtn = document.getElementById('main-submit-btn');
             
-            if (section === 'hero') {
-                let title = document.getElementById('display-unit-title').innerText;
-                let desc = document.getElementById('display-unit-desc').innerText;
-                modalTitle.innerHTML = t[window.activeLang].mEditDetails;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mUnitTitle}</label><input type="text" id="input-unit-title" class="form-input" value="${title}"></div><div class="form-group"><label>${t[window.activeLang].mDesc}</label><textarea id="input-unit-desc" class="form-input" rows="4">${desc}</textarea></div>`;
-            } 
-            else if (section === 'assignment') {
-                modalTitle.innerHTML = t[window.activeLang].mEditAssign;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mAssignTitle}</label><input type="text" id="input-assign-title" class="form-input" value="${document.getElementById('display-assign-title').innerText}"></div><div class="form-group"><label>${t[window.activeLang].mDueDate}</label><input type="datetime-local" id="input-due-date" class="form-input"></div><div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mUploadBrief}</label><input type="file" id="input-assign-file" class="form-input"></div>`;
-            } 
-            else if (section === 'add-aim' || section === 'edit-aim') {
-                modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddAim : t[window.activeLang].mEditAim;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mAimTitle}</label><input type="text" id="input-aim-title" class="form-input"></div><div class="form-group"><label>${t[window.activeLang].mAimDesc}</label><textarea id="input-aim-desc" class="form-input" rows="3"></textarea></div><div class="form-group"><label>${t[window.activeLang].mAttachFile}</label><input type="file" id="input-aim-file" class="form-input"></div><div class="form-group"><label>${t[window.activeLang].mExtLink}</label><input type="url" id="input-aim-url" class="form-input"></div>`;
-            } 
-            else if (section === 'add-tool' || section === 'edit-tool') {
-                modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddTool : t[window.activeLang].mEditTool;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mToolTitle}</label><input type="text" id="input-tool-title" class="form-input"></div><div class="form-group"><label>${t[window.activeLang].mUrlLink}</label><input type="url" id="input-tool-url" class="form-input"></div>`;
-            }
-        }
+            const dueDate = new Date("2026-05-20T23:59:00"); 
+            const now = new Date();
+            const diffInHours = (dueDate - now) / (1000 * 60 * 60);
 
-        window.saveChanges = function() {
-            if (window.currentSection === 'hero') {
-                let nt = document.getElementById('input-unit-title').value;
-                let nd = document.getElementById('input-unit-desc').value;
-                if(window.activeLang==='ar'){currentCourse.title_ar=nt; currentCourse.desc_ar=nd;} else {currentCourse.title_en=nt; currentCourse.desc_en=nd;}
-                document.getElementById('display-unit-title').innerText = nt; document.getElementById('display-unit-desc').innerText = nd;
-            } 
-            else if (window.currentSection === 'assignment') {
-                document.getElementById('display-assign-title').innerText = document.getElementById('input-assign-title').value;
-                let dv = document.getElementById('input-due-date').value; if(dv){document.getElementById('display-due-date').innerText=dv.replace('T',' ');}
-                let fi = document.getElementById('input-assign-file'); if(fi.files.length>0){document.getElementById('display-assign-file').innerText=fi.files[0].name;}
-            } 
-            else if (window.currentSection === 'add-tool') {
-                let t = document.getElementById('input-tool-title').value; let u = document.getElementById('input-tool-url').value;
-                if(t){ document.getElementById('tools-container').insertAdjacentHTML('beforeend', `<div class="tool-item"><span><i class="fas fa-link"></i> <a href="${u}" class="tool-title-link" target="_blank">${t}</a></span><div class="action-icons"><i class="fas fa-edit" onclick="window.openModal('edit-tool', this)"></i><i class="fas fa-trash" onclick="window.deleteElement(this)"></i></div></div>`); }
-            } 
-            else if (window.currentSection === 'add-aim') {
-                let t = document.getElementById('input-aim-title').value; let d = document.getElementById('input-aim-desc').value;
-                if(t){ document.getElementById('aims-container').insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header"><div style="flex-grow:1; cursor:pointer;" onclick="window.toggleAim(this.parentElement)">• <span class="aim-title-text">${t}</span></div><div class="action-icons"><i class="fas fa-edit" onclick="window.openModal('edit-aim', this)"></i><i class="fas fa-trash" onclick="window.deleteElement(this)"></i><i class="fas fa-chevron-down toggle-icon" onclick="window.toggleAim(this.parentElement)"></i></div></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${d}</div></div></div></div>`); }
+            if (diffInHours > 0 && diffInHours <= 24) {
+                if(card) card.style.borderLeftColor = "#ff4b2b"; 
+                if(dueText) dueText.style.color = "#ff4b2b";
+                if(submitBtn) { submitBtn.style.background = "rgba(255, 75, 43, 0.1)"; submitBtn.style.color = "#ff4b2b"; submitBtn.style.borderColor = "rgba(255, 75, 43, 0.3)"; }
+            } else {
+                if(card) card.style.borderLeftColor = "#4CAF50"; 
+                if(dueText) dueText.style.color = "#4CAF50";
+                if(submitBtn) { submitBtn.style.background = "rgba(76, 175, 80, 0.1)"; submitBtn.style.color = "#4CAF50"; submitBtn.style.borderColor = "rgba(76, 175, 80, 0.3)"; }
             }
-            window.closeModal();
-        }
+        };
+        window.updateAssignmentUrgency();
 
-        window.closeModal = function() { modal.classList.remove('active'); }
-        window.onclick = function(event) { if (!event.target.matches('#lang-display')) { document.getElementById('lang-menu').classList.remove('show'); } if (event.target === modal) window.closeModal(); }
+        const translations = {
+            en: {
+                langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", navDash: "Dashboard", navProf: "Profile", navSettings: "Settings", navLogout: "Logout",
+                cTitle: "Unit 2: IT Support & Communication", cDesc: "Explore how organizations use Information Technology to communicate effectively, manage data, and support daily business operations.",
+                cProg: "Unit Progress: 25%", cContent: "Learning Aims",
+                uGrades: "My Grades & Assessment", gFinal: "Final Grade", gCrit: "Criteria Achieved:",
+                wAssign: "Assignment & Submission", btnSubmit: "Submit Work", wTools: "Required Tools & Links",
+                valDist: "DISTINCTION", valMerit: "MERIT", valPass: "PASS", valFail: "FAIL", valPend: "PENDING",
+                tDue: "Due:", tDownload: "Download Instructions:", noAims: "No learning aims added by the teacher yet.", noTools: "No tools added yet."
+            },
+            ar: {
+                langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", navDash: "لوحة التحكم", navProf: "حسابي", navSettings: "الإعدادات", navLogout: "تسجيل الخروج",
+                cTitle: "دعم تكنولوجيا المعلومات", cDesc: "تعرف على كيفية استخدام المؤسسات لتكنولوجيا المعلومات للتواصل الفعال، وإدارة البيانات، ودعم العمليات التجارية اليومية.",
+                cProg: "نسبة إنجاز المادة: 25%", cContent: "الأهداف التعليمية",
+                uGrades: "علاماتي وتقييمي", gFinal: "العلامة النهائية", gCrit: "المعايير المنجزة:",
+                wAssign: "الواجبات والتسليم", btnSubmit: "تسليم الواجب", wTools: "الأدوات والروابط المطلوبة",
+                valDist: "امتياز (Distinction)", valMerit: "جيد جداً (Merit)", valPass: "اجتياز (Pass)", valFail: "رسوب", valPend: "قيد التقييم",
+                tDue: "تاريخ التسليم:", tDownload: "تعليمات التحميل:", noAims: "لم يقم المعلم بإضافة أهداف تعليمية بعد.", noTools: "لم يتم إضافة أدوات بعد."
+            }
+        };
+
+        window.displayStudentGrade = function(grade) {
+            window.currentStudentGrade = grade; 
+            const finalBadge = document.getElementById('auto-final-grade');
+            const summaryBox = document.getElementById('final-summary-box');
+            const tags = document.querySelectorAll('.crit-tag');
+
+            tags.forEach(tag => { tag.className = 'crit-tag'; });
+            if(summaryBox) summaryBox.style.borderColor = "rgba(255,255,255,0.08)";
+
+            const lang = document.documentElement.lang || 'en';
+
+            if (grade === "D") {
+                tags.forEach(t => { 
+                    if(t.dataset.type === 'p') t.classList.add('achieved-p');
+                    if(t.dataset.type === 'm') t.classList.add('achieved-m');
+                    if(t.dataset.type === 'd') t.classList.add('achieved-d');
+                });
+                finalBadge.innerText = translations[lang].valDist;
+                finalBadge.className = "grade-val val-dist";
+                if(summaryBox) summaryBox.style.borderColor = "rgba(255, 215, 0, 0.4)";
+            } 
+            else if (grade === "M") {
+                tags.forEach(t => { 
+                    if(t.dataset.type === 'p') t.classList.add('achieved-p');
+                    if(t.dataset.type === 'm') t.classList.add('achieved-m');
+                });
+                finalBadge.innerText = translations[lang].valMerit;
+                finalBadge.className = "grade-val val-merit";
+                if(summaryBox) summaryBox.style.borderColor = "rgba(0, 168, 252, 0.4)";
+            } 
+            else if (grade === "P") {
+                tags.forEach(t => { 
+                    if(t.dataset.type === 'p') t.classList.add('achieved-p');
+                });
+                finalBadge.innerText = translations[lang].valPass;
+                finalBadge.className = "grade-val val-pass";
+                if(summaryBox) summaryBox.style.borderColor = "rgba(76, 175, 80, 0.4)";
+            } 
+            else if (grade === "F") {
+                finalBadge.innerText = translations[lang].valFail;
+                finalBadge.className = "grade-val val-pend";
+            } 
+            else {
+                finalBadge.innerText = translations[lang].valPend;
+                finalBadge.className = "grade-val val-pend";
+            }
+        };
+
+        window.setLanguage = function(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.getElementById('lang-display').innerText = translations[lang].langDisplay;
+            document.getElementById('back-link-text').innerHTML = `<i class="fas fa-${lang === 'ar' ? 'arrow-right' : 'arrow-left'}"></i> ${translations[lang].backDash}`;
+            
+            document.getElementById('nav-dash').innerHTML = `<i class="fas fa-home"></i> ${translations[lang].navDash}`;
+            document.getElementById('nav-prof').innerHTML = `<i class="fas fa-user"></i> ${translations[lang].navProf}`;
+            document.getElementById('nav-settings').innerHTML = `<i class="fas fa-cog"></i> ${translations[lang].navSettings}`;
+            document.getElementById('nav-logout').innerText = translations[lang].navLogout;
+
+            document.getElementById('c-title').innerText = translations[lang].cTitle;
+            document.getElementById('c-desc').innerText = translations[lang].cDesc;
+            document.getElementById('c-prog-text').innerText = translations[lang].cProg;
+            
+            if(document.querySelector('.u-title-grades')) document.querySelector('.u-title-grades').innerText = translations[lang].uGrades;
+            if(document.getElementById('final-label-text')) document.getElementById('final-label-text').innerText = translations[lang].gFinal;
+            if(document.querySelector('.g-crit')) document.querySelector('.g-crit').innerText = translations[lang].gCrit;
+
+            if(document.getElementById('t-aims')) document.getElementById('t-aims').innerHTML = `<i class="fas fa-layer-group" style="color: #00a8fc;"></i> ${translations[lang].cContent}`;
+            if(document.getElementById('t-assign-box')) document.getElementById('t-assign-box').innerHTML = `<i class="fas fa-list-ul"></i> ${translations[lang].wAssign}`;
+            if(document.getElementById('t-tools-box')) document.getElementById('t-tools-box').innerHTML = `<i class="fas fa-link"></i> ${translations[lang].wTools}`;
+            
+            if(document.getElementById('t-due')) document.getElementById('t-due').innerText = translations[lang].tDue;
+            if(document.getElementById('t-download')) document.getElementById('t-download').innerText = translations[lang].tDownload;
+            if(document.getElementById('t-no-aims')) document.getElementById('t-no-aims').innerText = translations[lang].noAims;
+            if(document.getElementById('t-no-tools')) document.getElementById('t-no-tools').innerText = translations[lang].noTools;
+
+            document.querySelectorAll('.submit-text').forEach(el => el.innerText = translations[lang].btnSubmit);
+
+            localStorage.setItem('preferredLang', lang);
+            window.displayStudentGrade(window.currentStudentGrade);
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userName = user.displayName || "Student";
+                document.getElementById("nav-profile-pic").innerText = userName.charAt(0);
+
+                const savedLang = localStorage.getItem('preferredLang') || 'en';
+                setLanguage(savedLang);
+
+                try {
+                    const userDocRef = doc(db, "Users", user.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const grades = data.grades || {};
+                        const myGradeForThisCourse = grades[courseId]; 
+                        window.displayStudentGrade(myGradeForThisCourse);
+                    } else {
+                        window.displayStudentGrade(null); 
+                    }
+                } catch (error) {
+                    console.error("Error reading grade:", error);
+                    window.displayStudentGrade(null);
+                }
+
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => window.location.href = "index.html");
+        });
+
+        document.querySelectorAll('.dropdown-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if(menu !== this.querySelector('.dropdown-menu')) menu.classList.remove('show');
+                });
+                this.querySelector('.dropdown-menu').classList.toggle('show');
+            });
+        });
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+        });
     </script>
 </body>
 </html>
