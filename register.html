@@ -131,8 +131,10 @@
                     const user = userCredential.user;
                     
                     updateProfile(user, { displayName: name }).then(() => {
-                        setDoc(doc(db, "users", user.uid), {
-                            fullName: name,
+                        // 🌟 التعديل هون: غيرنا اسم الكوليكشن لـ Users بحرف كبير، وضفنا حقل name عشان الأستاذ يقرأه 🌟
+                        setDoc(doc(db, "Users", user.uid), {
+                            name: name, // تمت إضافته ليطابق كود جلب الطلاب
+                            fullName: name, // بقيناه احتياط لو استخدمته بمكان ثاني
                             nationalId: nationalId,
                             email: email,
                             role: "Student",
