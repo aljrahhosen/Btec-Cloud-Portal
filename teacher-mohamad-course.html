@@ -119,6 +119,7 @@
 
         .save-modal-btn { width: 100%; padding: 12px; background: var(--accent-yellow); color: var(--bg-main); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; margin-top: 10px; transition: 0.3s; }
         .save-modal-btn:hover { background: #e6c200; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2); }
+        .save-modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .card-grades-anim { max-height: 0; opacity: 0; overflow: hidden; transform: scaleY(0); transform-origin: top; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .card-grades-anim.show { max-height: 400px; opacity: 1; transform: scaleY(1); margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(255, 215, 0, 0.2); }
@@ -136,7 +137,7 @@
 
     <nav class="navbar">
         <div class="logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
                 <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
             </svg>
@@ -256,11 +257,11 @@
         </div>
     </div>
 
+    <!-- 🌟 تم استخدام updateDoc بدلاً من setDoc للتحديث 🌟 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        // 🌟 استيراد doc و setDoc عشان نقدر نكتب بالداتابيز 🌟
-        import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -420,7 +421,7 @@
             }
         }
 
-        // 🌟 دالة الحفظ المرتبطة بقاعدة البيانات الفايربيس (Firestore) 🌟
+        // 🌟 دالة الحفظ مع تنبيه للأخطاء لمعرفة سبب المشكلة 🌟
         window.saveCardGrades = async function() {
             const studentId = document.getElementById('card-student-select').value;
             const grade = document.getElementById('card-master-grade').value;
@@ -435,29 +436,30 @@
             btn.disabled = true;
 
             try {
-                // حفظ العلامة جوا حقل "grades" وباسم المادة الحالية للمستخدم المختار
                 const studentRef = doc(db, "Users", studentId);
-                await setDoc(studentRef, {
-                    grades: {
-                        [courseId]: grade // مثلاً grades.programming = 'D'
-                    }
-                }, { merge: true }); // Merge بتخلينا نحافظ على بياناته القديمة ونضيف بس العلامة
+                
+                // استخدام مسار النقطة للتحديث بدلاً من setDoc لتفادي حذف البيانات الأخرى
+                await updateDoc(studentRef, {
+                    [`grades.${courseId}`]: grade
+                });
 
-                // تأثير النجاح
                 btn.innerHTML = `<i class="fas fa-check"></i> ${window.activeLang === 'ar' ? 'تم حفظ العلامة!' : 'Grade Saved!'}`;
                 btn.style.background = 'var(--accent-green)';
                 btn.style.color = 'white';
                 
             } catch (error) {
                 console.error("Error updating grade: ", error);
-                alert("Failed to save grade to database. Check console for details.");
+                
+                // 🌟 هذا التنبيه سيظهر إذا رفض Firebase الحفظ 🌟
+                alert("فشل الحفظ بسبب قاعدة بيانات Firebase ❌\n\nالسبب: " + error.message + "\n\n(يرجى التأكد من الـ Firestore Rules)");
+                
             } finally {
-                btn.disabled = false;
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
                     btn.style.background = '';
                     btn.style.color = '';
-                }, 2000);
+                    btn.disabled = false;
+                }, 3000);
             }
         }
 
