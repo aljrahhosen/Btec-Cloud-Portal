@@ -41,9 +41,17 @@
 
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 25px; position: relative; margin-bottom: 20px; }
         
-        .edit-btn { position: absolute; top: 15px; right: 15px; width: 36px; height: 36px; border-radius: 8px; background: rgba(255, 215, 0, 0.1); color: var(--accent-yellow); border: 1px solid rgba(255, 215, 0, 0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: all 0.3s ease; z-index: 10; text-decoration: none !important; }
+        .edit-btn, .delete-btn { position: absolute; top: 15px; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: all 0.3s ease; z-index: 10; text-decoration: none !important; }
+        
+        .edit-btn { right: 15px; background: rgba(255, 215, 0, 0.1); color: var(--accent-yellow); border: 1px solid rgba(255, 215, 0, 0.3); }
         .edit-btn:hover { background: var(--accent-yellow); color: var(--bg-main); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
+        
+        .delete-btn { right: 58px; background: rgba(255, 71, 87, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 71, 87, 0.3); }
+        .delete-btn:hover { background: var(--accent-red); color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3); }
+        
         html[dir="rtl"] .edit-btn { right: auto; left: 15px; }
+        html[dir="rtl"] .delete-btn { right: auto; left: 58px; }
+
         .add-btn { background: rgba(0, 168, 252, 0.1); color: var(--primary); border-color: rgba(0, 168, 252, 0.3); }
         .add-btn:hover { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
 
@@ -108,24 +116,21 @@
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
-        
         .form-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 8px; color: white; font-family: inherit; box-sizing: border-box; transition: 0.3s; }
         .form-input[type="file"] { padding: 9px; }
         .form-input:focus { outline: none; border-color: var(--accent-yellow); box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
-        
         select.form-input { appearance: none; -webkit-appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px; }
         html[dir="rtl"] select.form-input { background-position: left 15px center; padding-right: 12px; padding-left: 40px; }
         select.form-input option { background-color: var(--card-bg); color: white; padding: 10px; }
 
         .save-modal-btn { width: 100%; padding: 12px; background: var(--accent-yellow); color: var(--bg-main); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; margin-top: 10px; transition: 0.3s; }
         .save-modal-btn:hover { background: #e6c200; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2); }
+        .save-modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .card-grades-anim { max-height: 0; opacity: 0; overflow: hidden; transform: scaleY(0); transform-origin: top; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .card-grades-anim.show { max-height: 400px; opacity: 1; transform: scaleY(1); margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(255, 215, 0, 0.2); }
-        
         .grade-select { text-align: center; font-weight: 700; font-size: 14px; padding: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.5); color: white; border-radius: 6px; }
         .grade-select:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 168, 252, 0.3); }
-        
         .grade-select option[value="D"] { color: var(--accent-yellow); font-weight: bold; }
         .grade-select option[value="M"] { color: var(--primary); font-weight: bold; }
         .grade-select option[value="P"] { color: var(--accent-green); font-weight: bold; }
@@ -180,7 +185,6 @@
                     </div>
 
                     <div id="card-grades-anim" class="card-grades-anim">
-                        
                         <div class="final-grade-box" style="justify-content: center; flex-direction: column; gap: 15px; border-color: rgba(255, 255, 255, 0.1);">
                             <div style="font-weight: 600; color: white;" id="t-select-grade">Select Final Grade:</div> 
                             <select id="card-master-grade" class="form-input grade-select" style="width: 100%; max-width: 250px; font-size: 16px; padding: 10px;" onchange="window.autoFillCriteria()">
@@ -194,12 +198,8 @@
 
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;" id="t-criteria">Criteria Achieved:</div>
                         <div class="criteria-row" id="criteria-container">
-                            <span class="crit-badge p" data-type="p">P1</span> 
-                            <span class="crit-badge p" data-type="p">P2</span> 
-                            <span class="crit-badge p" data-type="p">P3</span> 
-                            <span class="crit-badge p" data-type="p">P4</span>
-                            <span class="crit-badge m" data-type="m">M1</span> 
-                            <span class="crit-badge m" data-type="m">M2</span> 
+                            <span class="crit-badge p" data-type="p">P1</span> <span class="crit-badge p" data-type="p">P2</span> <span class="crit-badge p" data-type="p">P3</span> <span class="crit-badge p" data-type="p">P4</span>
+                            <span class="crit-badge m" data-type="m">M1</span> <span class="crit-badge m" data-type="m">M2</span> 
                             <span class="crit-badge d" data-type="d">D1</span>
                         </div>
 
@@ -221,18 +221,20 @@
 
             <div class="right-col">
                 <div class="card assignment-card">
-                    <button class="edit-btn" onclick="window.openModal('assignment')" title="Edit"><i class="fas fa-edit"></i></button>
+                    <!-- 🌟 زر حذف الواجب 🌟 -->
+                    <button class="delete-btn" onclick="window.deleteAssignment()" title="Delete Assignment"><i class="fas fa-trash"></i></button>
+                    <button class="edit-btn" onclick="window.openModal('edit-assignment')" title="Edit Assignment"><i class="fas fa-edit"></i></button>
+                    
                     <h3 style="font-size: 15px; margin: 0 0 20px 0;" id="t-assign-box"><i class="fas fa-list-ul"></i> Assignment & Submission</h3>
                     <div class="assignment-inner">
-                        <div style="font-weight: 600; font-size: 14px; color: white;" id="display-assign-title">Assignment 1</div>
-                        <div class="due-date"><i class="far fa-clock"></i> <span id="t-due">Due:</span> <span id="display-due-date">May 20, 2026</span></div>
-                        
+                        <div style="font-weight: 600; font-size: 14px; color: white;" id="display-assign-title">No Assignment</div>
+                        <div class="due-date"><i class="far fa-clock"></i> <span id="t-due">Due:</span> <span id="display-due-date">-</span></div>
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;" id="t-download">Download Instructions:</div>
                         <div class="download-box">
                             <i class="fas fa-file-pdf" style="color: var(--accent-yellow); font-size: 18px;"></i> 
-                            <span id="display-assign-file">Assignment_Brief.pdf</span>
+                            <span id="display-assign-file">None</span>
                         </div>
-                        <button class="submit-btn" id="t-view-subs"><i class="fas fa-box-open"></i> View Student Submissions</button>
+                        <button class="submit-btn" id="t-view-subs"><i class="fas fa-box-open"></i> View Submissions</button>
                     </div>
                 </div>
 
@@ -252,16 +254,14 @@
                 <button class="close-btn" onclick="window.closeModal()"><i class="fas fa-times"></i></button>
             </div>
             <div id="modal-body"></div>
-            <!-- 🌟 تم تغيير الزر هنا 🌟 -->
             <button class="save-modal-btn" onclick="window.saveChanges()" id="t-save-modal-btn"><i class="fas fa-save"></i> Save Changes</button>
         </div>
     </div>
 
-    <!-- 🌟 تم استيراد ميزات الفايربيس الإضافية هنا 🌟 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -282,6 +282,10 @@
         
         window.activeLang = 'en';
         window.currentSection = "";
+        window.editIndex = null; // 🌟 رقم العنصر اللي بنعدله 🌟
+        
+        // 🌟 تخزين محتويات المادة محلياً عشان نعدل ونحذف براحتنا 🌟
+        window.courseData = { aims: [], tools: [], assignment: null };
 
         const coursesDB = {
             "programming": { icon: "fa-laptop-code", title_en: "Introduction to Programming", desc_en: "Learn the fundamentals of programming.", title_ar: "مقدمة في البرمجة", desc_ar: "تعلم أساسيات البرمجة، الخوارزميات، وحل المشكلات." },
@@ -294,8 +298,8 @@
         const currentCourse = coursesDB[courseId] || coursesDB['it-systems']; 
 
         const t = {
-            en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload PDF", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --" },
-            ar: { langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", studentGrading: "تقييم الطلاب", criteria: "المعايير المنجزة:", final: "النتيجة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض التسليمات", toolsBox: "الأدوات والروابط", save: "حفظ التعديلات", saveGrades: "حفظ العلامة", progress: "تقدم الوحدة: 40%", pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز", fail: "رسوب (غير مصنف)", pending: "قيد الانتظار", selectGrade: "حدد العلامة النهائية:", chooseGrade: "-- اختر العلامة --", mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف", mEditAssign: "تعديل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم", mUploadBrief: "رفع ملف", mAddAim: "إضافة هدف", mEditAim: "تعديل هدف", mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف", mExtLink: "رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل رابط", mToolTitle: "عنوان الرابط", mUrlLink: "الرابط", chooseStudent: "-- اختر طالباً --" }
+            en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload PDF", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File (Name)", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --" },
+            ar: { langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", studentGrading: "تقييم الطلاب", criteria: "المعايير المنجزة:", final: "النتيجة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض التسليمات", toolsBox: "الأدوات والروابط", save: "حفظ التعديلات", saveGrades: "حفظ العلامة", progress: "تقدم الوحدة: 40%", pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز", fail: "رسوب (غير مصنف)", pending: "قيد الانتظار", selectGrade: "حدد العلامة النهائية:", chooseGrade: "-- اختر العلامة --", mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف", mEditAssign: "تعديل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم", mUploadBrief: "اسم ملف المرفق", mAddAim: "إضافة هدف", mEditAim: "تعديل هدف", mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "مرفق الهدف (اكتب اسم الملف)", mExtLink: "رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل رابط", mToolTitle: "عنوان الرابط", mUrlLink: "الرابط", chooseStudent: "-- اختر طالباً --" }
         };
 
         window.onload = function() {
@@ -303,55 +307,30 @@
             const savedLang = localStorage.getItem('preferredLang') || 'en';
             window.setLanguage(savedLang); 
             window.fetchStudentsForCard(); 
-            // 🌟 سحب المحتوى اللي انحفظ مسبقاً 🌟
             window.loadCourseContent();
         };
 
         window.setLanguage = function(lang) {
-            window.activeLang = lang;
-            document.documentElement.lang = lang;
-            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-            document.getElementById('lang-display').innerText = t[lang].langStr;
-            document.getElementById('lang-menu').classList.remove('show');
-            
-            document.getElementById('t-portal').innerText = t[lang].portal;
-            document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + t[lang].back;
+            window.activeLang = lang; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('lang-display').innerText = t[lang].langStr; document.getElementById('lang-menu').classList.remove('show');
+            document.getElementById('t-portal').innerText = t[lang].portal; document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + t[lang].back;
             document.getElementById('display-unit-title').innerText = lang === 'ar' ? currentCourse.title_ar : currentCourse.title_en;
             document.getElementById('display-unit-desc').innerText = lang === 'ar' ? currentCourse.desc_ar : currentCourse.desc_en;
-            
             document.getElementById('t-grades').innerHTML = `<i class="fas fa-user-graduate"></i> ` + t[lang].studentGrading;
-            document.getElementById('t-criteria').innerText = t[lang].criteria;
-            document.getElementById('t-final').innerText = t[lang].final;
-            document.getElementById('t-select-grade').innerText = t[lang].selectGrade;
-            document.getElementById('t-aims').innerHTML = `<i class="fas fa-layer-group" style="color: var(--primary);"></i> ` + t[lang].aims;
-            document.getElementById('t-assign-box').innerHTML = `<i class="fas fa-list-ul"></i> ` + t[lang].assignBox;
-            document.getElementById('t-due').innerText = t[lang].due;
-            document.getElementById('t-download').innerText = t[lang].download;
-            document.getElementById('t-view-subs').innerHTML = `<i class="fas fa-box-open"></i> ` + t[lang].viewSubs;
-            document.getElementById('t-tools-box').innerHTML = `<i class="fas fa-link"></i> ` + t[lang].toolsBox;
-            document.getElementById('t-save-modal-btn').innerHTML = `<i class="fas fa-save"></i> ` + t[lang].save;
-            document.getElementById('t-save-grades').innerText = t[lang].saveGrades;
-            document.getElementById('t-progress').innerText = t[lang].progress;
-            
-            window.updateGradeOptions();
-            window.autoFillCriteria(); 
-
-            localStorage.setItem('preferredLang', lang);
+            document.getElementById('t-criteria').innerText = t[lang].criteria; document.getElementById('t-final').innerText = t[lang].final;
+            document.getElementById('t-select-grade').innerText = t[lang].selectGrade; document.getElementById('t-aims').innerHTML = `<i class="fas fa-layer-group" style="color: var(--primary);"></i> ` + t[lang].aims;
+            document.getElementById('t-assign-box').innerHTML = `<i class="fas fa-list-ul"></i> ` + t[lang].assignBox; document.getElementById('t-due').innerText = t[lang].due;
+            document.getElementById('t-download').innerText = t[lang].download; document.getElementById('t-view-subs').innerHTML = `<i class="fas fa-box-open"></i> ` + t[lang].viewSubs;
+            document.getElementById('t-tools-box').innerHTML = `<i class="fas fa-link"></i> ` + t[lang].toolsBox; document.getElementById('t-save-modal-btn').innerHTML = `<i class="fas fa-save"></i> ` + t[lang].save;
+            document.getElementById('t-save-grades').innerText = t[lang].saveGrades; document.getElementById('t-progress').innerText = t[lang].progress;
+            window.updateGradeOptions(); window.autoFillCriteria(); localStorage.setItem('preferredLang', lang);
         }
 
         window.updateGradeOptions = function() {
             const masterSelect = document.getElementById('card-master-grade');
-            if(masterSelect) {
-                masterSelect.options[0].text = t[window.activeLang].chooseGrade;
-                masterSelect.options[1].text = t[window.activeLang].distinction;
-                masterSelect.options[2].text = t[window.activeLang].merit;
-                masterSelect.options[3].text = t[window.activeLang].pass;
-                masterSelect.options[4].text = t[window.activeLang].fail;
-            }
+            if(masterSelect) { masterSelect.options[0].text = t[window.activeLang].chooseGrade; masterSelect.options[1].text = t[window.activeLang].distinction; masterSelect.options[2].text = t[window.activeLang].merit; masterSelect.options[3].text = t[window.activeLang].pass; masterSelect.options[4].text = t[window.activeLang].fail; }
             const studentSelect = document.getElementById('card-student-select');
-            if(studentSelect && studentSelect.options.length > 0 && studentSelect.options[0].disabled) {
-                studentSelect.options[0].text = t[window.activeLang].chooseStudent;
-            }
+            if(studentSelect && studentSelect.options.length > 0 && studentSelect.options[0].disabled) { studentSelect.options[0].text = t[window.activeLang].chooseStudent; }
         }
 
         window.fetchStudentsForCard = async function() {
@@ -360,257 +339,185 @@
                 const querySnapshot = await getDocs(collection(db, "Users"));
                 let options = `<option value="" disabled selected>${t[window.activeLang].chooseStudent}</option>`;
                 let found = false;
-
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if(!data.teacherId) { 
-                        found = true;
-                        const name = data.name || data.fullName || "Student";
-                        options += `<option value="${doc.id}">👤 ${name}</option>`;
-                    }
-                });
-                
+                querySnapshot.forEach((doc) => { const data = doc.data(); if(!data.teacherId) { found = true; options += `<option value="${doc.id}">👤 ${data.name || data.fullName || "Student"}</option>`; } });
                 select.innerHTML = found ? options : `<option value="" disabled>No students found</option>`;
-            } catch (error) {
-                console.error("Error:", error);
-                select.innerHTML = `<option value="" disabled>Auth Error / Loading...</option>`;
-            }
+            } catch (error) { select.innerHTML = `<option value="" disabled>Auth Error</option>`; }
         }
 
-        window.onCardStudentSelect = function() {
-            const animContainer = document.getElementById('card-grades-anim');
-            animContainer.classList.add('show');
-            document.getElementById('card-master-grade').value = "";
-            window.autoFillCriteria();
-        }
+        window.onCardStudentSelect = function() { document.getElementById('card-grades-anim').classList.add('show'); document.getElementById('card-master-grade').value = ""; window.autoFillCriteria(); }
 
         window.autoFillCriteria = function() {
-            const grade = document.getElementById('card-master-grade').value;
-            const badges = document.querySelectorAll('.crit-badge');
-            const displayFinal = document.getElementById('display-final-grade');
-            const resultBox = document.getElementById('result-box');
-            
-            badges.forEach(b => b.classList.remove('active'));
-            displayFinal.className = "";
-            resultBox.style.borderColor = "rgba(255,255,255,0.1)";
-
-            if(grade === "D") {
-                badges.forEach(b => b.classList.add('active')); 
-                displayFinal.innerText = t[window.activeLang].distinction;
-                displayFinal.className = "grade-distinction";
-                resultBox.style.borderColor = "var(--accent-yellow)";
-            } 
-            else if(grade === "M") {
-                badges.forEach(b => { if(b.dataset.type === 'p' || b.dataset.type === 'm') b.classList.add('active'); }); 
-                displayFinal.innerText = t[window.activeLang].merit;
-                displayFinal.className = "grade-merit";
-                resultBox.style.borderColor = "var(--primary)";
-            } 
-            else if(grade === "P") {
-                badges.forEach(b => { if(b.dataset.type === 'p') b.classList.add('active'); }); 
-                displayFinal.innerText = t[window.activeLang].pass;
-                displayFinal.className = "grade-pass";
-                resultBox.style.borderColor = "var(--accent-green)";
-            } 
-            else if(grade === "F") {
-                displayFinal.innerText = t[window.activeLang].fail;
-                displayFinal.className = "grade-fail";
-                resultBox.style.borderColor = "var(--card-border)";
-            } 
-            else {
-                displayFinal.innerText = t[window.activeLang].pending;
-                displayFinal.className = "grade-fail";
-            }
+            const grade = document.getElementById('card-master-grade').value; const badges = document.querySelectorAll('.crit-badge'); const displayFinal = document.getElementById('display-final-grade'); const resultBox = document.getElementById('result-box');
+            badges.forEach(b => b.classList.remove('active')); displayFinal.className = ""; resultBox.style.borderColor = "rgba(255,255,255,0.1)";
+            if(grade === "D") { badges.forEach(b => b.classList.add('active')); displayFinal.innerText = t[window.activeLang].distinction; displayFinal.className = "grade-distinction"; resultBox.style.borderColor = "var(--accent-yellow)"; } 
+            else if(grade === "M") { badges.forEach(b => { if(b.dataset.type === 'p' || b.dataset.type === 'm') b.classList.add('active'); }); displayFinal.innerText = t[window.activeLang].merit; displayFinal.className = "grade-merit"; resultBox.style.borderColor = "var(--primary)"; } 
+            else if(grade === "P") { badges.forEach(b => { if(b.dataset.type === 'p') b.classList.add('active'); }); displayFinal.innerText = t[window.activeLang].pass; displayFinal.className = "grade-pass"; resultBox.style.borderColor = "var(--accent-green)"; } 
+            else if(grade === "F") { displayFinal.innerText = t[window.activeLang].fail; displayFinal.className = "grade-fail"; resultBox.style.borderColor = "var(--card-border)"; } 
+            else { displayFinal.innerText = t[window.activeLang].pending; displayFinal.className = "grade-fail"; }
         }
 
         window.saveCardGrades = async function() {
-            const studentId = document.getElementById('card-student-select').value;
-            const grade = document.getElementById('card-master-grade').value;
-            
-            if(!studentId) { alert("Please select a student first!"); return; }
-            if(!grade) { alert("Please select a grade before saving!"); return; }
-
-            const btn = document.getElementById('btn-save-card-grades');
-            const originalHTML = btn.innerHTML;
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            btn.disabled = true;
-
-            try {
-                const studentRef = doc(db, "Users", studentId);
-                await updateDoc(studentRef, {
-                    [`grades.${courseId}`]: grade
-                });
-
-                btn.innerHTML = `<i class="fas fa-check"></i> ${window.activeLang === 'ar' ? 'تم حفظ العلامة!' : 'Grade Saved!'}`;
-                btn.style.background = 'var(--accent-green)';
-                btn.style.color = 'white';
-                
-            } catch (error) {
-                console.error("Error updating grade: ", error);
-                alert("فشل الحفظ ❌\n\nالسبب: " + error.message);
-            } finally {
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.style.background = '';
-                    btn.style.color = '';
-                    btn.disabled = false;
-                }, 3000);
-            }
+            const studentId = document.getElementById('card-student-select').value; const grade = document.getElementById('card-master-grade').value;
+            if(!studentId || !grade) return alert("Select student and grade!");
+            const btn = document.getElementById('btn-save-card-grades'); const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; btn.disabled = true;
+            try { await updateDoc(doc(db, "Users", studentId), { [`grades.${courseId}`]: grade }); btn.innerHTML = `<i class="fas fa-check"></i> Saved!`; btn.style.background = 'var(--accent-green)'; btn.style.color = 'white'; } 
+            catch (error) { alert("Error: " + error.message); } finally { setTimeout(() => { btn.innerHTML = originalHTML; btn.style.background = ''; btn.style.color = ''; btn.disabled = false; }, 2000); }
         }
 
         window.toggleAim = function(headerElement) {
-            const container = headerElement.parentElement;
-            const content = container.querySelector('.aim-content');
-            const icon = container.querySelector('.toggle-icon');
-            if (content.style.maxHeight) { content.style.maxHeight = null; icon.style.transform = "rotate(0deg)"; } 
-            else { content.style.maxHeight = content.scrollHeight + "px"; icon.style.transform = "rotate(180deg)"; }
+            const content = headerElement.parentElement.querySelector('.aim-content'); const icon = headerElement.parentElement.querySelector('.toggle-icon');
+            if (content.style.maxHeight) { content.style.maxHeight = null; icon.style.transform = "rotate(0deg)"; } else { content.style.maxHeight = content.scrollHeight + "px"; icon.style.transform = "rotate(180deg)"; }
         }
 
-        // إزالة العناصر بس حالياً شكلي
-        window.deleteElement = function(btn) {
-            if(confirm("Are you sure?")) { btn.closest('.aim-accordion, .tool-item').remove(); }
+        // 🌟 1. دالة الحذف الذكية من الفايربيس 🌟
+        window.deleteContentItem = async function(type, index) {
+            const confirmMsg = window.activeLang === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Are you sure you want to delete this?';
+            if(!confirm(confirmMsg)) return;
+
+            if (type === 'tool') { window.courseData.tools.splice(index, 1); } 
+            else if (type === 'aim') { window.courseData.aims.splice(index, 1); }
+
+            try {
+                await setDoc(doc(db, "Courses", courseId), { tools: window.courseData.tools, aims: window.courseData.aims }, { merge: true });
+                window.renderCourseContent(); // إعادة رسم الشاشة
+            } catch (error) { alert("Delete failed: " + error.message); }
         }
 
-        window.openModal = function(section, btnElement = null) {
-            window.currentSection = section; window.currentEditElement = btnElement; modal.classList.add('active');
+        // 🌟 2. دالة حذف الواجب 🌟
+        window.deleteAssignment = async function() {
+            const confirmMsg = window.activeLang === 'ar' ? 'هل تريد مسح الواجب؟' : 'Delete assignment?';
+            if(!confirm(confirmMsg)) return;
+
+            try {
+                window.courseData.assignment = null;
+                await setDoc(doc(db, "Courses", courseId), { assignment: null }, { merge: true });
+                window.renderCourseContent();
+            } catch (error) { alert("Delete failed: " + error.message); }
+        }
+
+        // 🌟 3. دالة فتح النافذة وتعبئة البيانات للتعديل 🌟
+        window.openModal = function(section, index = null) {
+            window.currentSection = section; window.editIndex = index; modal.classList.add('active');
             
             if (section === 'hero') {
-                let title = document.getElementById('display-unit-title').innerText;
-                let desc = document.getElementById('display-unit-desc').innerText;
                 modalTitle.innerHTML = t[window.activeLang].mEditDetails;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mUnitTitle}</label><input type="text" id="input-unit-title" class="form-input" value="${title}"></div><div class="form-group"><label>${t[window.activeLang].mDesc}</label><textarea id="input-unit-desc" class="form-input" rows="4">${desc}</textarea></div>`;
+                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mUnitTitle}</label><input type="text" id="input-unit-title" class="form-input" value="${document.getElementById('display-unit-title').innerText}"></div><div class="form-group"><label>${t[window.activeLang].mDesc}</label><textarea id="input-unit-desc" class="form-input" rows="4">${document.getElementById('display-unit-desc').innerText}</textarea></div>`;
             } 
-            else if (section === 'assignment') {
+            else if (section === 'edit-assignment') {
                 modalTitle.innerHTML = t[window.activeLang].mEditAssign;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mAssignTitle}</label><input type="text" id="input-assign-title" class="form-input" value="${document.getElementById('display-assign-title').innerText}"></div><div class="form-group"><label>${t[window.activeLang].mDueDate}</label><input type="datetime-local" id="input-due-date" class="form-input"></div><div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mUploadBrief}</label><input type="file" id="input-assign-file" class="form-input"></div>`;
-            } 
-            // 🌟 🌟 🌟 التعديل السحري هون: رجعنا الملف والرابط في نافذة الأهداف 🌟 🌟 🌟
-            else if (section === 'add-aim' || section === 'edit-aim') {
-                modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddAim : t[window.activeLang].mEditAim;
+                let cTitle = window.courseData.assignment ? window.courseData.assignment.title : "";
+                let cDue = window.courseData.assignment && window.courseData.assignment.dueDate ? window.courseData.assignment.dueDate : "";
                 modalBody.innerHTML = `
-                    <div class="form-group"><label>${t[window.activeLang].mAimTitle}</label><input type="text" id="input-aim-title" class="form-input"></div>
-                    <div class="form-group"><label>${t[window.activeLang].mAimDesc}</label><textarea id="input-aim-desc" class="form-input" rows="3"></textarea></div>
-                    <div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mAttachFile}</label><input type="file" id="input-aim-file" class="form-input"></div>
-                    <div class="form-group"><label>${t[window.activeLang].mExtLink}</label><input type="url" id="input-aim-url" class="form-input" placeholder="https://..."></div>
+                    <div class="form-group"><label>${t[window.activeLang].mAssignTitle}</label><input type="text" id="input-assign-title" class="form-input" value="${cTitle}"></div>
+                    <div class="form-group"><label>${t[window.activeLang].mDueDate}</label><input type="datetime-local" id="input-due-date" class="form-input" value="${cDue}"></div>
+                    <div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mUploadBrief}</label><input type="text" id="input-assign-file" class="form-input" placeholder="Assignment.pdf" value="${window.courseData.assignment && window.courseData.assignment.fileName ? window.courseData.assignment.fileName : ''}"></div>
+                `;
+            } 
+            else if (section === 'add-aim' || section === 'edit-aim') {
+                modalTitle.innerHTML = section === 'add-aim' ? t[window.activeLang].mAddAim : t[window.activeLang].mEditAim;
+                let aim = index !== null ? window.courseData.aims[index] : { title: "", desc: "", fileName: "", url: "" };
+                
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>${t[window.activeLang].mAimTitle}</label><input type="text" id="input-aim-title" class="form-input" value="${aim.title}"></div>
+                    <div class="form-group"><label>${t[window.activeLang].mAimDesc}</label><textarea id="input-aim-desc" class="form-input" rows="3">${aim.desc}</textarea></div>
+                    <div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mAttachFile}</label><input type="text" id="input-aim-file" class="form-input" placeholder="File.pdf" value="${aim.fileName || ''}"></div>
+                    <div class="form-group"><label>${t[window.activeLang].mExtLink}</label><input type="url" id="input-aim-url" class="form-input" placeholder="https://..." value="${aim.url || ''}"></div>
                 `;
             } 
             else if (section === 'add-tool' || section === 'edit-tool') {
-                modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddTool : t[window.activeLang].mEditTool;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mToolTitle}</label><input type="text" id="input-tool-title" class="form-input"></div><div class="form-group"><label>${t[window.activeLang].mUrlLink}</label><input type="url" id="input-tool-url" class="form-input"></div>`;
+                modalTitle.innerHTML = section === 'add-tool' ? t[window.activeLang].mAddTool : t[window.activeLang].mEditTool;
+                let tool = index !== null ? window.courseData.tools[index] : { title: "", url: "" };
+                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mToolTitle}</label><input type="text" id="input-tool-title" class="form-input" value="${tool.title}"></div><div class="form-group"><label>${t[window.activeLang].mUrlLink}</label><input type="url" id="input-tool-url" class="form-input" value="${tool.url}"></div>`;
             }
         }
 
-        // 🌟 دالة الحفظ اللي بتخزن بالـ Firebase مع الملفات والروابط 🌟
+        // 🌟 4. دالة الحفظ الذكية (إضافة أو تعديل) 🌟
         window.saveChanges = async function() {
             const courseRef = doc(db, "Courses", courseId);
             const saveBtn = document.getElementById('t-save-modal-btn');
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; saveBtn.disabled = true;
 
             try {
                 if (window.currentSection === 'hero') {
-                    let nt = document.getElementById('input-unit-title').value;
-                    let nd = document.getElementById('input-unit-desc').value;
-                    if(window.activeLang==='ar'){currentCourse.title_ar=nt; currentCourse.desc_ar=nd;} else {currentCourse.title_en=nt; currentCourse.desc_en=nd;}
+                    let nt = document.getElementById('input-unit-title').value; let nd = document.getElementById('input-unit-desc').value;
                     document.getElementById('display-unit-title').innerText = nt; document.getElementById('display-unit-desc').innerText = nd;
                 } 
-                else if (window.currentSection === 'assignment') {
-                    let titleVal = document.getElementById('input-assign-title').value;
-                    let dueVal = document.getElementById('input-due-date').value; 
-                    
-                    document.getElementById('display-assign-title').innerText = titleVal;
-                    if(dueVal){document.getElementById('display-due-date').innerText = dueVal.replace('T',' ');}
-                    
-                    // إرسال الواجب للفايربيس
-                    await setDoc(courseRef, {
-                        assignment: { title: titleVal, dueDate: dueVal }
-                    }, { merge: true });
+                else if (window.currentSection === 'edit-assignment') {
+                    window.courseData.assignment = { 
+                        title: document.getElementById('input-assign-title').value, 
+                        dueDate: document.getElementById('input-due-date').value,
+                        fileName: document.getElementById('input-assign-file').value
+                    };
+                    await setDoc(courseRef, { assignment: window.courseData.assignment }, { merge: true });
                 } 
-                else if (window.currentSection === 'add-tool') {
-                    let titleVal = document.getElementById('input-tool-title').value; 
-                    let urlVal = document.getElementById('input-tool-url').value;
-                    
-                    if(titleVal && urlVal){ 
-                        document.getElementById('tools-container').insertAdjacentHTML('beforeend', `<div class="tool-item"><span><i class="fas fa-link"></i> <a href="${urlVal}" class="tool-title-link" target="_blank">${titleVal}</a></span><div class="action-icons"><i class="fas fa-trash" onclick="window.deleteElement(this)"></i></div></div>`); 
-                        
-                        // إرسال الرابط للفايربيس
-                        await setDoc(courseRef, {
-                            tools: arrayUnion({ title: titleVal, url: urlVal })
-                        }, { merge: true });
+                else if (window.currentSection === 'add-tool' || window.currentSection === 'edit-tool') {
+                    let newTool = { title: document.getElementById('input-tool-title').value, url: document.getElementById('input-tool-url').value };
+                    if(newTool.title && newTool.url){
+                        if(window.currentSection === 'add-tool') window.courseData.tools.push(newTool);
+                        else window.courseData.tools[window.editIndex] = newTool;
+                        await setDoc(courseRef, { tools: window.courseData.tools }, { merge: true });
                     }
                 } 
-                // 🌟 حفظ الهدف مع الملف والرابط 🌟
-                else if (window.currentSection === 'add-aim') {
-                    let titleVal = document.getElementById('input-aim-title').value; 
-                    let descVal = document.getElementById('input-aim-desc').value;
-                    let fileInput = document.getElementById('input-aim-file');
-                    let fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : "";
-                    let urlVal = document.getElementById('input-aim-url').value;
-                    
-                    if(titleVal){ 
-                        let extraHtml = '';
-                        if(fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${fileName}</span><i class="fas fa-cloud-download-alt" style="cursor:pointer;" title="Download"></i></div>`;
-                        if(urlVal) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${urlVal}" style="color:white; text-decoration:none;" target="_blank">رابط إضافي</a></span><i class="fas fa-external-link-alt" style="cursor:pointer;" title="Open"></i></div>`;
-
-                        document.getElementById('aims-container').insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header" onclick="window.toggleAim(this)"><div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${titleVal}</span></div><i class="fas fa-chevron-down toggle-icon"></i></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${descVal}</div>${extraHtml}</div></div></div>`); 
-                        
-                        // إرسال الهدف مع المرفقات للفايربيس
-                        await setDoc(courseRef, {
-                            aims: arrayUnion({ title: titleVal, desc: descVal, fileName: fileName, url: urlVal })
-                        }, { merge: true });
+                else if (window.currentSection === 'add-aim' || window.currentSection === 'edit-aim') {
+                    let newAim = { 
+                        title: document.getElementById('input-aim-title').value, 
+                        desc: document.getElementById('input-aim-desc').value, 
+                        fileName: document.getElementById('input-aim-file').value, 
+                        url: document.getElementById('input-aim-url').value 
+                    };
+                    if(newAim.title){
+                        if(window.currentSection === 'add-aim') window.courseData.aims.push(newAim);
+                        else window.courseData.aims[window.editIndex] = newAim;
+                        await setDoc(courseRef, { aims: window.courseData.aims }, { merge: true });
                     }
                 }
-            } catch (error) {
-                console.error("Firebase Error: ", error);
-                alert("Failed to save to database. Check Firebase Rules.");
-            } finally {
-                saveBtn.innerHTML = `<i class="fas fa-save"></i> Save Changes`;
-                saveBtn.disabled = false;
-                window.closeModal();
-            }
+                window.renderCourseContent(); // رسم البيانات من جديد
+            } catch (error) { alert("Failed to save to database. " + error.message); } 
+            finally { saveBtn.innerHTML = `<i class="fas fa-save"></i> Save Changes`; saveBtn.disabled = false; window.closeModal(); }
         }
 
-        // 🌟 دالة قراءة المحتوى من الفايربيس أول ما تفتح الصفحة 🌟
+        // 🌟 5. دالة قراءة ورسم المحتوى 🌟
         window.loadCourseContent = async function() {
             try {
-                const courseRef = doc(db, "Courses", courseId);
-                const docSnap = await getDoc(courseRef);
-                
+                const docSnap = await getDoc(doc(db, "Courses", courseId));
                 if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    
-                    // تحميل الواجب
-                    if(data.assignment) {
-                        if(data.assignment.title) document.getElementById('display-assign-title').innerText = data.assignment.title;
-                        if(data.assignment.dueDate) document.getElementById('display-due-date').innerText = data.assignment.dueDate.replace('T',' ');
-                    }
-                    
-                    // تحميل الروابط (Tools)
-                    if(data.tools && data.tools.length > 0) {
-                        const tc = document.getElementById('tools-container');
-                        tc.innerHTML = '';
-                        data.tools.forEach(tool => {
-                            tc.insertAdjacentHTML('beforeend', `<div class="tool-item"><span><i class="fas fa-link"></i> <a href="${tool.url}" class="tool-title-link" target="_blank">${tool.title}</a></span><div class="action-icons"><i class="fas fa-trash" onclick="window.deleteElement(this)"></i></div></div>`);
-                        });
-                    }
-                    
-                    // 🌟 تحميل الأهداف مع الملفات والروابط 🌟
-                    if(data.aims && data.aims.length > 0) {
-                        const ac = document.getElementById('aims-container');
-                        ac.innerHTML = '';
-                        data.aims.forEach(aim => {
-                            let extraHtml = '';
-                            if(aim.fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${aim.fileName}</span><i class="fas fa-cloud-download-alt" style="cursor:pointer;" title="Download"></i></div>`;
-                            if(aim.url) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${aim.url}" style="color:white; text-decoration:none;" target="_blank">رابط إضافي</a></span><i class="fas fa-external-link-alt" style="cursor:pointer;" title="Open"></i></div>`;
-
-                            ac.insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header" onclick="window.toggleAim(this)"><div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${aim.title}</span></div><i class="fas fa-chevron-down toggle-icon"></i></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${aim.desc}</div>${extraHtml}</div></div></div>`);
-                        });
-                    }
+                    let data = docSnap.data();
+                    window.courseData.aims = data.aims || [];
+                    window.courseData.tools = data.tools || [];
+                    window.courseData.assignment = data.assignment || null;
+                    window.renderCourseContent();
                 }
-            } catch(error) {
-                console.error("Error loading course content:", error);
+            } catch(error) { console.error("Error loading content:", error); }
+        }
+
+        window.renderCourseContent = function() {
+            // رسم الواجب
+            if(window.courseData.assignment && window.courseData.assignment.title) {
+                document.getElementById('display-assign-title').innerText = window.courseData.assignment.title;
+                document.getElementById('display-due-date').innerText = window.courseData.assignment.dueDate ? window.courseData.assignment.dueDate.replace('T',' ') : "-";
+                document.getElementById('display-assign-file').innerText = window.courseData.assignment.fileName || "No File";
+            } else {
+                document.getElementById('display-assign-title').innerText = "No Assignment";
+                document.getElementById('display-due-date').innerText = "-";
+                document.getElementById('display-assign-file').innerText = "None";
             }
+
+            // رسم الروابط
+            const tc = document.getElementById('tools-container'); tc.innerHTML = '';
+            window.courseData.tools.forEach((tool, index) => {
+                tc.insertAdjacentHTML('beforeend', `<div class="tool-item"><span><i class="fas fa-link"></i> <a href="${tool.url}" class="tool-title-link" target="_blank">${tool.title}</a></span><div class="action-icons"><i class="fas fa-edit" onclick="window.openModal('edit-tool', ${index})"></i> <i class="fas fa-trash" onclick="window.deleteContentItem('tool', ${index})"></i></div></div>`);
+            });
+
+            // رسم الأهداف
+            const ac = document.getElementById('aims-container'); ac.innerHTML = '';
+            window.courseData.aims.forEach((aim, index) => {
+                let extraHtml = '';
+                if(aim.fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${aim.fileName}</span></div>`;
+                if(aim.url) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${aim.url}" style="color:white; text-decoration:none;" target="_blank">External Link</a></span></div>`;
+
+                ac.insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header"><div style="flex-grow:1;" onclick="window.toggleAim(this)">• <span class="aim-title-text">${aim.title}</span></div><div class="action-icons"><i class="fas fa-edit" onclick="window.openModal('edit-aim', ${index})"></i><i class="fas fa-trash" onclick="window.deleteContentItem('aim', ${index})"></i><i class="fas fa-chevron-down toggle-icon" onclick="window.toggleAim(this.parentElement.parentElement)"></i></div></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${aim.desc}</div>${extraHtml}</div></div></div>`);
+            });
         }
 
         window.closeModal = function() { modal.classList.remove('active'); }
