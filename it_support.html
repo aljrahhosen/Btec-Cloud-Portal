@@ -253,6 +253,8 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
     <!-- 🌟 تم استيراد ميزة المزامنة الفورية onSnapshot 🌟 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -310,7 +312,7 @@
                 section1: "Section 1", section2: "Section 2", folderLabel: "Assignment Folder",
                 folderHint: "Choose one folder that contains your assignment files. Any file format is accepted.",
                 folderSummary: "Selected folder: {folder} ({count} files)", folderEmpty: "No folder selected yet.",
-                submitFolder: "Submit Folder", uploading: "Uploading {current} of {total} files...",
+                submitFolder: "Submit Folder", preparingZip: "Preparing folder...", uploadingZip: "Uploading folder...",
                 submitSuccess: "Your assignment was submitted successfully.", submitError: "Submission failed. Please try again.",
                 nameRequired: "Please enter your name.", sectionRequired: "Please select your section.",
                 folderRequired: "Please choose one assignment folder.", oneFolderOnly: "Please choose one folder only."
@@ -327,7 +329,7 @@
                 section1: "الشعبة الأولى", section2: "الشعبة الثانية", folderLabel: "مجلد الواجب",
                 folderHint: "اختر مجلداً واحداً يحتوي ملفات الواجب. كل صيغ الملفات مسموحة.",
                 folderSummary: "المجلد المختار: {folder} ({count} ملفات)", folderEmpty: "لم يتم اختيار مجلد بعد.",
-                submitFolder: "تسليم المجلد", uploading: "جاري رفع {current} من {total} ملفات...",
+                submitFolder: "تسليم المجلد", preparingZip: "جاري تجهيز المجلد...", uploadingZip: "جاري رفع المجلد...",
                 submitSuccess: "تم تسليم الواجب بنجاح.", submitError: "فشل التسليم. حاول مرة ثانية.",
                 nameRequired: "اكتب اسمك من فضلك.", sectionRequired: "اختر الشعبة من فضلك.",
                 folderRequired: "اختر مجلد الواجب من فضلك.", oneFolderOnly: "اختر مجلداً واحداً فقط."
@@ -363,9 +365,8 @@
             return (value || fallback).replace(/[\\#?[\]*]/g, "_").replace(/\s+/g, "_").slice(0, 120) || fallback;
         }
 
-        function getSafeRelativePath(file, index) {
-            const relPath = file.webkitRelativePath || file.name || `file-${index + 1}`;
-            return relPath.split('/').filter(Boolean).map((segment, segmentIndex) => safeStorageSegment(segment, segmentIndex === 0 ? "folder" : "file")).join('/');
+        function getZipFileName(folderName) {
+            return `${safeStorageSegment(folderName, "assignment-folder")}.zip`;
         }
 
         function encodeContentDispositionName(name) {
@@ -425,36 +426,36 @@
             status.innerText = "";
 
             try {
+                if (!window.JSZip) throw new Error("Folder packer is still loading. Please try again in a moment.");
+
                 const submissionRef = doc(collection(db, "Courses", courseId, "submissions"));
-                const uploadedFiles = [];
+                const zip = new window.JSZip();
+                const zipFileName = getZipFileName(selection.folderName);
+                const storagePath = `student-submissions/${courseId}/${submissionRef.id}/${zipFileName}`;
+                const storageRef = ref(storage, storagePath);
 
-                for (let i = 0; i < selection.files.length; i++) {
-                    const file = selection.files[i];
-                    const safeRelativePath = getSafeRelativePath(file, i);
-                    const storagePath = `student-submissions/${courseId}/${submissionRef.id}/${safeRelativePath}`;
-                    const storageRef = ref(storage, storagePath);
-                    const originalRelativePath = file.webkitRelativePath || `${selection.folderName}/${file.name}`;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${texts.preparingZip}`;
+                selection.files.forEach((file, index) => {
+                    const originalRelativePath = file.webkitRelativePath || `${selection.folderName}/${file.name || `file-${index + 1}`}`;
+                    zip.file(originalRelativePath, file);
+                });
 
-                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${texts.uploading.replace('{current}', i + 1).replace('{total}', selection.files.length)}`;
-                    await uploadBytes(storageRef, file, {
-                        contentType: file.type || "application/octet-stream",
-                        contentDisposition: `attachment; filename*=UTF-8''${encodeContentDispositionName(file.name)}`,
-                        customMetadata: {
-                            originalName: file.name,
-                            originalRelativePath
-                        }
-                    });
-                    const downloadURL = await getDownloadURL(storageRef);
+                const zipBlob = await zip.generateAsync({
+                    type: "blob",
+                    compression: "DEFLATE",
+                    compressionOptions: { level: 6 }
+                });
 
-                    uploadedFiles.push({
-                        originalName: file.name,
-                        relativePath: originalRelativePath,
-                        storagePath,
-                        downloadURL,
-                        size: file.size,
-                        type: file.type || ""
-                    });
-                }
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${texts.uploadingZip}`;
+                await uploadBytes(storageRef, zipBlob, {
+                    contentType: "application/zip",
+                    contentDisposition: `attachment; filename*=UTF-8''${encodeContentDispositionName(zipFileName)}`,
+                    customMetadata: {
+                        folderName: selection.folderName,
+                        fileCount: String(selection.files.length)
+                    }
+                });
+                const downloadURL = await getDownloadURL(storageRef);
 
                 await setDoc(submissionRef, {
                     courseId,
@@ -465,8 +466,11 @@
                     section,
                     sectionLabel: getSectionLabel(section),
                     folderName: selection.folderName,
-                    fileCount: uploadedFiles.length,
-                    files: uploadedFiles,
+                    zipFileName,
+                    zipStoragePath: storagePath,
+                    zipDownloadURL: downloadURL,
+                    fileCount: selection.files.length,
+                    files: [],
                     submittedAt: serverTimestamp(),
                     createdAtClient: new Date().toISOString()
                 });

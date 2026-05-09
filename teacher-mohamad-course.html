@@ -744,7 +744,7 @@
         window.downloadSubmissionFolder = async function(submissionId, button) {
             const submission = (window.submissionsCache || []).find(item => item.id === submissionId);
             const files = submission?.files || [];
-            if (!files.length) return;
+            if (!submission?.zipDownloadURL && !files.length) return;
 
             const originalButton = button?.innerHTML;
             if (button) {
@@ -753,6 +753,17 @@
             }
 
             try {
+                if (submission.zipDownloadURL) {
+                    const link = document.createElement('a');
+                    link.href = submission.zipDownloadURL;
+                    link.download = submission.zipFileName || `${cleanZipName(submission.folderName)}.zip`;
+                    link.target = "_blank";
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    return;
+                }
+
                 if (!window.JSZip) throw new Error("JSZip unavailable");
 
                 const zip = new window.JSZip();
