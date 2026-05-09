@@ -241,19 +241,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label id="submission-folder-label" for="submission-folder">Assignment Folder</label>
-                    <input type="file" id="submission-folder" class="form-input" webkitdirectory directory multiple>
-                    <div class="folder-hint" id="submission-folder-hint">Choose one folder that contains your assignment files. Any file format is accepted.</div>
+                    <label id="submission-folder-label" for="submission-folder">Assignment File</label>
+                    <input type="file" id="submission-folder" class="form-input">
+                    <div class="folder-hint" id="submission-folder-hint">Choose one assignment file. Any file format is accepted.</div>
                     <div class="folder-summary" id="submission-folder-summary"></div>
                 </div>
 
-                <button type="submit" class="submit-btn" id="submit-folder-btn"><i class="fas fa-cloud-upload-alt"></i> <span id="submit-folder-text">Submit Folder</span></button>
+                <button type="submit" class="submit-btn" id="submit-folder-btn"><i class="fas fa-cloud-upload-alt"></i> <span id="submit-folder-text">Submit File</span></button>
                 <div class="submission-status" id="submission-status"></div>
             </form>
         </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <!-- 🌟 تم استيراد ميزة المزامنة الفورية onSnapshot 🌟 -->
     <script type="module">
@@ -309,13 +307,13 @@
                 valDist: "DISTINCTION", valMerit: "MERIT", valPass: "PASS", valFail: "FAIL", valPend: "PENDING",
                 tDue: "Due:", noAims: "No learning aims added by the teacher yet.", noTools: "No tools added yet.",
                 submissionTitle: "Submit Assignment", studentName: "Student Name", section: "Section", chooseSection: "-- Select Section --",
-                section1: "Section 1", section2: "Section 2", folderLabel: "Assignment Folder",
-                folderHint: "Choose one folder that contains your assignment files. Any file format is accepted.",
-                folderSummary: "Selected folder: {folder} ({count} files)", folderEmpty: "No folder selected yet.",
-                submitFolder: "Submit Folder", preparingZip: "Preparing folder... {percent}%", uploadingZip: "Uploading folder... {percent}%",
+                section1: "Section 1", section2: "Section 2", folderLabel: "Assignment File",
+                folderHint: "Choose one assignment file. Any file format is accepted.",
+                folderSummary: "Selected file: 1 file", folderEmpty: "No file selected yet.",
+                submitFolder: "Submit File", uploadingZip: "Uploading file... {percent}%",
                 submitSuccess: "Your assignment was submitted successfully.", submitError: "Submission failed. Please try again.",
                 nameRequired: "Please enter your name.", sectionRequired: "Please select your section.",
-                folderRequired: "Please choose one assignment folder.", oneFolderOnly: "Please choose one folder only."
+                folderRequired: "Please choose one assignment file.", oneFolderOnly: "Please choose one file only."
             },
             ar: {
                 langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", navDash: "لوحة التحكم", navProf: "حسابي", navLogout: "تسجيل الخروج",
@@ -326,13 +324,13 @@
                 valDist: "امتياز (Distinction)", valMerit: "جيد جداً (Merit)", valPass: "اجتياز (Pass)", valFail: "رسوب", valPend: "قيد التقييم",
                 tDue: "تاريخ التسليم:", noAims: "لم يقم المعلم بإضافة أهداف تعليمية بعد.", noTools: "لم يتم إضافة أدوات بعد.",
                 submissionTitle: "تسليم الواجب", studentName: "اسم الطالب", section: "الشعبة", chooseSection: "-- اختر الشعبة --",
-                section1: "الشعبة الأولى", section2: "الشعبة الثانية", folderLabel: "مجلد الواجب",
-                folderHint: "اختر مجلداً واحداً يحتوي ملفات الواجب. كل صيغ الملفات مسموحة.",
-                folderSummary: "المجلد المختار: {folder} ({count} ملفات)", folderEmpty: "لم يتم اختيار مجلد بعد.",
-                submitFolder: "تسليم المجلد", preparingZip: "جاري تجهيز المجلد... {percent}%", uploadingZip: "جاري رفع المجلد... {percent}%",
+                section1: "الشعبة الأولى", section2: "الشعبة الثانية", folderLabel: "ملف الواجب",
+                folderHint: "اختر ملف واجب واحد. كل صيغ الملفات مسموحة.",
+                folderSummary: "تم اختيار ملف واحد", folderEmpty: "لم يتم اختيار ملف بعد.",
+                submitFolder: "تسليم الملف", uploadingZip: "جاري رفع الملف... {percent}%",
                 submitSuccess: "تم تسليم الواجب بنجاح.", submitError: "فشل التسليم. حاول مرة ثانية.",
                 nameRequired: "اكتب اسمك من فضلك.", sectionRequired: "اختر الشعبة من فضلك.",
-                folderRequired: "اختر مجلد الواجب من فضلك.", oneFolderOnly: "اختر مجلداً واحداً فقط."
+                folderRequired: "اختر ملف الواجب من فضلك.", oneFolderOnly: "اختر ملفاً واحداً فقط."
             }
         };
 
@@ -350,23 +348,12 @@
             const input = document.getElementById('submission-folder');
             const files = Array.from(input.files || []);
             if (!files.length) return { valid: false, reason: "folderRequired", files: [] };
-
-            const roots = new Set();
-            files.forEach(file => {
-                const relPath = file.webkitRelativePath || "";
-                if (relPath.includes('/')) roots.add(relPath.split('/')[0]);
-            });
-
-            if (roots.size !== 1) return { valid: false, reason: "oneFolderOnly", files };
-            return { valid: true, files, folderName: Array.from(roots)[0] };
+            if (files.length !== 1) return { valid: false, reason: "oneFolderOnly", files };
+            return { valid: true, files, file: files[0] };
         }
 
         function safeStorageSegment(value, fallback = "file") {
             return (value || fallback).replace(/[\\#?[\]*]/g, "_").replace(/\s+/g, "_").slice(0, 120) || fallback;
-        }
-
-        function getZipFileName(folderName) {
-            return `${safeStorageSegment(folderName, "assignment-folder")}.zip`;
         }
 
         function encodeContentDispositionName(name) {
@@ -378,9 +365,9 @@
             button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${textTemplate.replace('{percent}', safePercent)}`;
         }
 
-        function uploadZipWithProgress(storageRef, zipBlob, metadata, button, texts) {
+        function uploadFileWithProgress(storageRef, file, metadata, button, texts) {
             return new Promise((resolve, reject) => {
-                const uploadTask = uploadBytesResumable(storageRef, zipBlob, metadata);
+                const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
                 uploadTask.on('state_changed', (snapshot) => {
                     const percent = snapshot.totalBytes ? (snapshot.bytesTransferred / snapshot.totalBytes) * 100 : 0;
@@ -408,7 +395,7 @@
                 summary.innerText = texts[selection.reason];
                 return;
             }
-            summary.innerText = texts.folderSummary.replace('{folder}', selection.folderName).replace('{count}', selection.files.length);
+            summary.innerText = texts.folderSummary;
             summary.classList.add('ready');
         }
 
@@ -448,34 +435,18 @@
             status.innerText = "";
 
             try {
-                if (!window.JSZip) throw new Error("Folder packer is still loading. Please try again in a moment.");
-
                 const submissionRef = doc(collection(db, "Courses", courseId, "submissions"));
-                const zip = new window.JSZip();
-                const zipFileName = getZipFileName(selection.folderName);
-                const storagePath = `student-submissions/${courseId}/${submissionRef.id}/${zipFileName}`;
+                const file = selection.file;
+                const safeFileName = safeStorageSegment(file.name || "assignment-file", "assignment-file");
+                const storagePath = `student-submissions/${courseId}/${submissionRef.id}/${safeFileName}`;
                 const storageRef = ref(storage, storagePath);
 
-                setSubmitButtonProgress(btn, texts.preparingZip, 0);
-                selection.files.forEach((file, index) => {
-                    const originalRelativePath = file.webkitRelativePath || `${selection.folderName}/${file.name || `file-${index + 1}`}`;
-                    zip.file(originalRelativePath, file);
-                });
-
-                const zipBlob = await zip.generateAsync({
-                    type: "blob",
-                    compression: "STORE"
-                }, (metadata) => {
-                    setSubmitButtonProgress(btn, texts.preparingZip, metadata.percent);
-                });
-
                 setSubmitButtonProgress(btn, texts.uploadingZip, 0);
-                const downloadURL = await uploadZipWithProgress(storageRef, zipBlob, {
-                    contentType: "application/zip",
-                    contentDisposition: `attachment; filename*=UTF-8''${encodeContentDispositionName(zipFileName)}`,
+                const downloadURL = await uploadFileWithProgress(storageRef, file, {
+                    contentType: file.type || "application/octet-stream",
+                    contentDisposition: `attachment; filename*=UTF-8''${encodeContentDispositionName(file.name || "assignment-file")}`,
                     customMetadata: {
-                        folderName: selection.folderName,
-                        fileCount: String(selection.files.length)
+                        originalFileName: file.name || "assignment-file"
                     }
                 }, btn, texts);
 
@@ -487,11 +458,11 @@
                     studentName,
                     section,
                     sectionLabel: getSectionLabel(section),
-                    folderName: selection.folderName,
-                    zipFileName,
-                    zipStoragePath: storagePath,
-                    zipDownloadURL: downloadURL,
-                    fileCount: selection.files.length,
+                    folderName: "",
+                    originalFileName: file.name || "assignment-file",
+                    fileStoragePath: storagePath,
+                    fileDownloadURL: downloadURL,
+                    fileCount: 1,
                     files: [],
                     submittedAt: serverTimestamp(),
                     createdAtClient: new Date().toISOString()
