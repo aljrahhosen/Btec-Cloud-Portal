@@ -257,8 +257,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, onSnapshot, collection, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+        import { getFirestore, doc, getDoc, onSnapshot, collection, setDoc, serverTimestamp, Bytes } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -272,7 +271,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         window.currentStudentGrade = null;
         window.currentUser = null;
@@ -310,7 +308,7 @@
                 section1: "Section 1", section2: "Section 2", folderLabel: "Assignment File",
                 folderHint: "Choose one assignment file. Any file format is accepted.",
                 folderSummary: "Selected file: 1 file", folderEmpty: "No file selected yet.",
-                submitFolder: "Submit File", uploadingZip: "Uploading file... {percent}%",
+                submitFolder: "Submit File", uploadingZip: "Saving file... {percent}%",
                 submitSuccess: "Your assignment was submitted successfully.", submitError: "Submission failed. Please try again.",
                 nameRequired: "Please enter your name.", sectionRequired: "Please select your section.",
                 folderRequired: "Please choose one assignment file.", oneFolderOnly: "Please choose one file only."
@@ -327,7 +325,7 @@
                 section1: "الشعبة الأولى", section2: "الشعبة الثانية", folderLabel: "ملف الواجب",
                 folderHint: "اختر ملف واجب واحد. كل صيغ الملفات مسموحة.",
                 folderSummary: "تم اختيار ملف واحد", folderEmpty: "لم يتم اختيار ملف بعد.",
-                submitFolder: "تسليم الملف", uploadingZip: "جاري رفع الملف... {percent}%",
+                submitFolder: "تسليم الملف", uploadingZip: "جاري حفظ الملف... {percent}%",
                 submitSuccess: "تم تسليم الواجب بنجاح.", submitError: "فشل التسليم. حاول مرة ثانية.",
                 nameRequired: "اكتب اسمك من فضلك.", sectionRequired: "اختر الشعبة من فضلك.",
                 folderRequired: "اختر ملف الواجب من فضلك.", oneFolderOnly: "اختر ملفاً واحداً فقط."
@@ -365,21 +363,34 @@
             button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${textTemplate.replace('{percent}', safePercent)}`;
         }
 
-        function uploadFileWithProgress(storageRef, file, metadata, button, texts) {
-            return new Promise((resolve, reject) => {
-                const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+        async function saveFileToFirestoreChunks(submissionRef, file, button, texts) {
+            const chunkSize = 700 * 1024;
+            const totalChunks = Math.max(1, Math.ceil(file.size / chunkSize));
+            const chunksRoot = collection(submissionRef, "fileChunks");
+            let nextIndex = 0;
+            let completed = 0;
 
-                uploadTask.on('state_changed', (snapshot) => {
-                    const percent = snapshot.totalBytes ? (snapshot.bytesTransferred / snapshot.totalBytes) * 100 : 0;
-                    setSubmitButtonProgress(button, texts.uploadingZip, percent);
-                }, reject, async () => {
-                    try {
-                        resolve(await getDownloadURL(uploadTask.snapshot.ref));
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-            });
+            async function saveNextChunk() {
+                while (nextIndex < totalChunks) {
+                    const index = nextIndex++;
+                    const start = index * chunkSize;
+                    const end = Math.min(file.size, start + chunkSize);
+                    const buffer = await file.slice(start, end).arrayBuffer();
+
+                    await setDoc(doc(chunksRoot, String(index).padStart(5, "0")), {
+                        index,
+                        bytes: Bytes.fromUint8Array(new Uint8Array(buffer))
+                    });
+
+                    completed++;
+                    setSubmitButtonProgress(button, texts.uploadingZip, (completed / totalChunks) * 100);
+                }
+            }
+
+            const workers = Array.from({ length: Math.min(3, totalChunks) }, () => saveNextChunk());
+            await Promise.all(workers);
+
+            return totalChunks;
         }
 
         function updateFolderSummary() {
@@ -437,18 +448,9 @@
             try {
                 const submissionRef = doc(collection(db, "Courses", courseId, "submissions"));
                 const file = selection.file;
-                const safeFileName = safeStorageSegment(file.name || "assignment-file", "assignment-file");
-                const storagePath = `student-submissions/${courseId}/${submissionRef.id}/${safeFileName}`;
-                const storageRef = ref(storage, storagePath);
 
                 setSubmitButtonProgress(btn, texts.uploadingZip, 0);
-                const downloadURL = await uploadFileWithProgress(storageRef, file, {
-                    contentType: file.type || "application/octet-stream",
-                    contentDisposition: `attachment; filename*=UTF-8''${encodeContentDispositionName(file.name || "assignment-file")}`,
-                    customMetadata: {
-                        originalFileName: file.name || "assignment-file"
-                    }
-                }, btn, texts);
+                const chunkCount = await saveFileToFirestoreChunks(submissionRef, file, btn, texts);
 
                 await setDoc(submissionRef, {
                     courseId,
@@ -460,8 +462,10 @@
                     sectionLabel: getSectionLabel(section),
                     folderName: "",
                     originalFileName: file.name || "assignment-file",
-                    fileStoragePath: storagePath,
-                    fileDownloadURL: downloadURL,
+                    fileStorageType: "firestore-chunks",
+                    fileSize: file.size,
+                    fileType: file.type || "application/octet-stream",
+                    chunkCount,
                     fileCount: 1,
                     files: [],
                     submittedAt: serverTimestamp(),

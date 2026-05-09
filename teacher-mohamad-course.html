@@ -741,10 +741,31 @@
             });
         }
 
+        async function downloadFirestoreChunkedFile(submission, button) {
+            const chunksRef = collection(db, "Courses", courseId, "submissions", submission.id, "fileChunks");
+            const snapshot = await getDocs(chunksRef);
+            const chunks = snapshot.docs
+                .map(docSnap => docSnap.data())
+                .sort((a, b) => (a.index || 0) - (b.index || 0));
+
+            if (!chunks.length) throw new Error("No file chunks found");
+
+            const arrays = chunks.map(chunk => chunk.bytes.toUint8Array());
+            const blob = new Blob(arrays, { type: submission.fileType || "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = submission.originalFileName || "student-submission";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        }
+
         window.downloadSubmissionFolder = async function(submissionId, button) {
             const submission = (window.submissionsCache || []).find(item => item.id === submissionId);
             const files = submission?.files || [];
-            if (!submission?.fileDownloadURL && !submission?.zipDownloadURL && !files.length) return;
+            if (!submission?.fileStorageType && !submission?.fileDownloadURL && !submission?.zipDownloadURL && !files.length) return;
 
             const originalButton = button?.innerHTML;
             if (button) {
@@ -753,6 +774,11 @@
             }
 
             try {
+                if (submission.fileStorageType === "firestore-chunks") {
+                    await downloadFirestoreChunkedFile(submission, button);
+                    return;
+                }
+
                 if (submission.fileDownloadURL) {
                     const link = document.createElement('a');
                     link.href = submission.fileDownloadURL;
