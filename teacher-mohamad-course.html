@@ -485,9 +485,15 @@
                 modalTitle.innerHTML = t[window.activeLang].mEditAssign;
                 modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mAssignTitle}</label><input type="text" id="input-assign-title" class="form-input" value="${document.getElementById('display-assign-title').innerText}"></div><div class="form-group"><label>${t[window.activeLang].mDueDate}</label><input type="datetime-local" id="input-due-date" class="form-input"></div><div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mUploadBrief}</label><input type="file" id="input-assign-file" class="form-input"></div>`;
             } 
+            // 🌟 🌟 🌟 التعديل السحري هون: رجعنا الملف والرابط في نافذة الأهداف 🌟 🌟 🌟
             else if (section === 'add-aim' || section === 'edit-aim') {
                 modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddAim : t[window.activeLang].mEditAim;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mAimTitle}</label><input type="text" id="input-aim-title" class="form-input"></div><div class="form-group"><label>${t[window.activeLang].mAimDesc}</label><textarea id="input-aim-desc" class="form-input" rows="3"></textarea></div>`;
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>${t[window.activeLang].mAimTitle}</label><input type="text" id="input-aim-title" class="form-input"></div>
+                    <div class="form-group"><label>${t[window.activeLang].mAimDesc}</label><textarea id="input-aim-desc" class="form-input" rows="3"></textarea></div>
+                    <div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mAttachFile}</label><input type="file" id="input-aim-file" class="form-input"></div>
+                    <div class="form-group"><label>${t[window.activeLang].mExtLink}</label><input type="url" id="input-aim-url" class="form-input" placeholder="https://..."></div>
+                `;
             } 
             else if (section === 'add-tool' || section === 'edit-tool') {
                 modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddTool : t[window.activeLang].mEditTool;
@@ -495,7 +501,7 @@
             }
         }
 
-        // 🌟 دالة الحفظ اللي بتخزن بالـ Firebase 🌟
+        // 🌟 دالة الحفظ اللي بتخزن بالـ Firebase مع الملفات والروابط 🌟
         window.saveChanges = async function() {
             const courseRef = doc(db, "Courses", courseId);
             const saveBtn = document.getElementById('t-save-modal-btn');
@@ -534,16 +540,24 @@
                         }, { merge: true });
                     }
                 } 
+                // 🌟 حفظ الهدف مع الملف والرابط 🌟
                 else if (window.currentSection === 'add-aim') {
                     let titleVal = document.getElementById('input-aim-title').value; 
                     let descVal = document.getElementById('input-aim-desc').value;
+                    let fileInput = document.getElementById('input-aim-file');
+                    let fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : "";
+                    let urlVal = document.getElementById('input-aim-url').value;
                     
                     if(titleVal){ 
-                        document.getElementById('aims-container').insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header" onclick="window.toggleAim(this)"><div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${titleVal}</span></div><i class="fas fa-chevron-down toggle-icon"></i></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${descVal}</div></div></div></div>`); 
+                        let extraHtml = '';
+                        if(fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${fileName}</span><i class="fas fa-cloud-download-alt" style="cursor:pointer;" title="Download"></i></div>`;
+                        if(urlVal) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${urlVal}" style="color:white; text-decoration:none;" target="_blank">رابط إضافي</a></span><i class="fas fa-external-link-alt" style="cursor:pointer;" title="Open"></i></div>`;
+
+                        document.getElementById('aims-container').insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header" onclick="window.toggleAim(this)"><div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${titleVal}</span></div><i class="fas fa-chevron-down toggle-icon"></i></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${descVal}</div>${extraHtml}</div></div></div>`); 
                         
-                        // إرسال الهدف للفايربيس
+                        // إرسال الهدف مع المرفقات للفايربيس
                         await setDoc(courseRef, {
-                            aims: arrayUnion({ title: titleVal, desc: descVal })
+                            aims: arrayUnion({ title: titleVal, desc: descVal, fileName: fileName, url: urlVal })
                         }, { merge: true });
                     }
                 }
@@ -581,12 +595,16 @@
                         });
                     }
                     
-                    // تحميل الأهداف (Aims)
+                    // 🌟 تحميل الأهداف مع الملفات والروابط 🌟
                     if(data.aims && data.aims.length > 0) {
                         const ac = document.getElementById('aims-container');
                         ac.innerHTML = '';
                         data.aims.forEach(aim => {
-                            ac.insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header" onclick="window.toggleAim(this)"><div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${aim.title}</span></div><i class="fas fa-chevron-down toggle-icon"></i></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${aim.desc}</div></div></div></div>`);
+                            let extraHtml = '';
+                            if(aim.fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${aim.fileName}</span><i class="fas fa-cloud-download-alt" style="cursor:pointer;" title="Download"></i></div>`;
+                            if(aim.url) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${aim.url}" style="color:white; text-decoration:none;" target="_blank">رابط إضافي</a></span><i class="fas fa-external-link-alt" style="cursor:pointer;" title="Open"></i></div>`;
+
+                            ac.insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header" onclick="window.toggleAim(this)"><div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${aim.title}</span></div><i class="fas fa-chevron-down toggle-icon"></i></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${aim.desc}</div>${extraHtml}</div></div></div>`);
                         });
                     }
                 }
