@@ -133,11 +133,15 @@
 
         .submissions-modal-box { max-width: 760px; max-height: 88vh; display: flex; flex-direction: column; }
         .submissions-modal-box #modal-body { overflow: hidden; }
-        .submissions-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 15px; }
+        .submissions-toolbar { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 15px; flex-wrap: wrap; }
         .submissions-toolbar .form-group { flex: 1; margin-bottom: 0; }
+        .bulk-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .select-all-wrap { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; cursor: pointer; user-select: none; }
+        .submission-checkbox { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex: 0 0 auto; }
         .submissions-scroll { max-height: 55vh; overflow-y: auto; padding-right: 6px; }
         html[dir="rtl"] .submissions-scroll { padding-right: 0; padding-left: 6px; }
         .submission-item { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--card-border); border-radius: 8px; background: rgba(0,0,0,0.22); }
+        .submission-main { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
         .submission-name { color: white; font-weight: 600; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .submission-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--text-muted); font-size: 12px; }
         .submission-meta span { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); border-radius: 6px; padding: 5px 8px; }
@@ -148,6 +152,8 @@
 
         @media (max-width: 640px) {
             .submission-item { align-items: stretch; flex-direction: column; }
+            .submissions-toolbar { align-items: stretch; }
+            .submissions-toolbar .form-group, .bulk-actions, .download-submission-btn { width: 100%; }
             .download-submission-btn { width: 100%; }
         }
     </style>
@@ -327,8 +333,8 @@
         const currentCourse = coursesDB[courseId] || coursesDB['it-systems']; 
 
         const t = {
-            en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload File", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --", submissionsTitle: "Student Submissions", sectionFilter: "Section", allSections: "All Sections", section1: "Section 1", section2: "Section 2", loadingSubmissions: "Loading submissions...", noSubmissions: "No submissions for this section yet.", submittedAt: "Submitted", filesCount: "{count} file", downloadFolder: "Download Submission", preparingDownload: "Preparing...", downloadFallback: "Could not download the submission. Opening files instead.", confirmDelete: "Delete this item?", saveError: "Failed to save. Check Firebase Rules." },
-            ar: { langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", studentGrading: "تقييم الطلاب", criteria: "المعايير المنجزة:", final: "النتيجة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض التسليمات", toolsBox: "الأدوات والروابط", save: "حفظ التعديلات", saveGrades: "حفظ العلامة", progress: "تقدم الوحدة: 40%", pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز", fail: "رسوب (غير مصنف)", pending: "قيد الانتظار", selectGrade: "حدد العلامة النهائية:", chooseGrade: "-- اختر العلامة --", mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف", mEditAssign: "تعديل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم", mUploadBrief: "رفع ملف", mAddAim: "إضافة هدف", mEditAim: "تعديل هدف", mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف", mExtLink: "رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل رابط", mToolTitle: "عنوان الرابط", mUrlLink: "الرابط", chooseStudent: "-- اختر طالباً --", submissionsTitle: "تسليمات الطلاب", sectionFilter: "الشعبة", allSections: "كل الشعب", section1: "الشعبة الأولى", section2: "الشعبة الثانية", loadingSubmissions: "جاري تحميل التسليمات...", noSubmissions: "لا يوجد تسليمات لهذه الشعبة بعد.", submittedAt: "وقت التسليم", filesCount: "{count} ملف", downloadFolder: "تحميل التسليم", preparingDownload: "جاري التجهيز...", downloadFallback: "تعذر تحميل التسليم. سيتم فتح الملفات بدلاً من ذلك.", confirmDelete: "حذف هذا العنصر؟", saveError: "فشل الحفظ. تأكد من صلاحيات Firebase." }
+            en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload File", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --", submissionsTitle: "Student Submissions", sectionFilter: "Section", allSections: "All Sections", section1: "Section 1", section2: "Section 2", loadingSubmissions: "Loading submissions...", noSubmissions: "No submissions for this section yet.", submittedAt: "Submitted", filesCount: "{count} file", downloadFolder: "Download Submission", preparingDownload: "Preparing...", downloadFallback: "Could not download the submission. Opening files instead.", confirmDelete: "Delete this item?", saveError: "Failed to save. Check Firebase Rules.", selectAll: "Select All", downloadSelected: "Download Selected", selectedCount: "{count} selected", noSelected: "Select at least one submission.", bulkZipName: "student-submissions.zip" },
+            ar: { langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", studentGrading: "تقييم الطلاب", criteria: "المعايير المنجزة:", final: "النتيجة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض التسليمات", toolsBox: "الأدوات والروابط", save: "حفظ التعديلات", saveGrades: "حفظ العلامة", progress: "تقدم الوحدة: 40%", pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز", fail: "رسوب (غير مصنف)", pending: "قيد الانتظار", selectGrade: "حدد العلامة النهائية:", chooseGrade: "-- اختر العلامة --", mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف", mEditAssign: "تعديل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم", mUploadBrief: "رفع ملف", mAddAim: "إضافة هدف", mEditAim: "تعديل هدف", mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف", mExtLink: "رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل رابط", mToolTitle: "عنوان الرابط", mUrlLink: "الرابط", chooseStudent: "-- اختر طالباً --", submissionsTitle: "تسليمات الطلاب", sectionFilter: "الشعبة", allSections: "كل الشعب", section1: "الشعبة الأولى", section2: "الشعبة الثانية", loadingSubmissions: "جاري تحميل التسليمات...", noSubmissions: "لا يوجد تسليمات لهذه الشعبة بعد.", submittedAt: "وقت التسليم", filesCount: "{count} ملف", downloadFolder: "تحميل التسليم", preparingDownload: "جاري التجهيز...", downloadFallback: "تعذر تحميل التسليم. سيتم فتح الملفات بدلاً من ذلك.", confirmDelete: "حذف هذا العنصر؟", saveError: "فشل الحفظ. تأكد من صلاحيات Firebase.", selectAll: "تحديد الكل", downloadSelected: "تحميل المحدد", selectedCount: "{count} محدد", noSelected: "حدد تسليم واحد على الأقل.", bulkZipName: "تسليمات-الطلاب.zip" }
         };
 
         function escapeHTML(value) {
@@ -359,6 +365,15 @@
 
         function normalizeZipPath(value, fallback) {
             return (value || fallback || "file").split('/').filter(Boolean).join('/') || fallback || "file";
+        }
+
+        function safeFileName(value, fallback = "file") {
+            return String(value || fallback).replace(/[\\/:*?"<>|]/g, "_").replace(/\s+/g, "_").slice(0, 120) || fallback;
+        }
+
+        function getVisibleSubmissions() {
+            const selectedSection = document.getElementById('submission-section-filter')?.value || "";
+            return (window.submissionsCache || []).filter(submission => !selectedSection || submission.section === selectedSection);
         }
 
         window.renderTools = function() {
@@ -666,6 +681,14 @@
                                 <option value="section-2">${t[window.activeLang].section2}</option>
                             </select>
                         </div>
+                        <div class="bulk-actions">
+                            <label class="select-all-wrap">
+                                <input type="checkbox" id="select-all-submissions" class="submission-checkbox" onchange="window.toggleAllSubmissions(this.checked)">
+                                <span>${t[window.activeLang].selectAll}</span>
+                            </label>
+                            <button class="download-submission-btn" id="download-selected-btn" onclick="window.downloadSelectedSubmissions(this)" disabled><i class="fas fa-download"></i> ${t[window.activeLang].downloadSelected}</button>
+                            <span id="selected-count-label" style="color: var(--text-muted); font-size: 12px;">${t[window.activeLang].selectedCount.replace('{count}', 0)}</span>
+                        </div>
                     </div>
                     <div class="submissions-scroll" id="submissions-list">
                         <div class="empty-submissions"><i class="fas fa-spinner fa-spin"></i> ${t[window.activeLang].loadingSubmissions}</div>
@@ -679,11 +702,11 @@
             const list = document.getElementById('submissions-list');
             if (!list) return;
 
-            const selectedSection = document.getElementById('submission-section-filter')?.value || "";
-            const submissions = (window.submissionsCache || []).filter(submission => !selectedSection || submission.section === selectedSection);
+            const submissions = getVisibleSubmissions();
 
             if (!submissions.length) {
                 list.innerHTML = `<div class="empty-submissions">${t[window.activeLang].noSubmissions}</div>`;
+                window.updateSubmissionSelectionState();
                 return;
             }
 
@@ -694,18 +717,44 @@
 
                 list.insertAdjacentHTML('beforeend', `
                     <div class="submission-item">
-                        <div>
-                            <div class="submission-name"><i class="fas fa-user-graduate"></i> ${escapeHTML(submission.studentName || "-")}</div>
-                            <div class="submission-meta">
-                                <span><i class="fas fa-users"></i> ${escapeHTML(getSectionLabel(submission.section))}</span>
-                                <span><i class="far fa-clock"></i> ${escapeHTML(t[window.activeLang].submittedAt)}: ${escapeHTML(submittedAt)}</span>
-                                <span><i class="fas fa-folder"></i> ${escapeHTML(t[window.activeLang].filesCount.replace('{count}', fileCount))}</span>
+                        <div class="submission-main">
+                            <input type="checkbox" class="submission-checkbox submission-select" value="${escapeHTML(submission.id)}" onchange="window.updateSubmissionSelectionState()">
+                            <div>
+                                <div class="submission-name"><i class="fas fa-user-graduate"></i> ${escapeHTML(submission.studentName || "-")}</div>
+                                <div class="submission-meta">
+                                    <span><i class="fas fa-users"></i> ${escapeHTML(getSectionLabel(submission.section))}</span>
+                                    <span><i class="far fa-clock"></i> ${escapeHTML(t[window.activeLang].submittedAt)}: ${escapeHTML(submittedAt)}</span>
+                                    <span><i class="fas fa-folder"></i> ${escapeHTML(t[window.activeLang].filesCount.replace('{count}', fileCount))}</span>
+                                </div>
                             </div>
                         </div>
                         <button class="download-submission-btn" onclick="window.downloadSubmissionFolder('${escapeHTML(submission.id)}', this)"><i class="fas fa-download"></i> ${t[window.activeLang].downloadFolder}</button>
                     </div>
                 `);
             });
+            window.updateSubmissionSelectionState();
+        }
+
+        window.toggleAllSubmissions = function(checked) {
+            document.querySelectorAll('.submission-select').forEach(input => {
+                input.checked = checked;
+            });
+            window.updateSubmissionSelectionState();
+        }
+
+        window.updateSubmissionSelectionState = function() {
+            const boxes = Array.from(document.querySelectorAll('.submission-select'));
+            const checkedBoxes = boxes.filter(input => input.checked);
+            const selectAll = document.getElementById('select-all-submissions');
+            const bulkBtn = document.getElementById('download-selected-btn');
+            const countLabel = document.getElementById('selected-count-label');
+
+            if (selectAll) {
+                selectAll.checked = boxes.length > 0 && checkedBoxes.length === boxes.length;
+                selectAll.indeterminate = checkedBoxes.length > 0 && checkedBoxes.length < boxes.length;
+            }
+            if (bulkBtn) bulkBtn.disabled = checkedBoxes.length === 0;
+            if (countLabel) countLabel.innerText = t[window.activeLang].selectedCount.replace('{count}', checkedBoxes.length);
         }
 
         window.listenToSubmissions = function() {
@@ -741,7 +790,7 @@
             });
         }
 
-        async function downloadFirestoreChunkedFile(submission, button) {
+        async function getFirestoreChunkedBlob(submission) {
             const chunksRef = collection(db, "Courses", courseId, "submissions", submission.id, "fileChunks");
             const snapshot = await getDocs(chunksRef);
             const chunks = snapshot.docs
@@ -751,15 +800,105 @@
             if (!chunks.length) throw new Error("No file chunks found");
 
             const arrays = chunks.map(chunk => chunk.bytes.toUint8Array());
-            const blob = new Blob(arrays, { type: submission.fileType || "application/octet-stream" });
+            return new Blob(arrays, { type: submission.fileType || "application/octet-stream" });
+        }
+
+        async function getSubmissionDownloadItems(submission) {
+            if (submission.fileStorageType === "firestore-chunks") {
+                return [{
+                    name: submission.originalFileName || "student-submission",
+                    blob: await getFirestoreChunkedBlob(submission)
+                }];
+            }
+
+            if (submission.fileDownloadURL) {
+                const response = await fetch(submission.fileDownloadURL);
+                if (!response.ok) throw new Error("Download failed");
+                return [{
+                    name: submission.originalFileName || "student-submission",
+                    blob: await response.blob()
+                }];
+            }
+
+            if (submission.zipDownloadURL) {
+                const response = await fetch(submission.zipDownloadURL);
+                if (!response.ok) throw new Error("Download failed");
+                return [{
+                    name: submission.zipFileName || `${cleanZipName(submission.folderName)}.zip`,
+                    blob: await response.blob()
+                }];
+            }
+
+            const files = submission.files || [];
+            const items = [];
+            for (const file of files) {
+                const response = await fetch(file.downloadURL);
+                if (!response.ok) throw new Error("Download failed");
+                items.push({
+                    name: normalizeZipPath(file.relativePath, file.originalName || "file"),
+                    blob: await response.blob()
+                });
+            }
+            return items;
+        }
+
+        function saveBlob(blob, fileName) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = submission.originalFileName || "student-submission";
+            link.download = fileName;
             document.body.appendChild(link);
             link.click();
             link.remove();
             URL.revokeObjectURL(url);
+        }
+
+        async function downloadFirestoreChunkedFile(submission) {
+            saveBlob(await getFirestoreChunkedBlob(submission), submission.originalFileName || "student-submission");
+        }
+
+        window.downloadSelectedSubmissions = async function(button) {
+            const selectedIds = Array.from(document.querySelectorAll('.submission-select:checked')).map(input => input.value);
+            if (!selectedIds.length) {
+                alert(t[window.activeLang].noSelected);
+                return;
+            }
+            if (!window.JSZip) {
+                alert(t[window.activeLang].downloadFallback);
+                return;
+            }
+
+            const originalButton = button?.innerHTML;
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t[window.activeLang].preparingDownload}`;
+            }
+
+            try {
+                const zip = new window.JSZip();
+                for (const submissionId of selectedIds) {
+                    const submission = (window.submissionsCache || []).find(item => item.id === submissionId);
+                    if (!submission) continue;
+
+                    const studentFolder = `${safeFileName(submission.studentName || "student")}_${safeFileName(getSectionLabel(submission.section), "section")}_${safeFileName(submissionId, "submission")}`;
+                    const items = await getSubmissionDownloadItems(submission);
+                    items.forEach((item, index) => {
+                        zip.file(`${studentFolder}/${safeFileName(item.name, `file-${index + 1}`)}`, item.blob);
+                    });
+                }
+
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                saveBlob(zipBlob, t[window.activeLang].bulkZipName);
+            } catch (error) {
+                console.error("Bulk download error:", error);
+                alert(t[window.activeLang].downloadFallback);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = originalButton;
+                }
+                window.updateSubmissionSelectionState();
+            }
         }
 
         window.downloadSubmissionFolder = async function(submissionId, button) {
@@ -775,29 +914,21 @@
 
             try {
                 if (submission.fileStorageType === "firestore-chunks") {
-                    await downloadFirestoreChunkedFile(submission, button);
+                    await downloadFirestoreChunkedFile(submission);
                     return;
                 }
 
                 if (submission.fileDownloadURL) {
-                    const link = document.createElement('a');
-                    link.href = submission.fileDownloadURL;
-                    link.download = submission.originalFileName || "student-submission";
-                    link.target = "_blank";
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
+                    const response = await fetch(submission.fileDownloadURL);
+                    if (!response.ok) throw new Error("Download failed");
+                    saveBlob(await response.blob(), submission.originalFileName || "student-submission");
                     return;
                 }
 
                 if (submission.zipDownloadURL) {
-                    const link = document.createElement('a');
-                    link.href = submission.zipDownloadURL;
-                    link.download = submission.zipFileName || `${cleanZipName(submission.folderName)}.zip`;
-                    link.target = "_blank";
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
+                    const response = await fetch(submission.zipDownloadURL);
+                    if (!response.ok) throw new Error("Download failed");
+                    saveBlob(await response.blob(), submission.zipFileName || `${cleanZipName(submission.folderName)}.zip`);
                     return;
                 }
 
