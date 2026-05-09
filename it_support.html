@@ -89,6 +89,27 @@
         .submit-btn:hover { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
 
         .toggle-icon { transition: transform 0.3s ease; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(11, 17, 32, 0.82); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; padding: 20px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-box { width: min(100%, 520px); background: #1e293b; border: 1px solid var(--card-border); border-radius: 12px; padding: 26px; box-shadow: 0 25px 50px rgba(0,0,0,0.45); transform: translateY(20px) scale(0.96); opacity: 0; transition: all 0.3s ease; }
+        .modal-overlay.active .modal-box { transform: translateY(0) scale(1); opacity: 1; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid var(--card-border); }
+        .modal-header h3 { margin: 0; font-size: 18px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; }
+        .close-btn:hover { color: var(--accent-red); transform: rotate(90deg); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.28); color: white; border: 1px solid var(--card-border); border-radius: 8px; box-sizing: border-box; font-family: inherit; transition: 0.3s; }
+        .form-input[type="file"] { padding: 9px; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 168, 252, 0.12); }
+        select.form-input { appearance: none; -webkit-appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px; }
+        html[dir="rtl"] select.form-input { background-position: left 15px center; padding-right: 12px; padding-left: 40px; }
+        select.form-input option { background-color: var(--card-bg); color: white; }
+        .folder-hint, .folder-summary { color: var(--text-muted); font-size: 12px; line-height: 1.5; margin-top: 8px; }
+        .folder-summary.ready { color: var(--accent-green); }
+        .submission-status { min-height: 18px; margin-top: 10px; color: var(--text-muted); font-size: 12px; text-align: center; }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
     </style>
 </head>
 <body>
@@ -197,11 +218,47 @@
         </div>
     </div>
 
+    <div id="submission-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="submission-modal-title"><i class="fas fa-upload"></i> Submit Assignment</h3>
+                <button type="button" class="close-btn" onclick="window.closeSubmissionModal()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <form id="submission-form">
+                <div class="form-group">
+                    <label id="submission-name-label" for="submission-student-name">Student Name</label>
+                    <input type="text" id="submission-student-name" class="form-input" autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label id="submission-section-label" for="submission-section">Section</label>
+                    <select id="submission-section" class="form-input">
+                        <option value="" disabled selected>-- Select Section --</option>
+                        <option value="section-1">Section 1</option>
+                        <option value="section-2">Section 2</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="submission-folder-label" for="submission-folder">Assignment Folder</label>
+                    <input type="file" id="submission-folder" class="form-input" webkitdirectory directory multiple>
+                    <div class="folder-hint" id="submission-folder-hint">Choose one folder that contains your assignment files. Any file format is accepted.</div>
+                    <div class="folder-summary" id="submission-folder-summary"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submit-folder-btn"><i class="fas fa-cloud-upload-alt"></i> <span id="submit-folder-text">Submit Folder</span></button>
+                <div class="submission-status" id="submission-status"></div>
+            </form>
+        </div>
+    </div>
+
     <!-- 🌟 تم استيراد ميزة المزامنة الفورية onSnapshot 🌟 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, onSnapshot, collection, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -215,10 +272,17 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         window.currentStudentGrade = null;
+        window.currentUser = null;
         const urlParams = new URLSearchParams(window.location.search);
         const courseId = urlParams.get('id') || 'it-systems';
+
+        const sectionOptions = [
+            { value: "section-1", en: "Section 1", ar: "الشعبة الأولى" },
+            { value: "section-2", en: "Section 2", ar: "الشعبة الثانية" }
+        ];
 
         window.toggleAim = function(headerElement) {
             const container = headerElement.parentElement;
@@ -241,7 +305,15 @@
                 uGrades: "My Grades & Assessment", gFinal: "Resulting Grade:", gCrit: "Criteria Achieved:",
                 wAssign: "Assignment & Submission", btnSubmit: "Submit Work", wTools: "Required Software",
                 valDist: "DISTINCTION", valMerit: "MERIT", valPass: "PASS", valFail: "FAIL", valPend: "PENDING",
-                tDue: "Due:", noAims: "No learning aims added by the teacher yet.", noTools: "No tools added yet."
+                tDue: "Due:", noAims: "No learning aims added by the teacher yet.", noTools: "No tools added yet.",
+                submissionTitle: "Submit Assignment", studentName: "Student Name", section: "Section", chooseSection: "-- Select Section --",
+                section1: "Section 1", section2: "Section 2", folderLabel: "Assignment Folder",
+                folderHint: "Choose one folder that contains your assignment files. Any file format is accepted.",
+                folderSummary: "Selected folder: {folder} ({count} files)", folderEmpty: "No folder selected yet.",
+                submitFolder: "Submit Folder", uploading: "Uploading {current} of {total} files...",
+                submitSuccess: "Your assignment was submitted successfully.", submitError: "Submission failed. Please try again.",
+                nameRequired: "Please enter your name.", sectionRequired: "Please select your section.",
+                folderRequired: "Please choose one assignment folder.", oneFolderOnly: "Please choose one folder only."
             },
             ar: {
                 langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", navDash: "لوحة التحكم", navProf: "حسابي", navLogout: "تسجيل الخروج",
@@ -250,9 +322,169 @@
                 uGrades: "علاماتي وتقييمي", gFinal: "النتيجة النهائية:", gCrit: "المعايير المنجزة:",
                 wAssign: "الواجبات والتسليم", btnSubmit: "تسليم الواجب", wTools: "البرامج المطلوبة",
                 valDist: "امتياز (Distinction)", valMerit: "جيد جداً (Merit)", valPass: "اجتياز (Pass)", valFail: "رسوب", valPend: "قيد التقييم",
-                tDue: "تاريخ التسليم:", noAims: "لم يقم المعلم بإضافة أهداف تعليمية بعد.", noTools: "لم يتم إضافة أدوات بعد."
+                tDue: "تاريخ التسليم:", noAims: "لم يقم المعلم بإضافة أهداف تعليمية بعد.", noTools: "لم يتم إضافة أدوات بعد.",
+                submissionTitle: "تسليم الواجب", studentName: "اسم الطالب", section: "الشعبة", chooseSection: "-- اختر الشعبة --",
+                section1: "الشعبة الأولى", section2: "الشعبة الثانية", folderLabel: "مجلد الواجب",
+                folderHint: "اختر مجلداً واحداً يحتوي ملفات الواجب. كل صيغ الملفات مسموحة.",
+                folderSummary: "المجلد المختار: {folder} ({count} ملفات)", folderEmpty: "لم يتم اختيار مجلد بعد.",
+                submitFolder: "تسليم المجلد", uploading: "جاري رفع {current} من {total} ملفات...",
+                submitSuccess: "تم تسليم الواجب بنجاح.", submitError: "فشل التسليم. حاول مرة ثانية.",
+                nameRequired: "اكتب اسمك من فضلك.", sectionRequired: "اختر الشعبة من فضلك.",
+                folderRequired: "اختر مجلد الواجب من فضلك.", oneFolderOnly: "اختر مجلداً واحداً فقط."
             }
         };
+
+        function getActiveTexts() {
+            return translations[window.activeLang || document.documentElement.lang || 'en'];
+        }
+
+        function getSectionLabel(sectionValue) {
+            const option = sectionOptions.find(item => item.value === sectionValue);
+            if (!option) return sectionValue || "-";
+            return option[window.activeLang === 'ar' ? 'ar' : 'en'];
+        }
+
+        function getFolderSelection() {
+            const input = document.getElementById('submission-folder');
+            const files = Array.from(input.files || []);
+            if (!files.length) return { valid: false, reason: "folderRequired", files: [] };
+
+            const roots = new Set();
+            files.forEach(file => {
+                const relPath = file.webkitRelativePath || "";
+                if (relPath.includes('/')) roots.add(relPath.split('/')[0]);
+            });
+
+            if (roots.size !== 1) return { valid: false, reason: "oneFolderOnly", files };
+            return { valid: true, files, folderName: Array.from(roots)[0] };
+        }
+
+        function safeStorageSegment(value, fallback = "file") {
+            return (value || fallback).replace(/[\\#?[\]*]/g, "_").replace(/\s+/g, "_").slice(0, 120) || fallback;
+        }
+
+        function getSafeRelativePath(file, index) {
+            const relPath = file.webkitRelativePath || file.name || `file-${index + 1}`;
+            return relPath.split('/').filter(Boolean).map((segment, segmentIndex) => safeStorageSegment(segment, segmentIndex === 0 ? "folder" : "file")).join('/');
+        }
+
+        function encodeContentDispositionName(name) {
+            return encodeURIComponent(name).replace(/['()*]/g, char => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+        }
+
+        function updateFolderSummary() {
+            const texts = getActiveTexts();
+            const summary = document.getElementById('submission-folder-summary');
+            const selection = getFolderSelection();
+            summary.classList.remove('ready');
+            if (!selection.files.length) {
+                summary.innerText = texts.folderEmpty;
+                return;
+            }
+            if (!selection.valid) {
+                summary.innerText = texts[selection.reason];
+                return;
+            }
+            summary.innerText = texts.folderSummary.replace('{folder}', selection.folderName).replace('{count}', selection.files.length);
+            summary.classList.add('ready');
+        }
+
+        window.openSubmissionModal = function() {
+            const modal = document.getElementById('submission-modal');
+            const form = document.getElementById('submission-form');
+            form.reset();
+            document.getElementById('submission-status').innerText = "";
+            document.getElementById('submission-folder-summary').innerText = getActiveTexts().folderEmpty;
+            document.getElementById('submission-folder-summary').classList.remove('ready');
+            document.getElementById('submission-student-name').value = window.currentUser?.displayName || "";
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        window.closeSubmissionModal = function() {
+            const modal = document.getElementById('submission-modal');
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
+        window.submitAssignmentFolder = async function(event) {
+            event.preventDefault();
+            const texts = getActiveTexts();
+            const studentName = document.getElementById('submission-student-name').value.trim();
+            const section = document.getElementById('submission-section').value;
+            const selection = getFolderSelection();
+            const btn = document.getElementById('submit-folder-btn');
+            const status = document.getElementById('submission-status');
+
+            if (!studentName) { alert(texts.nameRequired); return; }
+            if (!section) { alert(texts.sectionRequired); return; }
+            if (!selection.valid) { alert(texts[selection.reason]); return; }
+
+            const originalButton = btn.innerHTML;
+            btn.disabled = true;
+            status.innerText = "";
+
+            try {
+                const submissionRef = doc(collection(db, "Courses", courseId, "submissions"));
+                const uploadedFiles = [];
+
+                for (let i = 0; i < selection.files.length; i++) {
+                    const file = selection.files[i];
+                    const safeRelativePath = getSafeRelativePath(file, i);
+                    const storagePath = `student-submissions/${courseId}/${submissionRef.id}/${safeRelativePath}`;
+                    const storageRef = ref(storage, storagePath);
+                    const originalRelativePath = file.webkitRelativePath || `${selection.folderName}/${file.name}`;
+
+                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${texts.uploading.replace('{current}', i + 1).replace('{total}', selection.files.length)}`;
+                    await uploadBytes(storageRef, file, {
+                        contentType: file.type || "application/octet-stream",
+                        contentDisposition: `attachment; filename*=UTF-8''${encodeContentDispositionName(file.name)}`,
+                        customMetadata: {
+                            originalName: file.name,
+                            originalRelativePath
+                        }
+                    });
+                    const downloadURL = await getDownloadURL(storageRef);
+
+                    uploadedFiles.push({
+                        originalName: file.name,
+                        relativePath: originalRelativePath,
+                        storagePath,
+                        downloadURL,
+                        size: file.size,
+                        type: file.type || ""
+                    });
+                }
+
+                await setDoc(submissionRef, {
+                    courseId,
+                    assignmentTitle: document.getElementById('display-assign-title').innerText,
+                    studentId: window.currentUser?.uid || null,
+                    studentEmail: window.currentUser?.email || "",
+                    studentName,
+                    section,
+                    sectionLabel: getSectionLabel(section),
+                    folderName: selection.folderName,
+                    fileCount: uploadedFiles.length,
+                    files: uploadedFiles,
+                    submittedAt: serverTimestamp(),
+                    createdAtClient: new Date().toISOString()
+                });
+
+                status.innerText = texts.submitSuccess;
+                btn.innerHTML = `<i class="fas fa-check"></i> ${texts.submitSuccess}`;
+                setTimeout(() => {
+                    btn.innerHTML = originalButton;
+                    btn.disabled = false;
+                    window.closeSubmissionModal();
+                }, 1600);
+            } catch (error) {
+                console.error("Submission error:", error);
+                status.innerText = `${texts.submitError} ${error.message || ""}`;
+                btn.innerHTML = originalButton;
+                btn.disabled = false;
+            }
+        }
 
         window.displayStudentGrade = function(grade) {
             window.currentStudentGrade = grade; 
@@ -320,6 +552,23 @@
             if(document.getElementById('t-due')) document.getElementById('t-due').innerText = translations[lang].tDue;
 
             document.querySelectorAll('.submit-text').forEach(el => el.innerText = translations[lang].btnSubmit);
+            document.getElementById('submission-modal-title').innerHTML = `<i class="fas fa-upload"></i> ${translations[lang].submissionTitle}`;
+            document.getElementById('submission-name-label').innerText = translations[lang].studentName;
+            document.getElementById('submission-section-label').innerText = translations[lang].section;
+            document.getElementById('submission-folder-label').innerText = translations[lang].folderLabel;
+            document.getElementById('submission-folder-hint').innerText = translations[lang].folderHint;
+            document.getElementById('submit-folder-text').innerText = translations[lang].submitFolder;
+
+            const sectionSelect = document.getElementById('submission-section');
+            if (sectionSelect) {
+                const selectedValue = sectionSelect.value;
+                sectionSelect.innerHTML = `
+                    <option value="" disabled ${selectedValue ? "" : "selected"}>${translations[lang].chooseSection}</option>
+                    <option value="section-1" ${selectedValue === "section-1" ? "selected" : ""}>${translations[lang].section1}</option>
+                    <option value="section-2" ${selectedValue === "section-2" ? "selected" : ""}>${translations[lang].section2}</option>
+                `;
+            }
+            updateFolderSummary();
 
             localStorage.setItem('preferredLang', lang);
             window.displayStudentGrade(window.currentStudentGrade);
@@ -327,6 +576,7 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                window.currentUser = user;
                 const userName = user.displayName || "Student";
                 document.getElementById("nav-profile-pic").innerText = userName.charAt(0);
 
@@ -404,6 +654,9 @@
             }
         });
 
+        document.getElementById('main-submit-btn').addEventListener('click', window.openSubmissionModal);
+        document.getElementById('submission-form').addEventListener('submit', window.submitAssignmentFolder);
+        document.getElementById('submission-folder').addEventListener('change', updateFolderSummary);
         document.getElementById('logout-btn').addEventListener('click', (e) => {
             e.preventDefault(); signOut(auth).then(() => window.location.href = "index.html");
         });
@@ -411,6 +664,7 @@
         window.onclick = function(event) { 
             if (!event.target.matches('#nav-profile-pic')) { document.getElementById('user-menu').classList.remove('show'); }
             if (!event.target.matches('#lang-display')) { document.getElementById('lang-menu').classList.remove('show'); }
+            if (event.target === document.getElementById('submission-modal')) window.closeSubmissionModal();
         }
     </script>
 </body>

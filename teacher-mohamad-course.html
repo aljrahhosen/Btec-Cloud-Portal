@@ -130,6 +130,26 @@
         .grade-select option[value="M"] { color: var(--primary); font-weight: bold; }
         .grade-select option[value="P"] { color: var(--accent-green); font-weight: bold; }
         .grade-select option[value="F"] { color: var(--text-muted); }
+
+        .submissions-modal-box { max-width: 760px; max-height: 88vh; display: flex; flex-direction: column; }
+        .submissions-modal-box #modal-body { overflow: hidden; }
+        .submissions-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 15px; }
+        .submissions-toolbar .form-group { flex: 1; margin-bottom: 0; }
+        .submissions-scroll { max-height: 55vh; overflow-y: auto; padding-right: 6px; }
+        html[dir="rtl"] .submissions-scroll { padding-right: 0; padding-left: 6px; }
+        .submission-item { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--card-border); border-radius: 8px; background: rgba(0,0,0,0.22); }
+        .submission-name { color: white; font-weight: 600; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .submission-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--text-muted); font-size: 12px; }
+        .submission-meta span { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); border-radius: 6px; padding: 5px 8px; }
+        .download-submission-btn { width: auto; min-width: 150px; padding: 10px 12px; background: rgba(0, 168, 252, 0.1); color: var(--primary); border: 1px solid rgba(0, 168, 252, 0.3); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .download-submission-btn:hover { background: var(--primary); color: white; }
+        .download-submission-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .empty-submissions { color: var(--text-muted); font-size: 13px; text-align: center; padding: 28px 12px; border: 1px dashed var(--card-border); border-radius: 8px; }
+
+        @media (max-width: 640px) {
+            .submission-item { align-items: stretch; flex-direction: column; }
+            .download-submission-btn { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -232,7 +252,7 @@
                             <i class="fas fa-file-pdf" style="color: var(--accent-yellow); font-size: 18px;"></i> 
                             <span id="display-assign-file">Assignment_Brief.pdf</span>
                         </div>
-                        <button class="submit-btn" id="t-view-subs"><i class="fas fa-box-open"></i> View Student Submissions</button>
+                        <button class="submit-btn" id="t-view-subs" onclick="window.openModal('submissions')"><i class="fas fa-box-open"></i> View Student Submissions</button>
                     </div>
                 </div>
 
@@ -246,7 +266,7 @@
     </div>
 
     <div id="dynamic-modal" class="modal-overlay">
-        <div class="modal-box">
+        <div class="modal-box" id="dynamic-modal-box">
             <div class="modal-header">
                 <h3 id="modal-title">Edit</h3>
                 <button class="close-btn" onclick="window.closeModal()"><i class="fas fa-times"></i></button>
@@ -257,11 +277,13 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
     <!-- 🌟 تم استيراد ميزات الفايربيس الإضافية هنا 🌟 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -277,11 +299,22 @@
         const db = getFirestore(app);
 
         const modal = document.getElementById('dynamic-modal');
+        const modalBox = document.getElementById('dynamic-modal-box');
         const modalTitle = document.getElementById('modal-title');
         const modalBody = document.getElementById('modal-body');
+        const saveModalBtn = document.getElementById('t-save-modal-btn');
         
         window.activeLang = 'en';
         window.currentSection = "";
+        window.currentEditIndex = null;
+        window.courseContent = { aims: [], tools: [] };
+        window.submissionsCache = [];
+        window.unsubscribeSubmissions = null;
+
+        const sectionOptions = [
+            { value: "section-1", en: "Section 1", ar: "الشعبة الأولى" },
+            { value: "section-2", en: "Section 2", ar: "الشعبة الثانية" }
+        ];
 
         const coursesDB = {
             "programming": { icon: "fa-laptop-code", title_en: "Introduction to Programming", desc_en: "Learn the fundamentals of programming.", title_ar: "مقدمة في البرمجة", desc_ar: "تعلم أساسيات البرمجة، الخوارزميات، وحل المشكلات." },
@@ -294,9 +327,83 @@
         const currentCourse = coursesDB[courseId] || coursesDB['it-systems']; 
 
         const t = {
-            en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload PDF", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --" },
-            ar: { langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", studentGrading: "تقييم الطلاب", criteria: "المعايير المنجزة:", final: "النتيجة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض التسليمات", toolsBox: "الأدوات والروابط", save: "حفظ التعديلات", saveGrades: "حفظ العلامة", progress: "تقدم الوحدة: 40%", pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز", fail: "رسوب (غير مصنف)", pending: "قيد الانتظار", selectGrade: "حدد العلامة النهائية:", chooseGrade: "-- اختر العلامة --", mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف", mEditAssign: "تعديل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم", mUploadBrief: "رفع ملف", mAddAim: "إضافة هدف", mEditAim: "تعديل هدف", mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف", mExtLink: "رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل رابط", mToolTitle: "عنوان الرابط", mUrlLink: "الرابط", chooseStudent: "-- اختر طالباً --" }
+            en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload File", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --", submissionsTitle: "Student Submissions", sectionFilter: "Section", allSections: "All Sections", section1: "Section 1", section2: "Section 2", loadingSubmissions: "Loading submissions...", noSubmissions: "No submissions for this section yet.", submittedAt: "Submitted", filesCount: "{count} files", downloadFolder: "Download Folder", preparingDownload: "Preparing...", downloadFallback: "Could not build the folder download. Opening files instead.", confirmDelete: "Delete this item?", saveError: "Failed to save. Check Firebase Rules." },
+            ar: { langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", studentGrading: "تقييم الطلاب", criteria: "المعايير المنجزة:", final: "النتيجة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض التسليمات", toolsBox: "الأدوات والروابط", save: "حفظ التعديلات", saveGrades: "حفظ العلامة", progress: "تقدم الوحدة: 40%", pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز", fail: "رسوب (غير مصنف)", pending: "قيد الانتظار", selectGrade: "حدد العلامة النهائية:", chooseGrade: "-- اختر العلامة --", mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف", mEditAssign: "تعديل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم", mUploadBrief: "رفع ملف", mAddAim: "إضافة هدف", mEditAim: "تعديل هدف", mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف", mExtLink: "رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل رابط", mToolTitle: "عنوان الرابط", mUrlLink: "الرابط", chooseStudent: "-- اختر طالباً --", submissionsTitle: "تسليمات الطلاب", sectionFilter: "الشعبة", allSections: "كل الشعب", section1: "الشعبة الأولى", section2: "الشعبة الثانية", loadingSubmissions: "جاري تحميل التسليمات...", noSubmissions: "لا يوجد تسليمات لهذه الشعبة بعد.", submittedAt: "وقت التسليم", filesCount: "{count} ملفات", downloadFolder: "تحميل المجلد", preparingDownload: "جاري التجهيز...", downloadFallback: "تعذر تجهيز تحميل المجلد. سيتم فتح الملفات بدلاً من ذلك.", confirmDelete: "حذف هذا العنصر؟", saveError: "فشل الحفظ. تأكد من صلاحيات Firebase." }
         };
+
+        function escapeHTML(value) {
+            return String(value ?? "").replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char]));
+        }
+
+        function getSectionLabel(sectionValue) {
+            const option = sectionOptions.find(item => item.value === sectionValue);
+            if (!option) return sectionValue || "-";
+            return option[window.activeLang === 'ar' ? 'ar' : 'en'];
+        }
+
+        function formatSubmittedAt(value) {
+            const date = value?.toDate ? value.toDate() : value ? new Date(value) : null;
+            if (!date || Number.isNaN(date.getTime())) return "-";
+            return date.toLocaleString(window.activeLang === 'ar' ? 'ar-JO' : 'en-US');
+        }
+
+        function cleanZipName(value) {
+            return (value || "submission-folder").replace(/[\\/:*?"<>|]/g, "_").slice(0, 80) || "submission-folder";
+        }
+
+        function normalizeZipPath(value, fallback) {
+            return (value || fallback || "file").split('/').filter(Boolean).join('/') || fallback || "file";
+        }
+
+        window.renderTools = function() {
+            const tools = window.courseContent.tools || [];
+            const container = document.getElementById('tools-container');
+            container.innerHTML = "";
+
+            tools.forEach((tool, index) => {
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="tool-item">
+                        <span><i class="fas fa-link"></i> <a href="${escapeHTML(tool.url)}" class="tool-title-link" target="_blank">${escapeHTML(tool.title)}</a></span>
+                        <div class="action-icons">
+                            <i class="fas fa-edit" onclick="window.openModal('edit-tool', null, ${index})" title="Edit"></i>
+                            <i class="fas fa-trash" onclick="window.deleteTool(${index})" title="Delete"></i>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        window.renderAims = function() {
+            const aims = window.courseContent.aims || [];
+            const container = document.getElementById('aims-container');
+            container.innerHTML = "";
+
+            aims.forEach((aim, index) => {
+                let extraHtml = "";
+                if (aim.fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${escapeHTML(aim.fileName)}</span><i class="fas fa-cloud-download-alt" style="cursor:pointer;" title="Download"></i></div>`;
+                if (aim.url) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${escapeHTML(aim.url)}" style="color:white; text-decoration:none;" target="_blank">رابط إضافي</a></span><i class="fas fa-external-link-alt" style="cursor:pointer;" title="Open"></i></div>`;
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="aim-accordion">
+                        <div class="aim-header" onclick="window.toggleAim(this)">
+                            <div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${escapeHTML(aim.title)}</span></div>
+                            <div class="action-icons">
+                                <i class="fas fa-edit" onclick="event.stopPropagation(); window.openModal('edit-aim', null, ${index})" title="Edit"></i>
+                                <i class="fas fa-trash" onclick="event.stopPropagation(); window.deleteAim(${index})" title="Delete"></i>
+                                <i class="fas fa-chevron-down toggle-icon"></i>
+                            </div>
+                        </div>
+                        <div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${escapeHTML(aim.desc)}</div>${extraHtml}</div></div>
+                    </div>
+                `);
+            });
+        }
 
         window.onload = function() {
             document.getElementById('display-unit-icon').className = "fas " + currentCourse.icon;
@@ -467,106 +574,286 @@
             else { content.style.maxHeight = content.scrollHeight + "px"; icon.style.transform = "rotate(180deg)"; }
         }
 
-        // إزالة العناصر بس حالياً شكلي
         window.deleteElement = function(btn) {
-            if(confirm("Are you sure?")) { btn.closest('.aim-accordion, .tool-item').remove(); }
+            if(confirm(t[window.activeLang].confirmDelete)) { btn.closest('.aim-accordion, .tool-item').remove(); }
         }
 
-        window.openModal = function(section, btnElement = null) {
-            window.currentSection = section; window.currentEditElement = btnElement; modal.classList.add('active');
+        window.deleteTool = async function(index) {
+            if (!confirm(t[window.activeLang].confirmDelete)) return;
+            const previous = [...(window.courseContent.tools || [])];
+            window.courseContent.tools.splice(index, 1);
+            window.renderTools();
+
+            try {
+                await setDoc(doc(db, "Courses", courseId), { tools: window.courseContent.tools }, { merge: true });
+            } catch (error) {
+                console.error("Delete tool error:", error);
+                window.courseContent.tools = previous;
+                window.renderTools();
+                alert(t[window.activeLang].saveError);
+            }
+        }
+
+        window.deleteAim = async function(index) {
+            if (!confirm(t[window.activeLang].confirmDelete)) return;
+            const previous = [...(window.courseContent.aims || [])];
+            window.courseContent.aims.splice(index, 1);
+            window.renderAims();
+
+            try {
+                await setDoc(doc(db, "Courses", courseId), { aims: window.courseContent.aims }, { merge: true });
+            } catch (error) {
+                console.error("Delete aim error:", error);
+                window.courseContent.aims = previous;
+                window.renderAims();
+                alert(t[window.activeLang].saveError);
+            }
+        }
+
+        window.openModal = function(section, btnElement = null, editIndex = null) {
+            window.currentSection = section;
+            window.currentEditElement = btnElement;
+            window.currentEditIndex = editIndex;
+
+            modalBox.classList.remove('submissions-modal-box');
+            saveModalBtn.style.display = 'block';
+            saveModalBtn.innerHTML = `<i class="fas fa-save"></i> ${t[window.activeLang].save}`;
+            modal.classList.add('active');
+
+            if (section !== 'submissions' && window.unsubscribeSubmissions) {
+                window.unsubscribeSubmissions();
+                window.unsubscribeSubmissions = null;
+            }
             
             if (section === 'hero') {
-                let title = document.getElementById('display-unit-title').innerText;
-                let desc = document.getElementById('display-unit-desc').innerText;
+                const title = document.getElementById('display-unit-title').innerText;
+                const desc = document.getElementById('display-unit-desc').innerText;
                 modalTitle.innerHTML = t[window.activeLang].mEditDetails;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mUnitTitle}</label><input type="text" id="input-unit-title" class="form-input" value="${title}"></div><div class="form-group"><label>${t[window.activeLang].mDesc}</label><textarea id="input-unit-desc" class="form-input" rows="4">${desc}</textarea></div>`;
+                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mUnitTitle}</label><input type="text" id="input-unit-title" class="form-input" value="${escapeHTML(title)}"></div><div class="form-group"><label>${t[window.activeLang].mDesc}</label><textarea id="input-unit-desc" class="form-input" rows="4">${escapeHTML(desc)}</textarea></div>`;
             } 
             else if (section === 'assignment') {
+                const currentDue = document.getElementById('display-due-date').innerText.trim().replace(' ', 'T');
+                const dueValue = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(currentDue) ? currentDue : "";
                 modalTitle.innerHTML = t[window.activeLang].mEditAssign;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mAssignTitle}</label><input type="text" id="input-assign-title" class="form-input" value="${document.getElementById('display-assign-title').innerText}"></div><div class="form-group"><label>${t[window.activeLang].mDueDate}</label><input type="datetime-local" id="input-due-date" class="form-input"></div><div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mUploadBrief}</label><input type="file" id="input-assign-file" class="form-input"></div>`;
+                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mAssignTitle}</label><input type="text" id="input-assign-title" class="form-input" value="${escapeHTML(document.getElementById('display-assign-title').innerText)}"></div><div class="form-group"><label>${t[window.activeLang].mDueDate}</label><input type="datetime-local" id="input-due-date" class="form-input" value="${escapeHTML(dueValue)}"></div><div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mUploadBrief}</label><input type="file" id="input-assign-file" class="form-input"></div>`;
             } 
-            // 🌟 🌟 🌟 التعديل السحري هون: رجعنا الملف والرابط في نافذة الأهداف 🌟 🌟 🌟
             else if (section === 'add-aim' || section === 'edit-aim') {
+                const aim = section === 'edit-aim' ? (window.courseContent.aims[editIndex] || {}) : {};
                 modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddAim : t[window.activeLang].mEditAim;
                 modalBody.innerHTML = `
-                    <div class="form-group"><label>${t[window.activeLang].mAimTitle}</label><input type="text" id="input-aim-title" class="form-input"></div>
-                    <div class="form-group"><label>${t[window.activeLang].mAimDesc}</label><textarea id="input-aim-desc" class="form-input" rows="3"></textarea></div>
+                    <div class="form-group"><label>${t[window.activeLang].mAimTitle}</label><input type="text" id="input-aim-title" class="form-input" value="${escapeHTML(aim.title || "")}"></div>
+                    <div class="form-group"><label>${t[window.activeLang].mAimDesc}</label><textarea id="input-aim-desc" class="form-input" rows="3">${escapeHTML(aim.desc || "")}</textarea></div>
                     <div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mAttachFile}</label><input type="file" id="input-aim-file" class="form-input"></div>
-                    <div class="form-group"><label>${t[window.activeLang].mExtLink}</label><input type="url" id="input-aim-url" class="form-input" placeholder="https://..."></div>
+                    <div class="form-group"><label>${t[window.activeLang].mExtLink}</label><input type="url" id="input-aim-url" class="form-input" placeholder="https://..." value="${escapeHTML(aim.url || "")}"></div>
                 `;
             } 
             else if (section === 'add-tool' || section === 'edit-tool') {
+                const tool = section === 'edit-tool' ? (window.courseContent.tools[editIndex] || {}) : {};
                 modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddTool : t[window.activeLang].mEditTool;
-                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mToolTitle}</label><input type="text" id="input-tool-title" class="form-input"></div><div class="form-group"><label>${t[window.activeLang].mUrlLink}</label><input type="url" id="input-tool-url" class="form-input"></div>`;
+                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mToolTitle}</label><input type="text" id="input-tool-title" class="form-input" value="${escapeHTML(tool.title || "")}"></div><div class="form-group"><label>${t[window.activeLang].mUrlLink}</label><input type="url" id="input-tool-url" class="form-input" value="${escapeHTML(tool.url || "")}"></div>`;
+            }
+            else if (section === 'submissions') {
+                modalBox.classList.add('submissions-modal-box');
+                saveModalBtn.style.display = 'none';
+                modalTitle.innerHTML = `<i class="fas fa-box-open"></i> ${t[window.activeLang].submissionsTitle}`;
+                modalBody.innerHTML = `
+                    <div class="submissions-toolbar">
+                        <div class="form-group">
+                            <label for="submission-section-filter">${t[window.activeLang].sectionFilter}</label>
+                            <select id="submission-section-filter" class="form-input" onchange="window.renderSubmissions()">
+                                <option value="">${t[window.activeLang].allSections}</option>
+                                <option value="section-1">${t[window.activeLang].section1}</option>
+                                <option value="section-2">${t[window.activeLang].section2}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="submissions-scroll" id="submissions-list">
+                        <div class="empty-submissions"><i class="fas fa-spinner fa-spin"></i> ${t[window.activeLang].loadingSubmissions}</div>
+                    </div>
+                `;
+                window.listenToSubmissions();
+            }
+        }
+
+        window.renderSubmissions = function() {
+            const list = document.getElementById('submissions-list');
+            if (!list) return;
+
+            const selectedSection = document.getElementById('submission-section-filter')?.value || "";
+            const submissions = (window.submissionsCache || []).filter(submission => !selectedSection || submission.section === selectedSection);
+
+            if (!submissions.length) {
+                list.innerHTML = `<div class="empty-submissions">${t[window.activeLang].noSubmissions}</div>`;
+                return;
+            }
+
+            list.innerHTML = "";
+            submissions.forEach(submission => {
+                const fileCount = Number(submission.fileCount || (submission.files || []).length || 0);
+                const submittedAt = formatSubmittedAt(submission.submittedAt || submission.createdAtClient);
+
+                list.insertAdjacentHTML('beforeend', `
+                    <div class="submission-item">
+                        <div>
+                            <div class="submission-name"><i class="fas fa-user-graduate"></i> ${escapeHTML(submission.studentName || "-")}</div>
+                            <div class="submission-meta">
+                                <span><i class="fas fa-users"></i> ${escapeHTML(getSectionLabel(submission.section))}</span>
+                                <span><i class="far fa-clock"></i> ${escapeHTML(t[window.activeLang].submittedAt)}: ${escapeHTML(submittedAt)}</span>
+                                <span><i class="fas fa-folder"></i> ${escapeHTML(t[window.activeLang].filesCount.replace('{count}', fileCount))}</span>
+                            </div>
+                        </div>
+                        <button class="download-submission-btn" onclick="window.downloadSubmissionFolder('${escapeHTML(submission.id)}', this)"><i class="fas fa-download"></i> ${t[window.activeLang].downloadFolder}</button>
+                    </div>
+                `);
+            });
+        }
+
+        window.listenToSubmissions = function() {
+            if (window.unsubscribeSubmissions) window.unsubscribeSubmissions();
+
+            const submissionsRef = collection(db, "Courses", courseId, "submissions");
+            window.unsubscribeSubmissions = onSnapshot(submissionsRef, (snapshot) => {
+                window.submissionsCache = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                window.submissionsCache.sort((a, b) => {
+                    const aDate = a.submittedAt?.toMillis ? a.submittedAt.toMillis() : new Date(a.createdAtClient || 0).getTime();
+                    const bDate = b.submittedAt?.toMillis ? b.submittedAt.toMillis() : new Date(b.createdAtClient || 0).getTime();
+                    return bDate - aDate;
+                });
+                window.renderSubmissions();
+            }, (error) => {
+                console.error("Submissions listener error:", error);
+                const list = document.getElementById('submissions-list');
+                if (list) list.innerHTML = `<div class="empty-submissions">${escapeHTML(error.message)}</div>`;
+            });
+        }
+
+        function openSubmissionFiles(files) {
+            files.forEach((file, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.href = file.downloadURL;
+                    link.download = file.originalName || `file-${index + 1}`;
+                    link.target = "_blank";
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                }, index * 250);
+            });
+        }
+
+        window.downloadSubmissionFolder = async function(submissionId, button) {
+            const submission = (window.submissionsCache || []).find(item => item.id === submissionId);
+            const files = submission?.files || [];
+            if (!files.length) return;
+
+            const originalButton = button?.innerHTML;
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t[window.activeLang].preparingDownload}`;
+            }
+
+            try {
+                if (!window.JSZip) throw new Error("JSZip unavailable");
+
+                const zip = new window.JSZip();
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const response = await fetch(file.downloadURL);
+                    if (!response.ok) throw new Error("Download failed");
+                    const blob = await response.blob();
+                    zip.file(normalizeZipPath(file.relativePath, file.originalName || `file-${i + 1}`), blob);
+                }
+
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                const zipUrl = URL.createObjectURL(zipBlob);
+                const link = document.createElement('a');
+                link.href = zipUrl;
+                link.download = `${cleanZipName(submission.folderName)}.zip`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(zipUrl);
+            } catch (error) {
+                console.error("Folder download error:", error);
+                alert(t[window.activeLang].downloadFallback);
+                openSubmissionFiles(files);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = originalButton;
+                }
             }
         }
 
         // 🌟 دالة الحفظ اللي بتخزن بالـ Firebase مع الملفات والروابط 🌟
         window.saveChanges = async function() {
             const courseRef = doc(db, "Courses", courseId);
-            const saveBtn = document.getElementById('t-save-modal-btn');
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            saveBtn.disabled = true;
+            saveModalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveModalBtn.disabled = true;
 
             try {
                 if (window.currentSection === 'hero') {
-                    let nt = document.getElementById('input-unit-title').value;
-                    let nd = document.getElementById('input-unit-desc').value;
+                    const nt = document.getElementById('input-unit-title').value.trim();
+                    const nd = document.getElementById('input-unit-desc').value.trim();
                     if(window.activeLang==='ar'){currentCourse.title_ar=nt; currentCourse.desc_ar=nd;} else {currentCourse.title_en=nt; currentCourse.desc_en=nd;}
-                    document.getElementById('display-unit-title').innerText = nt; document.getElementById('display-unit-desc').innerText = nd;
+                    document.getElementById('display-unit-title').innerText = nt;
+                    document.getElementById('display-unit-desc').innerText = nd;
                 } 
                 else if (window.currentSection === 'assignment') {
-                    let titleVal = document.getElementById('input-assign-title').value;
-                    let dueVal = document.getElementById('input-due-date').value; 
+                    const titleVal = document.getElementById('input-assign-title').value.trim();
+                    const dueVal = document.getElementById('input-due-date').value;
+                    const existingDue = document.getElementById('display-due-date').innerText;
+                    const dueToSave = dueVal || existingDue;
+                    const fileInput = document.getElementById('input-assign-file');
+                    const currentFileName = document.getElementById('display-assign-file').innerText;
+                    const fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : (currentFileName === "None" ? "" : currentFileName);
                     
                     document.getElementById('display-assign-title').innerText = titleVal;
-                    if(dueVal){document.getElementById('display-due-date').innerText = dueVal.replace('T',' ');}
+                    if(dueToSave){document.getElementById('display-due-date').innerText = dueToSave.replace('T',' ');}
+                    document.getElementById('display-assign-file').innerText = fileName || "No File";
                     
-                    // إرسال الواجب للفايربيس
                     await setDoc(courseRef, {
-                        assignment: { title: titleVal, dueDate: dueVal }
+                        assignment: { title: titleVal, dueDate: dueToSave, fileName }
                     }, { merge: true });
                 } 
-                else if (window.currentSection === 'add-tool') {
-                    let titleVal = document.getElementById('input-tool-title').value; 
-                    let urlVal = document.getElementById('input-tool-url').value;
-                    
-                    if(titleVal && urlVal){ 
-                        document.getElementById('tools-container').insertAdjacentHTML('beforeend', `<div class="tool-item"><span><i class="fas fa-link"></i> <a href="${urlVal}" class="tool-title-link" target="_blank">${titleVal}</a></span><div class="action-icons"><i class="fas fa-trash" onclick="window.deleteElement(this)"></i></div></div>`); 
-                        
-                        // إرسال الرابط للفايربيس
-                        await setDoc(courseRef, {
-                            tools: arrayUnion({ title: titleVal, url: urlVal })
-                        }, { merge: true });
-                    }
-                } 
-                // 🌟 حفظ الهدف مع الملف والرابط 🌟
-                else if (window.currentSection === 'add-aim') {
-                    let titleVal = document.getElementById('input-aim-title').value; 
-                    let descVal = document.getElementById('input-aim-desc').value;
-                    let fileInput = document.getElementById('input-aim-file');
-                    let fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : "";
-                    let urlVal = document.getElementById('input-aim-url').value;
-                    
-                    if(titleVal){ 
-                        let extraHtml = '';
-                        if(fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${fileName}</span><i class="fas fa-cloud-download-alt" style="cursor:pointer;" title="Download"></i></div>`;
-                        if(urlVal) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${urlVal}" style="color:white; text-decoration:none;" target="_blank">رابط إضافي</a></span><i class="fas fa-external-link-alt" style="cursor:pointer;" title="Open"></i></div>`;
+                else if (window.currentSection === 'add-tool' || window.currentSection === 'edit-tool') {
+                    const titleVal = document.getElementById('input-tool-title').value.trim(); 
+                    const urlVal = document.getElementById('input-tool-url').value.trim();
+                    if(!titleVal || !urlVal) return;
 
-                        document.getElementById('aims-container').insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header" onclick="window.toggleAim(this)"><div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${titleVal}</span></div><i class="fas fa-chevron-down toggle-icon"></i></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${descVal}</div>${extraHtml}</div></div></div>`); 
-                        
-                        // إرسال الهدف مع المرفقات للفايربيس
-                        await setDoc(courseRef, {
-                            aims: arrayUnion({ title: titleVal, desc: descVal, fileName: fileName, url: urlVal })
-                        }, { merge: true });
-                    }
+                    const tools = [...(window.courseContent.tools || [])];
+                    const item = { title: titleVal, url: urlVal };
+                    if (window.currentSection === 'edit-tool') tools[window.currentEditIndex] = item;
+                    else tools.push(item);
+
+                    window.courseContent.tools = tools;
+                    window.renderTools();
+                    await setDoc(courseRef, { tools }, { merge: true });
+                } 
+                else if (window.currentSection === 'add-aim' || window.currentSection === 'edit-aim') {
+                    const titleVal = document.getElementById('input-aim-title').value.trim(); 
+                    const descVal = document.getElementById('input-aim-desc').value.trim();
+                    const fileInput = document.getElementById('input-aim-file');
+                    const currentAim = window.currentSection === 'edit-aim' ? (window.courseContent.aims[window.currentEditIndex] || {}) : {};
+                    const fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : (currentAim.fileName || "");
+                    const urlVal = document.getElementById('input-aim-url').value.trim();
+                    if(!titleVal) return;
+
+                    const aims = [...(window.courseContent.aims || [])];
+                    const item = { title: titleVal, desc: descVal, fileName, url: urlVal };
+                    if (window.currentSection === 'edit-aim') aims[window.currentEditIndex] = item;
+                    else aims.push(item);
+
+                    window.courseContent.aims = aims;
+                    window.renderAims();
+                    await setDoc(courseRef, { aims }, { merge: true });
                 }
             } catch (error) {
                 console.error("Firebase Error: ", error);
-                alert("Failed to save to database. Check Firebase Rules.");
+                alert(t[window.activeLang].saveError);
             } finally {
-                saveBtn.innerHTML = `<i class="fas fa-save"></i> Save Changes`;
-                saveBtn.disabled = false;
+                saveModalBtn.innerHTML = `<i class="fas fa-save"></i> ${t[window.activeLang].save}`;
+                saveModalBtn.disabled = false;
                 window.closeModal();
             }
         }
@@ -580,41 +867,37 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     
-                    // تحميل الواجب
                     if(data.assignment) {
                         if(data.assignment.title) document.getElementById('display-assign-title').innerText = data.assignment.title;
                         if(data.assignment.dueDate) document.getElementById('display-due-date').innerText = data.assignment.dueDate.replace('T',' ');
+                        if(data.assignment.fileName) document.getElementById('display-assign-file').innerText = data.assignment.fileName;
                     }
                     
-                    // تحميل الروابط (Tools)
-                    if(data.tools && data.tools.length > 0) {
-                        const tc = document.getElementById('tools-container');
-                        tc.innerHTML = '';
-                        data.tools.forEach(tool => {
-                            tc.insertAdjacentHTML('beforeend', `<div class="tool-item"><span><i class="fas fa-link"></i> <a href="${tool.url}" class="tool-title-link" target="_blank">${tool.title}</a></span><div class="action-icons"><i class="fas fa-trash" onclick="window.deleteElement(this)"></i></div></div>`);
-                        });
-                    }
+                    window.courseContent.tools = Array.isArray(data.tools) ? data.tools : [];
+                    window.renderTools();
                     
-                    // 🌟 تحميل الأهداف مع الملفات والروابط 🌟
-                    if(data.aims && data.aims.length > 0) {
-                        const ac = document.getElementById('aims-container');
-                        ac.innerHTML = '';
-                        data.aims.forEach(aim => {
-                            let extraHtml = '';
-                            if(aim.fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${aim.fileName}</span><i class="fas fa-cloud-download-alt" style="cursor:pointer;" title="Download"></i></div>`;
-                            if(aim.url) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${aim.url}" style="color:white; text-decoration:none;" target="_blank">رابط إضافي</a></span><i class="fas fa-external-link-alt" style="cursor:pointer;" title="Open"></i></div>`;
-
-                            ac.insertAdjacentHTML('beforeend', `<div class="aim-accordion"><div class="aim-header" onclick="window.toggleAim(this)"><div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${aim.title}</span></div><i class="fas fa-chevron-down toggle-icon"></i></div><div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${aim.desc}</div>${extraHtml}</div></div></div>`);
-                        });
-                    }
+                    window.courseContent.aims = Array.isArray(data.aims) ? data.aims : [];
+                    window.renderAims();
                 }
             } catch(error) {
                 console.error("Error loading course content:", error);
             }
         }
 
-        window.closeModal = function() { modal.classList.remove('active'); }
-        window.onclick = function(event) { if (!event.target.matches('#lang-display')) { document.getElementById('lang-menu').classList.remove('show'); } if (event.target === modal) window.closeModal(); }
+        window.closeModal = function() {
+            if (window.currentSection === 'submissions' && window.unsubscribeSubmissions) {
+                window.unsubscribeSubmissions();
+                window.unsubscribeSubmissions = null;
+            }
+            modal.classList.remove('active');
+            modalBox.classList.remove('submissions-modal-box');
+            saveModalBtn.style.display = 'block';
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('#lang-display')) { document.getElementById('lang-menu').classList.remove('show'); }
+            if (event.target === modal) window.closeModal();
+        }
     </script>
 </body>
 </html>
