@@ -260,7 +260,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, onSnapshot, collection, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -312,7 +312,7 @@
                 section1: "Section 1", section2: "Section 2", folderLabel: "Assignment Folder",
                 folderHint: "Choose one folder that contains your assignment files. Any file format is accepted.",
                 folderSummary: "Selected folder: {folder} ({count} files)", folderEmpty: "No folder selected yet.",
-                submitFolder: "Submit Folder", preparingZip: "Preparing folder...", uploadingZip: "Uploading folder...",
+                submitFolder: "Submit Folder", preparingZip: "Preparing folder... {percent}%", uploadingZip: "Uploading folder... {percent}%",
                 submitSuccess: "Your assignment was submitted successfully.", submitError: "Submission failed. Please try again.",
                 nameRequired: "Please enter your name.", sectionRequired: "Please select your section.",
                 folderRequired: "Please choose one assignment folder.", oneFolderOnly: "Please choose one folder only."
@@ -329,7 +329,7 @@
                 section1: "الشعبة الأولى", section2: "الشعبة الثانية", folderLabel: "مجلد الواجب",
                 folderHint: "اختر مجلداً واحداً يحتوي ملفات الواجب. كل صيغ الملفات مسموحة.",
                 folderSummary: "المجلد المختار: {folder} ({count} ملفات)", folderEmpty: "لم يتم اختيار مجلد بعد.",
-                submitFolder: "تسليم المجلد", preparingZip: "جاري تجهيز المجلد...", uploadingZip: "جاري رفع المجلد...",
+                submitFolder: "تسليم المجلد", preparingZip: "جاري تجهيز المجلد... {percent}%", uploadingZip: "جاري رفع المجلد... {percent}%",
                 submitSuccess: "تم تسليم الواجب بنجاح.", submitError: "فشل التسليم. حاول مرة ثانية.",
                 nameRequired: "اكتب اسمك من فضلك.", sectionRequired: "اختر الشعبة من فضلك.",
                 folderRequired: "اختر مجلد الواجب من فضلك.", oneFolderOnly: "اختر مجلداً واحداً فقط."
@@ -371,6 +371,28 @@
 
         function encodeContentDispositionName(name) {
             return encodeURIComponent(name).replace(/['()*]/g, char => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+        }
+
+        function setSubmitButtonProgress(button, textTemplate, percent) {
+            const safePercent = Math.max(0, Math.min(100, Math.round(percent || 0)));
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${textTemplate.replace('{percent}', safePercent)}`;
+        }
+
+        function uploadZipWithProgress(storageRef, zipBlob, metadata, button, texts) {
+            return new Promise((resolve, reject) => {
+                const uploadTask = uploadBytesResumable(storageRef, zipBlob, metadata);
+
+                uploadTask.on('state_changed', (snapshot) => {
+                    const percent = snapshot.totalBytes ? (snapshot.bytesTransferred / snapshot.totalBytes) * 100 : 0;
+                    setSubmitButtonProgress(button, texts.uploadingZip, percent);
+                }, reject, async () => {
+                    try {
+                        resolve(await getDownloadURL(uploadTask.snapshot.ref));
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            });
         }
 
         function updateFolderSummary() {
@@ -434,7 +456,7 @@
                 const storagePath = `student-submissions/${courseId}/${submissionRef.id}/${zipFileName}`;
                 const storageRef = ref(storage, storagePath);
 
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${texts.preparingZip}`;
+                setSubmitButtonProgress(btn, texts.preparingZip, 0);
                 selection.files.forEach((file, index) => {
                     const originalRelativePath = file.webkitRelativePath || `${selection.folderName}/${file.name || `file-${index + 1}`}`;
                     zip.file(originalRelativePath, file);
@@ -442,20 +464,20 @@
 
                 const zipBlob = await zip.generateAsync({
                     type: "blob",
-                    compression: "DEFLATE",
-                    compressionOptions: { level: 6 }
+                    compression: "STORE"
+                }, (metadata) => {
+                    setSubmitButtonProgress(btn, texts.preparingZip, metadata.percent);
                 });
 
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${texts.uploadingZip}`;
-                await uploadBytes(storageRef, zipBlob, {
+                setSubmitButtonProgress(btn, texts.uploadingZip, 0);
+                const downloadURL = await uploadZipWithProgress(storageRef, zipBlob, {
                     contentType: "application/zip",
                     contentDisposition: `attachment; filename*=UTF-8''${encodeContentDispositionName(zipFileName)}`,
                     customMetadata: {
                         folderName: selection.folderName,
                         fileCount: String(selection.files.length)
                     }
-                });
-                const downloadURL = await getDownloadURL(storageRef);
+                }, btn, texts);
 
                 await setDoc(submissionRef, {
                     courseId,
