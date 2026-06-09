@@ -10,8 +10,12 @@
     
     <style>
         :root {
-            --bg-main: #0b1120; --card-bg: #131c31; --card-border: rgba(255, 255, 255, 0.05);
-            --text-main: #f8fafc; --text-muted: #94a3b8; --primary: #00a8fc;
+            --bg-main: #0b1120; 
+            --card-bg: #131c31; 
+            --card-border: rgba(255, 255, 255, 0.05);
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --primary: #00a8fc;
         }
 
         body { margin: 0; background: var(--bg-main); color: var(--text-main); font-family: 'Poppins', sans-serif; }
@@ -19,14 +23,47 @@
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(11, 17, 32, 0.8); border-bottom: 1px solid var(--card-border); }
         .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; color: var(--primary); }
         
-        .container { max-width: 1000px; margin: 50px auto; padding: 0 20px; text-align: center; }
+        .container { max-width: 1100px; margin: 50px auto; padding: 0 20px; text-align: center; }
         
-        .welcome-box { background: var(--card-bg); border: 1px solid var(--primary); border-radius: 15px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 168, 252, 0.1); }
+        .welcome-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 15px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .welcome-box h1 { margin: 0 0 10px 0; font-size: 28px; }
-        .welcome-box p { color: var(--text-muted); margin-bottom: 30px; }
+        .welcome-box p { color: var(--text-muted); margin-bottom: 35px; }
         
-        .course-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--primary); color: white; text-decoration: none; padding: 15px 30px; border-radius: 10px; font-weight: 600; transition: 0.3s; }
-        .course-btn:hover { background: #008be6; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,168,252,0.3); }
+        /* 🌟 توزيع المواد بشكل عرضي متناسق 🌟 */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        /* 🌟 ستايل كرت المادة بدون أي خطوط سفلية 🌟 */
+        .course-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-decoration: none !important; /* يلغي الخط اللي تحت الرابط تماماً */
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* تأثيرات الحركة عند تمرير الماوس فوق الكرت */
+        .course-card:hover {
+            border-color: var(--primary);
+            background: rgba(0, 168, 252, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 168, 252, 0.15);
+        }
+
+        .course-icon { font-size: 40px; }
+        .course-card h3 { margin: 0; font-size: 18px; font-weight: 600; color: white; }
+        .course-card span { font-size: 13px; color: var(--text-muted); }
 
         .logout-btn { display: inline-block; margin-top: 20px; color: #ff4757; cursor: pointer; font-weight: 500; text-decoration: underline; }
     </style>
@@ -45,13 +82,28 @@
 
         <div id="teacher-content" class="welcome-box" style="display: none;">
             <h1>Welcome, <span id="teacher-name" style="color: var(--primary);">Teacher</span>!</h1>
-            <p>Select your course below to manage student submissions and grading.</p>
+            <p>Select a course below to manage student submissions and grading.</p>
             
-            <a href="teacher-mohamad-course.html" class="course-btn">
-                <i class="fas fa-folder-open"></i> Manage My Course
-            </a>
+            <div class="courses-grid">
+                <a href="teacher-mohamad-course.html?id=web_dev" class="course-card">
+                    <i class="fas fa-code course-icon" style="color: #00f2fe;"></i>
+                    <h3>Web Development</h3>
+                    <span>إدارة مادة تطوير الويب</span>
+                </a>
+
+                <a href="teacher-mohamad-course.html?id=programming" class="course-card">
+                    <i class="fas fa-laptop-code course-icon" style="color: #a855f7;"></i>
+                    <h3>Programming</h3>
+                    <span>إدارة مادة البرمجة</span>
+                </a>
+
+                <a href="teacher-mohamad-course.html?id=networks" class="course-card">
+                    <i class="fas fa-network-wired course-icon" style="color: #22c55e;"></i>
+                    <h3>Computer Networks</h3>
+                    <span>إدارة مادة الشبكات</span>
+                </a>
+            </div>
             
-            <br>
             <div class="logout-btn" id="logout-action"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </div>
     </div>
@@ -77,33 +129,26 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    // جلب بيانات المستخدم من الفايربيس للتأكد من دوره
                     const userDocRef = doc(db, "Users", user.uid);
                     const docSnap = await getDoc(userDocRef);
                     
                     if (docSnap.exists() && docSnap.data().role === 'teacher') {
-                        // إذا كان معلماً، أخفِ التحميل واعرض الواجهة
                         document.getElementById('loading-screen').style.display = 'none';
                         document.getElementById('teacher-content').style.display = 'block';
                         document.getElementById('teacher-name').innerText = user.displayName || "Teacher";
                     } else {
-                        // إذا كان طالباً، اطرده لصفحة الطلاب
                         window.location.href = "dashboard.html";
                     }
                 } catch (error) {
                     console.error("Error verifying role:", error);
                 }
             } else {
-                // إذا لم يسجل دخوله أصلاً
                 window.location.href = "index.html";
             }
         });
 
-        // كود تسجيل الخروج
         document.getElementById('logout-action').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = "index.html";
-            });
+            signOut(auth).then(() => { window.location.href = "index.html"; });
         });
     </script>
 </body>
