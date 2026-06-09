@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEC Cloud - Course Management</title>
+    <meta name="description" content="إدارة محتوى المادة الدراسية، رفع الواجبات والملفات، وتحديد علامات الطلاب (Pass, Merit, Distinction).">
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #0b1120;
+            --card-bg: #131c31;
+            --card-border: rgba(255, 255, 255, 0.05);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #00a8fc;
+            --accent-yellow: #FFD700;
+            --accent-green: #4CAF50;
+            --accent-red: #ff4757;
+            --gray-out: rgba(255, 255, 255, 0.1);
+        }
+
+        body { margin: 0; background: var(--bg-main); color: var(--text-main); font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+        
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; color: var(--accent-yellow); }
+        .nav-profile { display: flex; align-items: center; gap: 15px; font-size: 14px; }
+        .avatar { width: 35px; height: 35px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+
+        .lang-dropdown { position: relative; cursor: pointer; }
+        .lang-menu { display: none; position: absolute; top: 120%; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; z-index: 100; overflow: hidden; min-width: 110px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .lang-menu.show { display: block; }
+        .lang-menu div { padding: 10px 15px; transition: 0.3s; }
+        .lang-menu div:hover { background: rgba(255,255,255,0.1); color: var(--primary); }
+        html[dir="rtl"] .lang-menu { right: auto; left: 0; }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        
+        .back-link { color: var(--text-muted); text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; transition: 0.3s; }
+        .back-link:hover { color: white; }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 25px; position: relative; margin-bottom: 20px; }
+        
+        .edit-btn { position: absolute; top: 15px; right: 15px; width: 36px; height: 36px; border-radius: 8px; background: rgba(255, 215, 0, 0.1); color: var(--accent-yellow); border: 1px solid rgba(255, 215, 0, 0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: all 0.3s ease; z-index: 10; text-decoration: none !important; }
+        .edit-btn:hover { background: var(--accent-yellow); color: var(--bg-main); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
+        html[dir="rtl"] .edit-btn { right: auto; left: 15px; }
+        .add-btn { background: rgba(0, 168, 252, 0.1); color: var(--primary); border-color: rgba(0, 168, 252, 0.3); }
+        .add-btn:hover { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
+
+        .hero-card { background: linear-gradient(135deg, #0f2038 0%, #081221 100%); border-left: 4px solid var(--primary); }
+        html[dir="rtl"] .hero-card { border-left: none; border-right: 4px solid var(--primary); }
+        .hero-title { font-size: 24px; font-weight: 700; margin: 0 0 10px 0; display: inline-flex; align-items: center; gap: 12px; }
+        .hero-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; max-width: 80%; }
+        .progress-bar { width: 300px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 15px; overflow: hidden; }
+        .progress-fill { width: 40%; height: 100%; background: var(--primary); border-radius: 10px; }
+
+        .main-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: start; }
+
+        .grades-card { border-color: rgba(255, 215, 0, 0.3); box-shadow: 0 5px 20px rgba(0,0,0,0.2); transition: 0.3s; }
+        .grades-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--accent-yellow); font-weight: 600; font-size: 16px; } 
+        
+        .criteria-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; transition: 0.3s; }
+        .crit-badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid var(--gray-out); color: var(--text-muted); transition: 0.4s ease; opacity: 0.4; }
+        
+        .crit-badge.active.p { border-color: var(--accent-green); color: var(--accent-green); opacity: 1; box-shadow: 0 0 8px rgba(76, 175, 80, 0.3); }
+        .crit-badge.active.m { border-color: var(--primary); color: var(--primary); opacity: 1; box-shadow: 0 0 8px rgba(0, 168, 252, 0.3); }
+        .crit-badge.active.d { border-color: var(--accent-yellow); color: var(--accent-yellow); opacity: 1; box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
+
+        .final-grade-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--card-border); font-size: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; transition: 0.3s; }
+
+        .grade-pass { color: var(--accent-green) !important; text-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
+        .grade-merit { color: var(--primary) !important; text-shadow: 0 0 10px rgba(0, 168, 252, 0.4); }
+        .grade-distinction { color: var(--accent-yellow) !important; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
+        .grade-fail { color: var(--text-muted) !important; }
+
+        .aim-accordion { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+        .aim-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; cursor: pointer;}
+        .aim-header:hover { background: rgba(255,255,255,0.05); }
+        .aim-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.1); }
+        .aim-inner { padding: 15px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--card-border); }
+        
+        .action-icons { display: flex; gap: 12px; align-items: center; }
+        .action-icons i { cursor: pointer; transition: 0.3s; font-size: 14px; color: var(--text-muted); }
+        .action-icons i.fa-edit:hover { color: var(--accent-yellow); }
+        .action-icons i.fa-trash:hover { color: var(--accent-red); }
+        .action-icons i.toggle-icon:hover { color: white; }
+
+        .assignment-card { border-left: 3px solid var(--accent-red); }
+        html[dir="rtl"] .assignment-card { border-left: none; border-right: 3px solid var(--accent-red); }
+        .assignment-inner { background: rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; border: 1px solid rgba(255, 71, 87, 0.2); }
+        .due-date { font-size: 12px; color: var(--accent-red); margin: 5px 0 15px 0; }
+        .download-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border: 1px solid var(--card-border); }
+        .submit-btn { width: 100%; padding: 12px; background: rgba(255, 71, 87, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+
+        .tool-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--card-border); font-size: 13px; color: white; }
+        .tool-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .tool-title-link { color: inherit; text-decoration: none; transition: 0.3s; }
+        .tool-title-link:hover { color: var(--primary); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-box { background: #1e293b; border: 1px solid var(--card-border); border-radius: 16px; width: 90%; max-width: 450px; padding: 30px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: scale(0.8) translateY(30px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 15px; }
+        .modal-header h3 { margin: 0; font-size: 18px; color: var(--accent-yellow); display: flex; align-items: center; gap: 10px; }
+        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; }
+        .close-btn:hover { color: var(--accent-red); transform: rotate(90deg); }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+        
+        .form-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 8px; color: white; font-family: inherit; box-sizing: border-box; transition: 0.3s; }
+        .form-input[type="file"] { padding: 9px; }
+        .form-input:focus { outline: none; border-color: var(--accent-yellow); box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
+        
+        select.form-input { appearance: none; -webkit-appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px; }
+        html[dir="rtl"] select.form-input { background-position: left 15px center; padding-right: 12px; padding-left: 40px; }
+        select.form-input option { background-color: var(--card-bg); color: white; padding: 10px; }
+
+        .save-modal-btn { width: 100%; padding: 12px; background: var(--accent-yellow); color: var(--bg-main); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; margin-top: 10px; transition: 0.3s; }
+        .save-modal-btn:hover { background: #e6c200; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2); }
+
+        .card-grades-anim { max-height: 0; opacity: 0; overflow: hidden; transform: scaleY(0); transform-origin: top; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card-grades-anim.show { max-height: 400px; opacity: 1; transform: scaleY(1); margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(255, 215, 0, 0.2); }
+        
+        .grade-select { text-align: center; font-weight: 700; font-size: 14px; padding: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.5); color: white; border-radius: 6px; }
+        .grade-select:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 168, 252, 0.3); }
+        
+        .grade-select option[value="D"] { color: var(--accent-yellow); font-weight: bold; }
+        .grade-select option[value="M"] { color: var(--primary); font-weight: bold; }
+        .grade-select option[value="P"] { color: var(--accent-green); font-weight: bold; }
+        .grade-select option[value="F"] { color: var(--text-muted); }
+
+        .submissions-modal-box { max-width: 760px; max-height: 88vh; display: flex; flex-direction: column; }
+        .submissions-modal-box #modal-body { overflow: hidden; }
+        .submissions-toolbar { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 15px; flex-wrap: wrap; }
+        .submissions-toolbar .form-group { flex: 1; margin-bottom: 0; }
+        .bulk-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .select-all-wrap { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; cursor: pointer; user-select: none; }
+        .submission-checkbox { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex: 0 0 auto; }
+        .submissions-scroll { max-height: 55vh; overflow-y: auto; padding-right: 6px; }
+        html[dir="rtl"] .submissions-scroll { padding-right: 0; padding-left: 6px; }
+        .submission-item { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--card-border); border-radius: 8px; background: rgba(0,0,0,0.22); }
+        .submission-main { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+        .submission-name { color: white; font-weight: 600; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .submission-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--text-muted); font-size: 12px; }
+        .submission-meta span { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); border-radius: 6px; padding: 5px 8px; }
+        .download-submission-btn { width: auto; min-width: 150px; padding: 10px 12px; background: rgba(0, 168, 252, 0.1); color: var(--primary); border: 1px solid rgba(0, 168, 252, 0.3); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .download-submission-btn:hover { background: var(--primary); color: white; }
+        .download-submission-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .empty-submissions { color: var(--text-muted); font-size: 13px; text-align: center; padding: 28px 12px; border: 1px dashed var(--card-border); border-radius: 8px; }
+
+        @media (max-width: 640px) {
+            .submission-item { align-items: stretch; flex-direction: column; }
+            .submissions-toolbar { align-items: stretch; }
+            .submissions-toolbar .form-group, .bulk-actions, .download-submission-btn { width: 100%; }
+            .download-submission-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+            </svg>
+            <span id="t-portal">Teacher Portal</span>
+        </div>
+        <div class="nav-profile">
+            <div class="lang-dropdown">
+                <span id="lang-display" onclick="document.getElementById('lang-menu').classList.toggle('show')">🌐 EN ▾</span>
+                <div id="lang-menu" class="lang-menu">
+                    <div onclick="window.setLanguage('en')">English (EN)</div>
+                    <div onclick="window.setLanguage('ar')">العربية (AR)</div>
+                </div>
+            </div>
+            <div class="avatar">M</div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="javascript:history.back()" class="back-link" id="t-back"><i class="fas fa-arrow-left" id="back-icon"></i> Back to Dashboard</a>
+
+        <div class="card hero-card">
+            <button class="edit-btn" onclick="window.openModal('hero')" title="Edit"><i class="fas fa-edit"></i></button>
+            <h1 class="hero-title">
+                <i id="display-unit-icon" class="fas fa-spinner fa-spin"></i> 
+                <span id="display-unit-title">Loading...</span>
+            </h1>
+            <p class="hero-desc" id="display-unit-desc">...</p>
+            <div style="font-size: 12px; color: var(--primary); margin-top: 20px;" id="t-progress">Unit Progress: 40%</div>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+        </div>
+
+        <div class="main-grid">
+            <div class="left-col">
+                <div class="card grades-card" id="grades-card-container">
+                    <div class="grades-header" id="t-grades"><i class="fas fa-user-graduate"></i> Student Grading</div>
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <select id="card-student-select" class="form-input" onchange="window.onCardStudentSelect()" style="border-color: rgba(255, 215, 0, 0.5); background: rgba(255, 215, 0, 0.05); color: var(--accent-yellow); font-weight: 600; font-size: 15px;">
+                            <option value="" disabled selected>Loading students...</option>
+                        </select>
+                    </div>
+
+                    <div id="card-grades-anim" class="card-grades-anim">
+                        
+                        <div class="final-grade-box" style="justify-content: center; flex-direction: column; gap: 15px; border-color: rgba(255, 255, 255, 0.1);">
+                            <div style="font-weight: 600; color: white;" id="t-select-grade">Select Final Grade:</div> 
+                            <select id="card-master-grade" class="form-input grade-select" style="width: 100%; max-width: 250px; font-size: 16px; padding: 10px;" onchange="window.autoFillCriteria()">
+                                <option value="" disabled selected>-- Choose Grade --</option>
+                                <option value="D">DISTINCTION</option>
+                                <option value="M">MERIT</option>
+                                <option value="P">PASS</option>
+                                <option value="F">FAIL (Unclassified)</option>
+                            </select>
+                        </div>
+
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;" id="t-criteria">Criteria Achieved:</div>
+                        <div class="criteria-row" id="criteria-container">
+                            <span class="crit-badge p" data-type="p">P1</span> 
+                            <span class="crit-badge p" data-type="p">P2</span> 
+                            <span class="crit-badge p" data-type="p">P3</span> 
+                            <span class="crit-badge p" data-type="p">P4</span>
+                            <span class="crit-badge m" data-type="m">M1</span> 
+                            <span class="crit-badge m" data-type="m">M2</span> 
+                            <span class="crit-badge d" data-type="d">D1</span>
+                        </div>
+
+                        <div class="final-grade-box" id="result-box">
+                            <span id="t-final" style="font-weight: 600;">Resulting Grade:</span> 
+                            <span id="display-final-grade" class="grade-fail" style="font-weight: bold; font-size: 16px;">PENDING</span>
+                        </div>
+
+                        <button class="save-modal-btn" id="btn-save-card-grades" onclick="window.saveCardGrades()"><i class="fas fa-save"></i> <span id="t-save-grades">Save Grade</span></button>
+                    </div>
+                </div>
+
+                <div class="card" style="padding-top: 30px;">
+                    <button class="edit-btn add-btn" onclick="window.openModal('add-aim')" title="Add"><i class="fas fa-plus"></i></button>
+                    <h3 style="font-size: 16px; margin: 0 0 15px 0;" id="t-aims"><i class="fas fa-layer-group" style="color: var(--primary);"></i> Learning Aims</h3>
+                    <div id="aims-container"></div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <div class="card assignment-card">
+                    <button class="edit-btn" onclick="window.openModal('assignment')" title="Edit"><i class="fas fa-edit"></i></button>
+                    <h3 style="font-size: 15px; margin: 0 0 20px 0;" id="t-assign-box"><i class="fas fa-list-ul"></i> Assignment & Submission</h3>
+                    <div class="assignment-inner">
+                        <div style="font-weight: 600; font-size: 14px; color: white;" id="display-assign-title">Assignment 1</div>
+                        <div class="due-date"><i class="far fa-clock"></i> <span id="t-due">Due:</span> <span id="display-due-date">May 20, 2026</span></div>
+                        
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;" id="t-download">Download Instructions:</div>
+                        <div class="download-box">
+                            <i class="fas fa-file-pdf" style="color: var(--accent-yellow); font-size: 18px;"></i> 
+                            <span id="display-assign-file">Assignment_Brief.pdf</span>
+                        </div>
+                        <button class="submit-btn" id="t-view-subs" onclick="window.openModal('submissions')"><i class="fas fa-box-open"></i> View Student Submissions</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <button class="edit-btn add-btn" onclick="window.openModal('add-tool')" title="Add"><i class="fas fa-plus"></i></button>
+                    <h3 style="font-size: 15px; margin: 0 0 20px 0;" id="t-tools-box"><i class="fas fa-link"></i> Required Tools & Links</h3>
+                    <div class="tools-list" id="tools-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dynamic-modal" class="modal-overlay">
+        <div class="modal-box" id="dynamic-modal-box">
+            <div class="modal-header">
+                <h3 id="modal-title">Edit</h3>
+                <button class="close-btn" onclick="window.closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modal-body"></div>
+            <!-- 🌟 تم تغيير الزر هنا 🌟 -->
+            <button class="save-modal-btn" onclick="window.saveChanges()" id="t-save-modal-btn"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- 🌟 تم استيراد ميزات الفايربيس الإضافية هنا 🌟 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
+            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            projectId: "btec-cloud-portal-d6a93",
+            storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
+            messagingSenderId: "230354414241",
+            appId: "1:230354414241:web:b365524169fb815b449ee0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
+
+        const modal = document.getElementById('dynamic-modal');
+        const modalBox = document.getElementById('dynamic-modal-box');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const saveModalBtn = document.getElementById('t-save-modal-btn');
+        
+        window.activeLang = 'en';
+        window.currentSection = "";
+        window.currentEditIndex = null;
+        window.courseContent = { aims: [], tools: [] };
+        window.submissionsCache = [];
+        window.unsubscribeSubmissions = null;
+
+        const sectionOptions = [
+            { value: "section-1", en: "Section 1", ar: "الشعبة الأولى" },
+            { value: "section-2", en: "Section 2", ar: "الشعبة الثانية" }
+        ];
+
+        const coursesDB = {
+            "programming": { icon: "fa-laptop-code", title_en: "Introduction to Programming", desc_en: "Learn the fundamentals of programming.", title_ar: "مقدمة في البرمجة", desc_ar: "تعلم أساسيات البرمجة، الخوارزميات، وحل المشكلات." },
+            "web-design": { icon: "fa-globe", title_en: "Introduction to Web Design", desc_en: "Master HTML, CSS, and user experience.", title_ar: "مقدمة في تصميم المواقع", desc_ar: "احترف مبادئ تصميم الويب وبناء المواقع." },
+            "it-systems": { icon: "fa-sitemap", title_en: "Using IT in Organizations", desc_en: "Explore how organizations use Information Technology.", title_ar: "استخدام تكنولوجيا المعلومات في المؤسسات", desc_ar: "استكشف كيف تستخدم المؤسسات تكنولوجيا المعلومات لتحقيق أهدافها." }
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('id') || 'it-systems'; 
+        const currentCourse = coursesDB[courseId] || coursesDB['it-systems']; 
+
+        const t = {
+            en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload File", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --", submissionsTitle: "Student Submissions", sectionFilter: "Section", allSections: "All Sections", section1: "Section 1", section2: "Section 2", loadingSubmissions: "Loading submissions...", noSubmissions: "No submissions for this section yet.", submittedAt: "Submitted", filesCount: "{count} file", downloadFolder: "Download Submission", preparingDownload: "Preparing...", downloadFallback: "Could not download the submission. Opening files instead.", confirmDelete: "Delete this item?", saveError: "Failed to save. Check Firebase Rules.", selectAll: "Select All", downloadSelected: "Download Selected", selectedCount: "{count} selected", noSelected: "Select at least one submission.", bulkZipName: "student-submissions.zip" },
+            ar: { langStr: "🌐 AR ▾", portal: "بوابة المعلم", back: "العودة للوحة التحكم", studentGrading: "تقييم الطلاب", criteria: "المعايير المنجزة:", final: "النتيجة النهائية:", aims: "أهداف التعلم", assignBox: "الواجبات والتسليم", due: "تاريخ التسليم:", download: "تعليمات التحميل:", viewSubs: "عرض التسليمات", toolsBox: "الأدوات والروابط", save: "حفظ التعديلات", saveGrades: "حفظ العلامة", progress: "تقدم الوحدة: 40%", pass: "اجتياز", merit: "جيد جداً", distinction: "امتياز", fail: "رسوب (غير مصنف)", pending: "قيد الانتظار", selectGrade: "حدد العلامة النهائية:", chooseGrade: "-- اختر العلامة --", mEditDetails: "تعديل التفاصيل", mUnitTitle: "اسم الوحدة", mDesc: "الوصف", mEditAssign: "تعديل الواجب", mAssignTitle: "اسم الواجب", mDueDate: "تاريخ التسليم", mUploadBrief: "رفع ملف", mAddAim: "إضافة هدف", mEditAim: "تعديل هدف", mAimTitle: "عنوان الهدف", mAimDesc: "وصف الهدف", mAttachFile: "إرفاق ملف", mExtLink: "رابط خارجي", mAddTool: "إضافة رابط", mEditTool: "تعديل رابط", mToolTitle: "عنوان الرابط", mUrlLink: "الرابط", chooseStudent: "-- اختر طالباً --", submissionsTitle: "تسليمات الطلاب", sectionFilter: "الشعبة", allSections: "كل الشعب", section1: "الشعبة الأولى", section2: "الشعبة الثانية", loadingSubmissions: "جاري تحميل التسليمات...", noSubmissions: "لا يوجد تسليمات لهذه الشعبة بعد.", submittedAt: "وقت التسليم", filesCount: "{count} ملف", downloadFolder: "تحميل التسليم", preparingDownload: "جاري التجهيز...", downloadFallback: "تعذر تحميل التسليم. سيتم فتح الملفات بدلاً من ذلك.", confirmDelete: "حذف هذا العنصر؟", saveError: "فشل الحفظ. تأكد من صلاحيات Firebase.", selectAll: "تحديد الكل", downloadSelected: "تحميل المحدد", selectedCount: "{count} محدد", noSelected: "حدد تسليم واحد على الأقل.", bulkZipName: "تسليمات-الطلاب.zip" }
+        };
+
+        function escapeHTML(value) {
+            return String(value ?? "").replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char]));
+        }
+
+        function getSectionLabel(sectionValue) {
+            const option = sectionOptions.find(item => item.value === sectionValue);
+            if (!option) return sectionValue || "-";
+            return option[window.activeLang === 'ar' ? 'ar' : 'en'];
+        }
+
+        function formatSubmittedAt(value) {
+            const date = value?.toDate ? value.toDate() : value ? new Date(value) : null;
+            if (!date || Number.isNaN(date.getTime())) return "-";
+            return date.toLocaleString(window.activeLang === 'ar' ? 'ar-JO' : 'en-US');
+        }
+
+        function cleanZipName(value) {
+            return (value || "submission-folder").replace(/[\\/:*?"<>|]/g, "_").slice(0, 80) || "submission-folder";
+        }
+
+        function normalizeZipPath(value, fallback) {
+            return (value || fallback || "file").split('/').filter(Boolean).join('/') || fallback || "file";
+        }
+
+        function safeFileName(value, fallback = "file") {
+            return String(value || fallback).replace(/[\\/:*?"<>|]/g, "_").replace(/\s+/g, "_").slice(0, 120) || fallback;
+        }
+
+        function getVisibleSubmissions() {
+            const selectedSection = document.getElementById('submission-section-filter')?.value || "";
+            return (window.submissionsCache || []).filter(submission => !selectedSection || submission.section === selectedSection);
+        }
+
+        window.renderTools = function() {
+            const tools = window.courseContent.tools || [];
+            const container = document.getElementById('tools-container');
+            container.innerHTML = "";
+
+            tools.forEach((tool, index) => {
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="tool-item">
+                        <span><i class="fas fa-link"></i> <a href="${escapeHTML(tool.url)}" class="tool-title-link" target="_blank">${escapeHTML(tool.title)}</a></span>
+                        <div class="action-icons">
+                            <i class="fas fa-edit" onclick="window.openModal('edit-tool', null, ${index})" title="Edit"></i>
+                            <i class="fas fa-trash" onclick="window.deleteTool(${index})" title="Delete"></i>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        window.renderAims = function() {
+            const aims = window.courseContent.aims || [];
+            const container = document.getElementById('aims-container');
+            container.innerHTML = "";
+
+            aims.forEach((aim, index) => {
+                let extraHtml = "";
+                if (aim.fileName) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-file-pdf" style="color:var(--accent-red);"></i> ${escapeHTML(aim.fileName)}</span><i class="fas fa-cloud-download-alt" style="cursor:pointer;" title="Download"></i></div>`;
+                if (aim.url) extraHtml += `<div class="tool-item" style="margin-top:10px;"><span><i class="fas fa-link" style="color:var(--primary);"></i> <a href="${escapeHTML(aim.url)}" style="color:white; text-decoration:none;" target="_blank">رابط إضافي</a></span><i class="fas fa-external-link-alt" style="cursor:pointer;" title="Open"></i></div>`;
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="aim-accordion">
+                        <div class="aim-header" onclick="window.toggleAim(this)">
+                            <div style="flex-grow:1; cursor:pointer;">• <span class="aim-title-text">${escapeHTML(aim.title)}</span></div>
+                            <div class="action-icons">
+                                <i class="fas fa-edit" onclick="event.stopPropagation(); window.openModal('edit-aim', null, ${index})" title="Edit"></i>
+                                <i class="fas fa-trash" onclick="event.stopPropagation(); window.deleteAim(${index})" title="Delete"></i>
+                                <i class="fas fa-chevron-down toggle-icon"></i>
+                            </div>
+                        </div>
+                        <div class="aim-content"><div class="aim-inner"><div class="aim-desc-text">${escapeHTML(aim.desc)}</div>${extraHtml}</div></div>
+                    </div>
+                `);
+            });
+        }
+
+        window.onload = function() {
+            document.getElementById('display-unit-icon').className = "fas " + currentCourse.icon;
+            const savedLang = localStorage.getItem('preferredLang') || 'en';
+            window.setLanguage(savedLang); 
+            window.fetchStudentsForCard(); 
+            // 🌟 سحب المحتوى اللي انحفظ مسبقاً 🌟
+            window.loadCourseContent();
+        };
+
+        window.setLanguage = function(lang) {
+            window.activeLang = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('lang-display').innerText = t[lang].langStr;
+            document.getElementById('lang-menu').classList.remove('show');
+            
+            document.getElementById('t-portal').innerText = t[lang].portal;
+            document.getElementById('t-back').innerHTML = `<i class="fas fa-arrow-${lang==='ar'?'right':'left'}"></i> ` + t[lang].back;
+            document.getElementById('display-unit-title').innerText = lang === 'ar' ? currentCourse.title_ar : currentCourse.title_en;
+            document.getElementById('display-unit-desc').innerText = lang === 'ar' ? currentCourse.desc_ar : currentCourse.desc_en;
+            
+            document.getElementById('t-grades').innerHTML = `<i class="fas fa-user-graduate"></i> ` + t[lang].studentGrading;
+            document.getElementById('t-criteria').innerText = t[lang].criteria;
+            document.getElementById('t-final').innerText = t[lang].final;
+            document.getElementById('t-select-grade').innerText = t[lang].selectGrade;
+            document.getElementById('t-aims').innerHTML = `<i class="fas fa-layer-group" style="color: var(--primary);"></i> ` + t[lang].aims;
+            document.getElementById('t-assign-box').innerHTML = `<i class="fas fa-list-ul"></i> ` + t[lang].assignBox;
+            document.getElementById('t-due').innerText = t[lang].due;
+            document.getElementById('t-download').innerText = t[lang].download;
+            document.getElementById('t-view-subs').innerHTML = `<i class="fas fa-box-open"></i> ` + t[lang].viewSubs;
+            document.getElementById('t-tools-box').innerHTML = `<i class="fas fa-link"></i> ` + t[lang].toolsBox;
+            document.getElementById('t-save-modal-btn').innerHTML = `<i class="fas fa-save"></i> ` + t[lang].save;
+            document.getElementById('t-save-grades').innerText = t[lang].saveGrades;
+            document.getElementById('t-progress').innerText = t[lang].progress;
+            
+            window.updateGradeOptions();
+            window.autoFillCriteria(); 
+
+            localStorage.setItem('preferredLang', lang);
+        }
+
+        window.updateGradeOptions = function() {
+            const masterSelect = document.getElementById('card-master-grade');
+            if(masterSelect) {
+                masterSelect.options[0].text = t[window.activeLang].chooseGrade;
+                masterSelect.options[1].text = t[window.activeLang].distinction;
+                masterSelect.options[2].text = t[window.activeLang].merit;
+                masterSelect.options[3].text = t[window.activeLang].pass;
+                masterSelect.options[4].text = t[window.activeLang].fail;
+            }
+            const studentSelect = document.getElementById('card-student-select');
+            if(studentSelect && studentSelect.options.length > 0 && studentSelect.options[0].disabled) {
+                studentSelect.options[0].text = t[window.activeLang].chooseStudent;
+            }
+        }
+
+        window.fetchStudentsForCard = async function() {
+            const select = document.getElementById('card-student-select');
+            try {
+                const querySnapshot = await getDocs(collection(db, "Users"));
+                let options = `<option value="" disabled selected>${t[window.activeLang].chooseStudent}</option>`;
+                let found = false;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if(!data.teacherId) { 
+                        found = true;
+                        const name = data.name || data.fullName || "Student";
+                        options += `<option value="${doc.id}">👤 ${name}</option>`;
+                    }
+                });
+                
+                select.innerHTML = found ? options : `<option value="" disabled>No students found</option>`;
+            } catch (error) {
+                console.error("Error:", error);
+                select.innerHTML = `<option value="" disabled>Auth Error / Loading...</option>`;
+            }
+        }
+
+        window.onCardStudentSelect = function() {
+            const animContainer = document.getElementById('card-grades-anim');
+            animContainer.classList.add('show');
+            document.getElementById('card-master-grade').value = "";
+            window.autoFillCriteria();
+        }
+
+        window.autoFillCriteria = function() {
+            const grade = document.getElementById('card-master-grade').value;
+            const badges = document.querySelectorAll('.crit-badge');
+            const displayFinal = document.getElementById('display-final-grade');
+            const resultBox = document.getElementById('result-box');
+            
+            badges.forEach(b => b.classList.remove('active'));
+            displayFinal.className = "";
+            resultBox.style.borderColor = "rgba(255,255,255,0.1)";
+
+            if(grade === "D") {
+                badges.forEach(b => b.classList.add('active')); 
+                displayFinal.innerText = t[window.activeLang].distinction;
+                displayFinal.className = "grade-distinction";
+                resultBox.style.borderColor = "var(--accent-yellow)";
+            } 
+            else if(grade === "M") {
+                badges.forEach(b => { if(b.dataset.type === 'p' || b.dataset.type === 'm') b.classList.add('active'); }); 
+                displayFinal.innerText = t[window.activeLang].merit;
+                displayFinal.className = "grade-merit";
+                resultBox.style.borderColor = "var(--primary)";
+            } 
+            else if(grade === "P") {
+                badges.forEach(b => { if(b.dataset.type === 'p') b.classList.add('active'); }); 
+                displayFinal.innerText = t[window.activeLang].pass;
+                displayFinal.className = "grade-pass";
+                resultBox.style.borderColor = "var(--accent-green)";
+            } 
+            else if(grade === "F") {
+                displayFinal.innerText = t[window.activeLang].fail;
+                displayFinal.className = "grade-fail";
+                resultBox.style.borderColor = "var(--card-border)";
+            } 
+            else {
+                displayFinal.innerText = t[window.activeLang].pending;
+                displayFinal.className = "grade-fail";
+            }
+        }
+
+        window.saveCardGrades = async function() {
+            const studentId = document.getElementById('card-student-select').value;
+            const grade = document.getElementById('card-master-grade').value;
+            
+            if(!studentId) { alert("Please select a student first!"); return; }
+            if(!grade) { alert("Please select a grade before saving!"); return; }
+
+            const btn = document.getElementById('btn-save-card-grades');
+            const originalHTML = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                const studentRef = doc(db, "Users", studentId);
+                await updateDoc(studentRef, {
+                    [`grades.${courseId}`]: grade
+                });
+
+                btn.innerHTML = `<i class="fas fa-check"></i> ${window.activeLang === 'ar' ? 'تم حفظ العلامة!' : 'Grade Saved!'}`;
+                btn.style.background = 'var(--accent-green)';
+                btn.style.color = 'white';
+                
+            } catch (error) {
+                console.error("Error updating grade: ", error);
+                alert("فشل الحفظ ❌\n\nالسبب: " + error.message);
+            } finally {
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.disabled = false;
+                }, 3000);
+            }
+        }
+
+        window.toggleAim = function(headerElement) {
+            const container = headerElement.parentElement;
+            const content = container.querySelector('.aim-content');
+            const icon = container.querySelector('.toggle-icon');
+            if (content.style.maxHeight) { content.style.maxHeight = null; icon.style.transform = "rotate(0deg)"; } 
+            else { content.style.maxHeight = content.scrollHeight + "px"; icon.style.transform = "rotate(180deg)"; }
+        }
+
+        window.deleteElement = function(btn) {
+            if(confirm(t[window.activeLang].confirmDelete)) { btn.closest('.aim-accordion, .tool-item').remove(); }
+        }
+
+        window.deleteTool = async function(index) {
+            if (!confirm(t[window.activeLang].confirmDelete)) return;
+            const previous = [...(window.courseContent.tools || [])];
+            window.courseContent.tools.splice(index, 1);
+            window.renderTools();
+
+            try {
+                await setDoc(doc(db, "Courses", courseId), { tools: window.courseContent.tools }, { merge: true });
+            } catch (error) {
+                console.error("Delete tool error:", error);
+                window.courseContent.tools = previous;
+                window.renderTools();
+                alert(t[window.activeLang].saveError);
+            }
+        }
+
+        window.deleteAim = async function(index) {
+            if (!confirm(t[window.activeLang].confirmDelete)) return;
+            const previous = [...(window.courseContent.aims || [])];
+            window.courseContent.aims.splice(index, 1);
+            window.renderAims();
+
+            try {
+                await setDoc(doc(db, "Courses", courseId), { aims: window.courseContent.aims }, { merge: true });
+            } catch (error) {
+                console.error("Delete aim error:", error);
+                window.courseContent.aims = previous;
+                window.renderAims();
+                alert(t[window.activeLang].saveError);
+            }
+        }
+
+        window.openModal = function(section, btnElement = null, editIndex = null) {
+            window.currentSection = section;
+            window.currentEditElement = btnElement;
+            window.currentEditIndex = editIndex;
+
+            modalBox.classList.remove('submissions-modal-box');
+            saveModalBtn.style.display = 'block';
+            saveModalBtn.innerHTML = `<i class="fas fa-save"></i> ${t[window.activeLang].save}`;
+            modal.classList.add('active');
+
+            if (section !== 'submissions' && window.unsubscribeSubmissions) {
+                window.unsubscribeSubmissions();
+                window.unsubscribeSubmissions = null;
+            }
+            
+            if (section === 'hero') {
+                const title = document.getElementById('display-unit-title').innerText;
+                const desc = document.getElementById('display-unit-desc').innerText;
+                modalTitle.innerHTML = t[window.activeLang].mEditDetails;
+                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mUnitTitle}</label><input type="text" id="input-unit-title" class="form-input" value="${escapeHTML(title)}"></div><div class="form-group"><label>${t[window.activeLang].mDesc}</label><textarea id="input-unit-desc" class="form-input" rows="4">${escapeHTML(desc)}</textarea></div>`;
+            } 
+            else if (section === 'assignment') {
+                const currentDue = document.getElementById('display-due-date').innerText.trim().replace(' ', 'T');
+                const dueValue = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(currentDue) ? currentDue : "";
+                modalTitle.innerHTML = t[window.activeLang].mEditAssign;
+                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mAssignTitle}</label><input type="text" id="input-assign-title" class="form-input" value="${escapeHTML(document.getElementById('display-assign-title').innerText)}"></div><div class="form-group"><label>${t[window.activeLang].mDueDate}</label><input type="datetime-local" id="input-due-date" class="form-input" value="${escapeHTML(dueValue)}"></div><div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mUploadBrief}</label><input type="file" id="input-assign-file" class="form-input"></div>`;
+            } 
+            else if (section === 'add-aim' || section === 'edit-aim') {
+                const aim = section === 'edit-aim' ? (window.courseContent.aims[editIndex] || {}) : {};
+                modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddAim : t[window.activeLang].mEditAim;
+                modalBody.innerHTML = `
+                    <div class="form-group"><label>${t[window.activeLang].mAimTitle}</label><input type="text" id="input-aim-title" class="form-input" value="${escapeHTML(aim.title || "")}"></div>
+                    <div class="form-group"><label>${t[window.activeLang].mAimDesc}</label><textarea id="input-aim-desc" class="form-input" rows="3">${escapeHTML(aim.desc || "")}</textarea></div>
+                    <div class="form-group"><label style="color:var(--accent-yellow);">${t[window.activeLang].mAttachFile}</label><input type="file" id="input-aim-file" class="form-input"></div>
+                    <div class="form-group"><label>${t[window.activeLang].mExtLink}</label><input type="url" id="input-aim-url" class="form-input" placeholder="https://..." value="${escapeHTML(aim.url || "")}"></div>
+                `;
+            } 
+            else if (section === 'add-tool' || section === 'edit-tool') {
+                const tool = section === 'edit-tool' ? (window.courseContent.tools[editIndex] || {}) : {};
+                modalTitle.innerHTML = section.includes('add') ? t[window.activeLang].mAddTool : t[window.activeLang].mEditTool;
+                modalBody.innerHTML = `<div class="form-group"><label>${t[window.activeLang].mToolTitle}</label><input type="text" id="input-tool-title" class="form-input" value="${escapeHTML(tool.title || "")}"></div><div class="form-group"><label>${t[window.activeLang].mUrlLink}</label><input type="url" id="input-tool-url" class="form-input" value="${escapeHTML(tool.url || "")}"></div>`;
+            }
+            else if (section === 'submissions') {
+                modalBox.classList.add('submissions-modal-box');
+                saveModalBtn.style.display = 'none';
+                modalTitle.innerHTML = `<i class="fas fa-box-open"></i> ${t[window.activeLang].submissionsTitle}`;
+                modalBody.innerHTML = `
+                    <div class="submissions-toolbar">
+                        <div class="form-group">
+                            <label for="submission-section-filter">${t[window.activeLang].sectionFilter}</label>
+                            <select id="submission-section-filter" class="form-input" onchange="window.renderSubmissions()">
+                                <option value="">${t[window.activeLang].allSections}</option>
+                                <option value="section-1">${t[window.activeLang].section1}</option>
+                                <option value="section-2">${t[window.activeLang].section2}</option>
+                            </select>
+                        </div>
+                        <div class="bulk-actions">
+                            <label class="select-all-wrap">
+                                <input type="checkbox" id="select-all-submissions" class="submission-checkbox" onchange="window.toggleAllSubmissions(this.checked)">
+                                <span>${t[window.activeLang].selectAll}</span>
+                            </label>
+                            <button class="download-submission-btn" id="download-selected-btn" onclick="window.downloadSelectedSubmissions(this)" disabled><i class="fas fa-download"></i> ${t[window.activeLang].downloadSelected}</button>
+                            <span id="selected-count-label" style="color: var(--text-muted); font-size: 12px;">${t[window.activeLang].selectedCount.replace('{count}', 0)}</span>
+                        </div>
+                    </div>
+                    <div class="submissions-scroll" id="submissions-list">
+                        <div class="empty-submissions"><i class="fas fa-spinner fa-spin"></i> ${t[window.activeLang].loadingSubmissions}</div>
+                    </div>
+                `;
+                window.listenToSubmissions();
+            }
+        }
+
+        window.renderSubmissions = function() {
+            const list = document.getElementById('submissions-list');
+            if (!list) return;
+
+            const submissions = getVisibleSubmissions();
+
+            if (!submissions.length) {
+                list.innerHTML = `<div class="empty-submissions">${t[window.activeLang].noSubmissions}</div>`;
+                window.updateSubmissionSelectionState();
+                return;
+            }
+
+            list.innerHTML = "";
+            submissions.forEach(submission => {
+                const fileCount = Number(submission.fileCount || (submission.files || []).length || 0);
+                const submittedAt = formatSubmittedAt(submission.submittedAt || submission.createdAtClient);
+
+                list.insertAdjacentHTML('beforeend', `
+                    <div class="submission-item">
+                        <div class="submission-main">
+                            <input type="checkbox" class="submission-checkbox submission-select" value="${escapeHTML(submission.id)}" onchange="window.updateSubmissionSelectionState()">
+                            <div>
+                                <div class="submission-name"><i class="fas fa-user-graduate"></i> ${escapeHTML(submission.studentName || "-")}</div>
+                                <div class="submission-meta">
+                                    <span><i class="fas fa-users"></i> ${escapeHTML(getSectionLabel(submission.section))}</span>
+                                    <span><i class="far fa-clock"></i> ${escapeHTML(t[window.activeLang].submittedAt)}: ${escapeHTML(submittedAt)}</span>
+                                    <span><i class="fas fa-folder"></i> ${escapeHTML(t[window.activeLang].filesCount.replace('{count}', fileCount))}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="download-submission-btn" onclick="window.downloadSubmissionFolder('${escapeHTML(submission.id)}', this)"><i class="fas fa-download"></i> ${t[window.activeLang].downloadFolder}</button>
+                    </div>
+                `);
+            });
+            window.updateSubmissionSelectionState();
+        }
+
+        window.toggleAllSubmissions = function(checked) {
+            document.querySelectorAll('.submission-select').forEach(input => {
+                input.checked = checked;
+            });
+            window.updateSubmissionSelectionState();
+        }
+
+        window.updateSubmissionSelectionState = function() {
+            const boxes = Array.from(document.querySelectorAll('.submission-select'));
+            const checkedBoxes = boxes.filter(input => input.checked);
+            const selectAll = document.getElementById('select-all-submissions');
+            const bulkBtn = document.getElementById('download-selected-btn');
+            const countLabel = document.getElementById('selected-count-label');
+
+            if (selectAll) {
+                selectAll.checked = boxes.length > 0 && checkedBoxes.length === boxes.length;
+                selectAll.indeterminate = checkedBoxes.length > 0 && checkedBoxes.length < boxes.length;
+            }
+            if (bulkBtn) bulkBtn.disabled = checkedBoxes.length === 0;
+            if (countLabel) countLabel.innerText = t[window.activeLang].selectedCount.replace('{count}', checkedBoxes.length);
+        }
+
+        window.listenToSubmissions = function() {
+            if (window.unsubscribeSubmissions) window.unsubscribeSubmissions();
+
+            const submissionsRef = collection(db, "Courses", courseId, "submissions");
+            window.unsubscribeSubmissions = onSnapshot(submissionsRef, (snapshot) => {
+                window.submissionsCache = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                window.submissionsCache.sort((a, b) => {
+                    const aDate = a.submittedAt?.toMillis ? a.submittedAt.toMillis() : new Date(a.createdAtClient || 0).getTime();
+                    const bDate = b.submittedAt?.toMillis ? b.submittedAt.toMillis() : new Date(b.createdAtClient || 0).getTime();
+                    return bDate - aDate;
+                });
+                window.renderSubmissions();
+            }, (error) => {
+                console.error("Submissions listener error:", error);
+                const list = document.getElementById('submissions-list');
+                if (list) list.innerHTML = `<div class="empty-submissions">${escapeHTML(error.message)}</div>`;
+            });
+        }
+
+        function openSubmissionFiles(files) {
+            files.forEach((file, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.href = file.downloadURL;
+                    link.download = file.originalName || `file-${index + 1}`;
+                    link.target = "_blank";
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                }, index * 250);
+            });
+        }
+
+        async function getFirestoreChunkedBlob(submission) {
+            const chunksRef = collection(db, "Courses", courseId, "submissions", submission.id, "fileChunks");
+            const snapshot = await getDocs(chunksRef);
+            const chunks = snapshot.docs
+                .map(docSnap => docSnap.data())
+                .sort((a, b) => (a.index || 0) - (b.index || 0));
+
+            if (!chunks.length) throw new Error("No file chunks found");
+
+            const arrays = chunks.map(chunk => chunk.bytes.toUint8Array());
+            return new Blob(arrays, { type: submission.fileType || "application/octet-stream" });
+        }
+
+        async function getSubmissionDownloadItems(submission) {
+            if (submission.fileStorageType === "firestore-chunks") {
+                return [{
+                    name: submission.originalFileName || "student-submission",
+                    blob: await getFirestoreChunkedBlob(submission)
+                }];
+            }
+
+            if (submission.fileDownloadURL) {
+                const response = await fetch(submission.fileDownloadURL);
+                if (!response.ok) throw new Error("Download failed");
+                return [{
+                    name: submission.originalFileName || "student-submission",
+                    blob: await response.blob()
+                }];
+            }
+
+            if (submission.zipDownloadURL) {
+                const response = await fetch(submission.zipDownloadURL);
+                if (!response.ok) throw new Error("Download failed");
+                return [{
+                    name: submission.zipFileName || `${cleanZipName(submission.folderName)}.zip`,
+                    blob: await response.blob()
+                }];
+            }
+
+            const files = submission.files || [];
+            const items = [];
+            for (const file of files) {
+                const response = await fetch(file.downloadURL);
+                if (!response.ok) throw new Error("Download failed");
+                items.push({
+                    name: normalizeZipPath(file.relativePath, file.originalName || "file"),
+                    blob: await response.blob()
+                });
+            }
+            return items;
+        }
+
+        function saveBlob(blob, fileName) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        async function downloadFirestoreChunkedFile(submission) {
+            saveBlob(await getFirestoreChunkedBlob(submission), submission.originalFileName || "student-submission");
+        }
+
+        window.downloadSelectedSubmissions = async function(button) {
+            const selectedIds = Array.from(document.querySelectorAll('.submission-select:checked')).map(input => input.value);
+            if (!selectedIds.length) {
+                alert(t[window.activeLang].noSelected);
+                return;
+            }
+            if (!window.JSZip) {
+                alert(t[window.activeLang].downloadFallback);
+                return;
+            }
+
+            const originalButton = button?.innerHTML;
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t[window.activeLang].preparingDownload}`;
+            }
+
+            try {
+                const zip = new window.JSZip();
+                for (const submissionId of selectedIds) {
+                    const submission = (window.submissionsCache || []).find(item => item.id === submissionId);
+                    if (!submission) continue;
+
+                    const studentFolder = `${safeFileName(submission.studentName || "student")}_${safeFileName(getSectionLabel(submission.section), "section")}_${safeFileName(submissionId, "submission")}`;
+                    const items = await getSubmissionDownloadItems(submission);
+                    items.forEach((item, index) => {
+                        zip.file(`${studentFolder}/${safeFileName(item.name, `file-${index + 1}`)}`, item.blob);
+                    });
+                }
+
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                saveBlob(zipBlob, t[window.activeLang].bulkZipName);
+            } catch (error) {
+                console.error("Bulk download error:", error);
+                alert(t[window.activeLang].downloadFallback);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = originalButton;
+                }
+                window.updateSubmissionSelectionState();
+            }
+        }
+
+        window.downloadSubmissionFolder = async function(submissionId, button) {
+            const submission = (window.submissionsCache || []).find(item => item.id === submissionId);
+            const files = submission?.files || [];
+            if (!submission?.fileStorageType && !submission?.fileDownloadURL && !submission?.zipDownloadURL && !files.length) return;
+
+            const originalButton = button?.innerHTML;
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t[window.activeLang].preparingDownload}`;
+            }
+
+            try {
+                if (submission.fileStorageType === "firestore-chunks") {
+                    await downloadFirestoreChunkedFile(submission);
+                    return;
+                }
+
+                if (submission.fileDownloadURL) {
+                    const response = await fetch(submission.fileDownloadURL);
+                    if (!response.ok) throw new Error("Download failed");
+                    saveBlob(await response.blob(), submission.originalFileName || "student-submission");
+                    return;
+                }
+
+                if (submission.zipDownloadURL) {
+                    const response = await fetch(submission.zipDownloadURL);
+                    if (!response.ok) throw new Error("Download failed");
+                    saveBlob(await response.blob(), submission.zipFileName || `${cleanZipName(submission.folderName)}.zip`);
+                    return;
+                }
+
+                if (!window.JSZip) throw new Error("JSZip unavailable");
+
+                const zip = new window.JSZip();
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const response = await fetch(file.downloadURL);
+                    if (!response.ok) throw new Error("Download failed");
+                    const blob = await response.blob();
+                    zip.file(normalizeZipPath(file.relativePath, file.originalName || `file-${i + 1}`), blob);
+                }
+
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                const zipUrl = URL.createObjectURL(zipBlob);
+                const link = document.createElement('a');
+                link.href = zipUrl;
+                link.download = `${cleanZipName(submission.folderName)}.zip`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(zipUrl);
+            } catch (error) {
+                console.error("Folder download error:", error);
+                alert(t[window.activeLang].downloadFallback);
+                openSubmissionFiles(files);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = originalButton;
+                }
+            }
+        }
+
+        // 🌟 دالة الحفظ اللي بتخزن بالـ Firebase مع الملفات والروابط 🌟
+        window.saveChanges = async function() {
+            const courseRef = doc(db, "Courses", courseId);
+            saveModalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveModalBtn.disabled = true;
+
+            try {
+                if (window.currentSection === 'hero') {
+                    const nt = document.getElementById('input-unit-title').value.trim();
+                    const nd = document.getElementById('input-unit-desc').value.trim();
+                    if(window.activeLang==='ar'){currentCourse.title_ar=nt; currentCourse.desc_ar=nd;} else {currentCourse.title_en=nt; currentCourse.desc_en=nd;}
+                    document.getElementById('display-unit-title').innerText = nt;
+                    document.getElementById('display-unit-desc').innerText = nd;
+                } 
+                else if (window.currentSection === 'assignment') {
+                    const titleVal = document.getElementById('input-assign-title').value.trim();
+                    const dueVal = document.getElementById('input-due-date').value;
+                    const existingDue = document.getElementById('display-due-date').innerText;
+                    const dueToSave = dueVal || existingDue;
+                    const fileInput = document.getElementById('input-assign-file');
+                    const currentFileName = document.getElementById('display-assign-file').innerText;
+                    const fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : (currentFileName === "None" ? "" : currentFileName);
+                    
+                    document.getElementById('display-assign-title').innerText = titleVal;
+                    if(dueToSave){document.getElementById('display-due-date').innerText = dueToSave.replace('T',' ');}
+                    document.getElementById('display-assign-file').innerText = fileName || "No File";
+                    
+                    await setDoc(courseRef, {
+                        assignment: { title: titleVal, dueDate: dueToSave, fileName }
+                    }, { merge: true });
+                } 
+                else if (window.currentSection === 'add-tool' || window.currentSection === 'edit-tool') {
+                    const titleVal = document.getElementById('input-tool-title').value.trim(); 
+                    const urlVal = document.getElementById('input-tool-url').value.trim();
+                    if(!titleVal || !urlVal) return;
+
+                    const tools = [...(window.courseContent.tools || [])];
+                    const item = { title: titleVal, url: urlVal };
+                    if (window.currentSection === 'edit-tool') tools[window.currentEditIndex] = item;
+                    else tools.push(item);
+
+                    window.courseContent.tools = tools;
+                    window.renderTools();
+                    await setDoc(courseRef, { tools }, { merge: true });
+                } 
+                else if (window.currentSection === 'add-aim' || window.currentSection === 'edit-aim') {
+                    const titleVal = document.getElementById('input-aim-title').value.trim(); 
+                    const descVal = document.getElementById('input-aim-desc').value.trim();
+                    const fileInput = document.getElementById('input-aim-file');
+                    const currentAim = window.currentSection === 'edit-aim' ? (window.courseContent.aims[window.currentEditIndex] || {}) : {};
+                    const fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : (currentAim.fileName || "");
+                    const urlVal = document.getElementById('input-aim-url').value.trim();
+                    if(!titleVal) return;
+
+                    const aims = [...(window.courseContent.aims || [])];
+                    const item = { title: titleVal, desc: descVal, fileName, url: urlVal };
+                    if (window.currentSection === 'edit-aim') aims[window.currentEditIndex] = item;
+                    else aims.push(item);
+
+                    window.courseContent.aims = aims;
+                    window.renderAims();
+                    await setDoc(courseRef, { aims }, { merge: true });
+                }
+            } catch (error) {
+                console.error("Firebase Error: ", error);
+                alert(t[window.activeLang].saveError);
+            } finally {
+                saveModalBtn.innerHTML = `<i class="fas fa-save"></i> ${t[window.activeLang].save}`;
+                saveModalBtn.disabled = false;
+                window.closeModal();
+            }
+        }
+
+        // 🌟 دالة قراءة المحتوى من الفايربيس أول ما تفتح الصفحة 🌟
+        window.loadCourseContent = async function() {
+            try {
+                const courseRef = doc(db, "Courses", courseId);
+                const docSnap = await getDoc(courseRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    if(data.assignment) {
+                        if(data.assignment.title) document.getElementById('display-assign-title').innerText = data.assignment.title;
+                        if(data.assignment.dueDate) document.getElementById('display-due-date').innerText = data.assignment.dueDate.replace('T',' ');
+                        if(data.assignment.fileName) document.getElementById('display-assign-file').innerText = data.assignment.fileName;
+                    }
+                    
+                    window.courseContent.tools = Array.isArray(data.tools) ? data.tools : [];
+                    window.renderTools();
+                    
+                    window.courseContent.aims = Array.isArray(data.aims) ? data.aims : [];
+                    window.renderAims();
+                }
+            } catch(error) {
+                console.error("Error loading course content:", error);
+            }
+        }
+
+        window.closeModal = function() {
+            if (window.currentSection === 'submissions' && window.unsubscribeSubmissions) {
+                window.unsubscribeSubmissions();
+                window.unsubscribeSubmissions = null;
+            }
+            modal.classList.remove('active');
+            modalBox.classList.remove('submissions-modal-box');
+            saveModalBtn.style.display = 'block';
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('#lang-display')) { document.getElementById('lang-menu').classList.remove('show'); }
+            if (event.target === modal) window.closeModal();
+        }
+    </script>
+</body>
+</html>

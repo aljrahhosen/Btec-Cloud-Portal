@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEC Cloud - My Profile</title>
+    <meta name="description" content="الملف الشخصي للمستخدم. قم بإدارة معلوماتك وتحديث بيانات حسابك في منصة BTEC Cloud.">
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard-style.css?v=9">
+    
+    <style>
+        .profile-container { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
+        .profile-sidebar { flex: 1; min-width: 250px; text-align: center; padding: 40px 20px; }
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-glow), #0056b3); display: flex; justify-content: center; align-items: center; font-size: 48px; font-weight: bold; color: white; margin: 0 auto 20px auto; box-shadow: 0 10px 25px rgba(0, 168, 252, 0.4); text-transform: uppercase; }
+        .profile-name { font-size: 24px; font-weight: 600; margin-bottom: 5px; }
+        .profile-role { color: var(--primary-glow); font-size: 14px; font-weight: 500; margin-bottom: 25px; }
+        
+        .profile-content { flex: 2; min-width: 300px; padding: 30px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .info-group { margin-bottom: 15px; }
+        .info-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: block; }
+        .info-value { font-size: 15px; color: white; padding: 12px 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 8px; }
+        
+        .btn-primary { background: var(--primary-glow); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary:hover { background: #0088cc; box-shadow: 0 5px 15px rgba(0, 168, 252, 0.3); }
+        
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
+        .back-link:hover { color: var(--primary-glow); }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; box-shadow: 0 15px 50px rgba(0,0,0,0.5); position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+        .modal-title { font-size: 18px; font-weight: 600; color: white; }
+        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+        .close-btn:hover { color: #ff4b2b; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 10px 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 8px; color: white; outline: none; }
+        .form-group input:focus { border-color: var(--primary-glow); }
+        .form-group input:disabled { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); cursor: not-allowed; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 25px; }
+        .btn-cancel { background: transparent; border: 1px solid var(--glass-border); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1; }
+        .btn-save { background: var(--primary-glow); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1; font-weight: 600; }
+    </style>
+</head>
+
+<body class="dashboard-body" style="display: block !important; width: 100% !important; height: auto !important; min-height: 100vh !important; overflow-y: auto !important;">
+
+    <nav class="navbar glass-panel" style="width: 100% !important; top: 0 !important; position: relative !important; display: flex !important;">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00a8fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(0, 168, 252, 0.5));">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                <path d="M9 14l2 2 4-4"></path>
+            </svg>
+            BTEC Cloud
+        </div>
+        <div class="nav-actions">
+            <div class="dropdown-wrapper">
+                <span id="lang-display">🌐 EN ▾</span>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item" onclick="setLanguage('ar')">العربية (AR)</a>
+                    <a href="#" class="dropdown-item" onclick="setLanguage('en')">English (EN)</a>
+                </div>
+            </div>
+
+            <div class="dropdown-wrapper">
+                <div class="profile-pic" id="nav-profile-pic">U</div>
+                <div class="dropdown-menu">
+                    <a href="dashboard.html" class="dropdown-item" id="nav-dash"><i class="fas fa-home"></i> Dashboard</a>
+                    <a href="settings.html" class="dropdown-item" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" class="dropdown-item" id="logout-btn" style="color:#ff4b2b; border-top: 1px solid var(--glass-border); margin-top: 5px;">
+                        <i class="fas fa-sign-out-alt"></i> <span id="nav-logout">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <a href="dashboard.html" class="back-link" id="back-link-text"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        
+        <div class="welcome-section">
+            <h1 id="page-title">My Profile</h1>
+            <p id="page-desc">Manage your personal information, academic details, and identity.</p>
+        </div>
+
+        <div class="profile-container">
+            <div class="glass-panel profile-sidebar">
+                <div class="profile-avatar" id="main-avatar">U</div>
+                <div class="profile-name" id="display-name">Loading...</div>
+                <div class="profile-role" id="display-major">BTEC Student</div>
+                
+                <button class="btn-primary" id="open-edit-btn"><i class="fas fa-pen"></i> <span id="btn-edit-text">Edit Profile</span></button>
+            </div>
+
+            <div class="glass-panel profile-content">
+                <div class="info-grid">
+                    <div class="info-group">
+                        <span class="info-label" id="label-name">Full Name</span>
+                        <div class="info-value" id="info-name">Loading...</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label" id="label-email">Email Address</span>
+                        <div class="info-value" id="info-email">Loading...</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label" id="label-nid">National ID</span>
+                        <div class="info-value" id="info-nid" style="color: #bbb;">Waiting for Sync...</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label" id="label-sid">Student Number</span>
+                        <div class="info-value" id="info-sid" style="color: var(--primary-glow); font-weight: bold; letter-spacing: 1px;">Loading...</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label" id="label-school">School</span>
+                        <div class="info-value" id="info-school">Not Set</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label" id="label-grade">Academic Year / Grade</span>
+                        <div class="info-value" id="info-grade" style="color: #bbb;">Waiting for Sync...</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label" id="label-loc">Location / Country</span>
+                        <div class="info-value" id="info-loc" style="color: #4CAF50; font-weight: 500;"><i class="fas fa-map-marker-alt"></i> Jordan - Irbid</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modal-title-text">Edit Profile Details</div>
+                <button class="close-btn" id="close-modal-btn"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="form-group">
+                <label id="modal-label-school">School</label>
+                <input type="text" id="input-school" placeholder="e.g. Ali Khalqi Al-Sharairi">
+            </div>
+            <div class="form-group">
+                <label id="modal-label-major">Major</label>
+                <input type="text" id="input-major" placeholder="Your specialization">
+            </div>
+            <div class="form-group">
+                <label id="modal-label-loc">Location</label>
+                <input type="text" id="input-loc" value="Jordan - Irbid" disabled>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" id="cancel-btn">Cancel</button>
+                <button class="btn-save" id="save-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
+            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            projectId: "btec-cloud-portal-d6a93",
+            storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
+            messagingSenderId: "230354414241",
+            appId: "1:230354414241:web:b365524169fb815b449ee0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const translations = {
+            en: {
+                langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", pageTitle: "My Profile",
+                pageDesc: "Manage your personal information, academic details, and identity.",
+                editBtn: "Edit Profile",
+                labelName: "Full Name", labelEmail: "Email Address", labelNid: "National ID",
+                labelSid: "Student Number", labelSchool: "School", labelLoc: "Location / Country",
+                labelGrade: "Academic Year / Grade",
+                modalTitle: "Edit Profile Details", modalCancel: "Cancel", modalSave: "Save Changes",
+                navDash: "Dashboard", navSettings: "Settings", navLogout: "Logout"
+            },
+            ar: {
+                langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", pageTitle: "حسابي الشخصي",
+                pageDesc: "إدارة معلوماتك الشخصية، الأكاديمية، وهويتك.",
+                editBtn: "تعديل الحساب",
+                labelName: "الاسم الكامل", labelEmail: "البريد الإلكتروني", labelNid: "الرقم الوطني",
+                labelSid: "الرقم الطلابي", labelSchool: "المدرسة", labelLoc: "الموقع / الدولة",
+                labelGrade: "السنة الدراسية / الصف",
+                modalTitle: "تعديل بيانات الحساب", modalCancel: "إلغاء", modalSave: "حفظ التعديلات",
+                navDash: "لوحة التحكم", navSettings: "الإعدادات", navLogout: "تسجيل الخروج"
+            }
+        };
+
+        window.setLanguage = function(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.getElementById('lang-display').innerText = translations[lang].langDisplay;
+            document.getElementById('back-link-text').innerHTML = `<i class="fas fa-${lang === 'ar' ? 'arrow-right' : 'arrow-left'}"></i> ${translations[lang].backDash}`;
+            document.getElementById('page-title').innerText = translations[lang].pageTitle;
+            document.getElementById('page-desc').innerText = translations[lang].pageDesc;
+            document.getElementById('btn-edit-text').innerText = translations[lang].editBtn;
+            
+            document.getElementById('label-name').innerText = translations[lang].labelName;
+            document.getElementById('label-email').innerText = translations[lang].labelEmail;
+            document.getElementById('label-nid').innerText = translations[lang].labelNid;
+            document.getElementById('label-sid').innerText = translations[lang].labelSid;
+            document.getElementById('label-school').innerText = translations[lang].labelSchool;
+            document.getElementById('label-grade').innerText = translations[lang].labelGrade;
+            document.getElementById('label-loc').innerText = translations[lang].labelLoc;
+            
+            document.getElementById('modal-title-text').innerText = translations[lang].modalTitle;
+            document.getElementById('modal-label-school').innerText = translations[lang].labelSchool;
+            document.getElementById('modal-label-major').innerText = translations[lang].labelSchool + " Major";
+            
+            document.getElementById('cancel-btn').innerText = translations[lang].modalCancel;
+            document.getElementById('save-btn').innerText = translations[lang].modalSave;
+            document.getElementById('nav-dash').innerHTML = `<i class="fas fa-home"></i> ${translations[lang].navDash}`;
+            document.getElementById('nav-settings').innerHTML = `<i class="fas fa-cog"></i> ${translations[lang].navSettings}`;
+            document.getElementById('nav-logout').innerText = translations[lang].navLogout;
+
+            document.getElementById('info-loc').innerHTML = lang === 'ar' ? '<i class="fas fa-map-marker-alt"></i> الأردن - إربد' : '<i class="fas fa-map-marker-alt"></i> Jordan - Irbid';
+            document.getElementById('input-loc').value = lang === 'ar' ? 'الأردن - إربد' : 'Jordan - Irbid';
+
+            localStorage.setItem('preferredLang', lang);
+        };
+
+        function generateStudentNumber() {
+            return 'BTEC' + Math.floor(100000 + Math.random() * 900000);
+        }
+
+        const defaultData = {
+            school: "",
+            major: "BTEC Student",
+        };
+
+        function loadProfileData() {
+            let saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
+            
+            let sid = localStorage.getItem('btec_student_id');
+            if (!sid) {
+                sid = generateStudentNumber();
+                localStorage.setItem('btec_student_id', sid);
+            }
+
+            document.getElementById('info-sid').innerText = sid;
+            document.getElementById('info-school').innerText = saved.school || "Not Set";
+            document.getElementById('display-major').innerText = saved.major;
+
+            document.getElementById('input-school').value = saved.school || "";
+            document.getElementById('input-major').value = saved.major || "";
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userName = user.displayName || "Student";
+                const userEmail = user.email || "No email provided";
+                
+                document.getElementById("nav-profile-pic").innerText = userName.charAt(0);
+                document.getElementById("main-avatar").innerText = userName.charAt(0);
+                document.getElementById("display-name").innerText = userName;
+                document.getElementById("info-name").innerText = userName;
+                document.getElementById("info-email").innerText = userEmail;
+
+                loadProfileData(); 
+                const savedLang = localStorage.getItem('preferredLang') || 'en';
+                setLanguage(savedLang);
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        const modal = document.getElementById('edit-modal');
+        document.getElementById('open-edit-btn').addEventListener('click', () => modal.classList.add('active'));
+        
+        const closeModal = () => modal.classList.remove('active');
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+        document.getElementById('cancel-btn').addEventListener('click', closeModal);
+
+        document.getElementById('save-btn').addEventListener('click', () => {
+            let saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
+            
+            saved.school = document.getElementById('input-school').value;
+            saved.major = document.getElementById('input-major').value;
+
+            localStorage.setItem('btec_user_profile', JSON.stringify(saved));
+            loadProfileData();
+            closeModal();
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => window.location.href = "index.html");
+        });
+
+        document.querySelectorAll('.dropdown-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if(menu !== this.querySelector('.dropdown-menu')) menu.classList.remove('show');
+                });
+                this.querySelector('.dropdown-menu').classList.toggle('show');
+            });
+        });
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+        });
+    </script>
+</body>
+</html>
