@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTEC Cloud - Computer Networks</title>
+    <title>BTEC Cloud - Data Modeling & Spreadsheets</title>
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard-style.css?v=17">
+    <link rel="stylesheet" href="dashboard-style.css?v=16">
     
     <style>
-        /* ثيم المادة: اللون البنفسجي (Networks Theme) */
-        .course-header { background: linear-gradient(135deg, rgba(142, 68, 173, 0.15), rgba(0, 168, 252, 0.1)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px; margin-bottom: 30px; position: relative; overflow: hidden; }
-        .course-header::after { content: '\f6ff'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: -20px; bottom: -40px; font-size: 200px; color: rgba(255, 255, 255, 0.03); transform: rotate(-15deg); }
+        /* ثيم المادة: ألوان قريبة من الإكسل والجداول (أخضر مزرق) */
+        .course-header { background: linear-gradient(135deg, rgba(33, 115, 70, 0.1), rgba(0, 168, 252, 0.2)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px; margin-bottom: 30px; position: relative; overflow: hidden; }
+        .course-header::after { content: '\f1c3'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: -20px; bottom: -40px; font-size: 200px; color: rgba(255, 255, 255, 0.03); transform: rotate(-15deg); }
         .course-title { font-size: 32px; font-weight: 700; color: white; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; }
-        .course-title i { color: #8e44ad; }
+        .course-title i { color: #21ce99; }
         .course-desc { color: var(--text-muted); max-width: 700px; margin-bottom: 25px; line-height: 1.6; }
         
         .progress-container { background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; width: 100%; max-width: 400px; overflow: hidden; position: relative; margin-top: 10px; }
-        .progress-bar { background: #8e44ad; height: 100%; width: 10%; border-radius: 10px; box-shadow: 0 0 10px rgba(142, 68, 173, 0.5); }
+        .progress-bar { background: #21ce99; height: 100%; width: 15%; border-radius: 10px; box-shadow: 0 0 10px rgba(33, 206, 153, 0.5); }
         .progress-text { font-size: 13px; color: white; font-weight: 500; margin-bottom: 5px; display: inline-block; }
 
         .course-layout { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
@@ -28,15 +28,15 @@
         /* Accordion Style السريع */
         .module-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; transition: 0.3s; }
         .module-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: white; font-weight: 600; font-size: 16px; background: rgba(0,0,0,0.2); }
-        .module-header:hover { background: rgba(142, 68, 173, 0.1); }
-        .module-icon { width: 35px; height: 35px; background: rgba(142, 68, 173, 0.15); color: #8e44ad; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
+        .module-header:hover { background: rgba(33, 206, 153, 0.1); }
+        .module-icon { width: 35px; height: 35px; background: rgba(33, 206, 153, 0.15); color: #21ce99; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
         html[dir="rtl"] .module-icon { margin-right: 0; margin-left: 15px; }
         .header-left { display: flex; align-items: center; }
         
         .toggle-icon { transition: transform 0.2s ease; color: var(--text-muted); }
         .module-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.2s ease-in-out; background: transparent; }
         .module-card.active .module-content { padding: 20px; max-height: 800px; border-top: 1px solid var(--glass-border); }
-        .module-card.active .toggle-icon { transform: rotate(180deg); color: #8e44ad; }
+        .module-card.active .toggle-icon { transform: rotate(180deg); color: #21ce99; }
 
         /* BTEC Grades Layout */
         .grade-box-container { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -58,8 +58,7 @@
         .material-item:hover { border-color: var(--glass-border); background: rgba(255,255,255,0.05); }
         .material-info { display: flex; align-items: center; gap: 12px; color: white; font-size: 14px; }
         .icon-pdf { color: #ff4b2b; }
-        .icon-video { color: #00a8fc; }
-        .icon-packet { color: #f39c12; }
+        .icon-excel { color: #217346; }
         .btn-download { background: transparent; color: var(--text-muted); border: none; cursor: pointer; transition: 0.2s; font-size: 16px; }
         .btn-download:hover { color: white; transform: translateY(-2px); }
 
@@ -67,18 +66,18 @@
         .widget { padding: 25px; border-radius: 16px; margin-bottom: 20px; }
         .widget-title { font-size: 16px; font-weight: 600; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
         
-        .assignment-card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #8e44ad; transition: 0.3s; }
+        .assignment-card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #21ce99; transition: 0.3s; }
         .assign-title { font-size: 14px; color: white; font-weight: 500; margin-bottom: 5px; }
         .assign-due { font-size: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        .btn-submit { background: rgba(142, 68, 173, 0.1); color: #8e44ad; border: 1px solid rgba(142, 68, 173, 0.3); padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; display: flex; justify-content: center; gap: 8px; align-items: center;}
-        .btn-submit:hover { background: #8e44ad; color: white; }
+        .btn-submit { background: rgba(33, 206, 153, 0.1); color: #21ce99; border: 1px solid rgba(33, 206, 153, 0.3); padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; display: flex; justify-content: center; gap: 8px; align-items: center;}
+        .btn-submit:hover { background: #21ce99; color: white; }
 
         .resource-link { display: flex; align-items: center; gap: 12px; color: var(--text-muted); text-decoration: none; padding: 10px 0; font-size: 14px; transition: 0.2s; }
-        .resource-link:hover { color: #8e44ad; transform: translateX(5px); }
+        .resource-link:hover { color: #21ce99; transform: translateX(5px); }
         html[dir="rtl"] .resource-link:hover { transform: translateX(-5px); }
 
         .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
-        .back-link:hover { color: #8e44ad; }
+        .back-link:hover { color: #21ce99; }
     </style>
 </head>
 
@@ -118,12 +117,12 @@
     <main class="container">
         <a href="dashboard.html" class="back-link" id="back-link-text"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         
-        <!-- Course Header (اللقطة الجديدة: إضافة Unit 4) -->
+        <!-- Course Header -->
         <div class="course-header">
-            <h1 class="course-title"><i class="fas fa-network-wired"></i> <span id="c-title">Unit 4: Introduction to Computer Networks</span></h1>
-            <p class="course-desc" id="c-desc">Learn the fundamentals of networking, the OSI model, IP addressing, and how data is securely transmitted across local and wide area networks.</p>
+            <h1 class="course-title"><i class="fas fa-file-excel"></i> <span id="c-title">Unit 3: Data Modeling & Spreadsheets</span></h1>
+            <p class="course-desc" id="c-desc">Learn how to use spreadsheet software to model complex data, automate calculations, and present business information effectively.</p>
             
-            <span class="progress-text" id="c-prog-text">Unit Progress: 10%</span>
+            <span class="progress-text" id="c-prog-text">Unit Progress: 15%</span>
             <div class="progress-container">
                 <div class="progress-bar"></div>
             </div>
@@ -182,18 +181,18 @@
                 <div class="module-card">
                     <div class="module-header" onclick="toggleModule(this)">
                         <div class="header-left">
-                            <div class="module-icon"><i class="fas fa-sitemap"></i></div>
-                            <span class="u-title-1">Learning Aim A: Networking Principles</span>
+                            <div class="module-icon"><i class="fas fa-lightbulb"></i></div>
+                            <span class="u-title-1">Learning Aim A: Understanding Data Modeling</span>
                         </div>
                         <i class="fas fa-chevron-down toggle-icon"></i>
                     </div>
                     <div class="module-content">
                         <div class="material-item">
-                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> Network_Topologies.pdf</div>
+                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> What_is_Data_Modeling.pdf</div>
                             <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
                         </div>
                         <div class="material-item">
-                            <div class="material-info"><i class="fas fa-video icon-video"></i> How_The_Internet_Works.mp4</div>
+                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> Spreadsheet_Basics.pdf</div>
                             <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
                         </div>
                     </div>
@@ -203,18 +202,35 @@
                 <div class="module-card">
                     <div class="module-header" onclick="toggleModule(this)">
                         <div class="header-left">
-                            <div class="module-icon"><i class="fas fa-layer-group"></i></div>
-                            <span class="u-title-2">Learning Aim B: OSI & TCP/IP Models</span>
+                            <div class="module-icon"><i class="fas fa-table"></i></div>
+                            <span class="u-title-2">Learning Aim B: Designing Spreadsheet Models</span>
                         </div>
                         <i class="fas fa-chevron-down toggle-icon"></i>
                     </div>
                     <div class="module-content">
                         <div class="material-item">
-                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> OSI_7_Layers.pdf</div>
+                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> Advanced_Formulas_Functions.pdf</div>
                             <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
                         </div>
                         <div class="material-item">
-                            <div class="material-info"><i class="fas fa-network-wired icon-packet"></i> Subnetting_Practice.pkt</div>
+                            <div class="material-info"><i class="fas fa-file-excel icon-excel"></i> Financial_Model_Template.xlsx</div>
+                            <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Aim C -->
+                <div class="module-card">
+                    <div class="module-header" onclick="toggleModule(this)">
+                        <div class="header-left">
+                            <div class="module-icon"><i class="fas fa-chart-bar"></i></div>
+                            <span class="u-title-3">Learning Aim C: Testing and Reviewing</span>
+                        </div>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="module-content">
+                        <div class="material-item">
+                            <div class="material-info"><i class="fas fa-file-pdf icon-pdf"></i> Data_Validation_Rules.pdf</div>
                             <button class="btn-download" title="Download"><i class="fas fa-cloud-download-alt"></i></button>
                         </div>
                     </div>
@@ -229,15 +245,15 @@
                     <h3 class="widget-title"><i class="fas fa-tasks"></i> <span id="w-assign">Assignment & Submission</span></h3>
                     
                     <div id="dynamic-assign-card" class="assignment-card">
-                        <div class="assign-title" id="active-assign-title">Task 1: Network Design Proposal</div>
-                        <div class="assign-due" id="active-assign-due" style="color: #8e44ad;">
-                            <i class="far fa-clock"></i> <span id="due-text">Due: May 06, 2026 12:00 PM</span>
+                        <div class="assign-title" id="active-assign-title">Task 1: Spreadsheet Design</div>
+                        <div class="assign-due" id="active-assign-due" style="color: #21ce99;">
+                            <i class="far fa-clock"></i> <span id="due-text">Due: May 06, 2026 11:59 PM</span>
                         </div>
                         
                         <div style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">
                             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px;">Download Instructions:</div>
                             <a href="#" class="resource-link" style="padding: 0; font-size: 13px; color: white;">
-                                <i class="fas fa-file-download" style="color: #FFD700;"></i> Network_Proposal_Brief.pdf
+                                <i class="fas fa-file-download" style="color: #FFD700;"></i> Task1_Scenario.docx
                             </a>
                         </div>
 
@@ -250,8 +266,8 @@
                 <!-- Tools Widget -->
                 <div class="glass-panel widget">
                     <h3 class="widget-title"><i class="fas fa-toolbox"></i> <span id="w-tools">Required Software</span></h3>
-                    <a href="#" class="resource-link"><i class="fas fa-project-diagram"></i> Cisco Packet Tracer</a>
-                    <a href="#" class="resource-link"><i class="fas fa-wifi"></i> Wireshark Network Analyzer</a>
+                    <a href="#" class="resource-link"><i class="fab fa-microsoft"></i> Microsoft Excel 365</a>
+                    <a href="#" class="resource-link"><i class="fas fa-link"></i> Google Sheets (Alternative)</a>
                 </div>
             </div>
         </div>
@@ -277,38 +293,9 @@
             const card = element.closest('.module-card');
             card.classList.toggle('active');
         };
-
-        window.updateAssignmentUrgency = function() {
-            const card = document.getElementById('dynamic-assign-card');
-            const dueText = document.getElementById('active-assign-due');
-            const submitBtn = document.getElementById('main-submit-btn');
-            
-            // عشان يضوّي أحمر، خلينا الوقت 6 مايو الساعة 12 الظهر
-            const dueDate = new Date("2026-05-06T12:00:00"); 
-            const now = new Date();
-            
-            const diffInMs = dueDate - now;
-            const diffInHours = diffInMs / (1000 * 60 * 60);
-
-            if (diffInHours > 0 && diffInHours <= 24) {
-                card.style.borderLeftColor = "#ff4b2b";
-                dueText.style.color = "#ff4b2b";
-                submitBtn.style.background = "rgba(255, 75, 43, 0.1)";
-                submitBtn.style.color = "#ff4b2b";
-                submitBtn.style.borderColor = "rgba(255, 75, 43, 0.3)";
-            } else {
-                card.style.borderLeftColor = "#8e44ad";
-                dueText.style.color = "#8e44ad";
-                submitBtn.style.background = "rgba(142, 68, 173, 0.1)";
-                submitBtn.style.color = "#8e44ad";
-                submitBtn.style.borderColor = "rgba(142, 68, 173, 0.3)";
-            }
-        };
-
-        window.updateAssignmentUrgency();
-        window.calculateFinalGrade = function() {
+window.calculateFinalGrade = function() {
             const badge = document.getElementById('auto-final-grade');
-            if (!badge) return;
+            if(!badge) return;
 
             const hasD = document.querySelector('.crit-tag.achieved-d');
             const hasM = document.querySelector('.crit-tag.achieved-m');
@@ -328,33 +315,62 @@
                 badge.className = "grade-val val-pend";
             }
         };
+
         window.addEventListener('load', window.calculateFinalGrade);
+        window.updateAssignmentUrgency = function() {
+            const card = document.getElementById('dynamic-assign-card');
+            const dueText = document.getElementById('active-assign-due');
+            const submitBtn = document.getElementById('main-submit-btn');
+            
+            // تاريخ التسليم المبرمج: 6 مايو 2026 
+            const dueDate = new Date("2026-05-06T23:59:00"); 
+            const now = new Date();
+            
+            const diffInMs = dueDate - now;
+            const diffInHours = diffInMs / (1000 * 60 * 60);
+
+            if (diffInHours > 0 && diffInHours <= 24) {
+                card.style.borderLeftColor = "#ff4b2b";
+                dueText.style.color = "#ff4b2b";
+                submitBtn.style.background = "rgba(255, 75, 43, 0.1)";
+                submitBtn.style.color = "#ff4b2b";
+                submitBtn.style.borderColor = "rgba(255, 75, 43, 0.3)";
+            } else {
+                card.style.borderLeftColor = "#21ce99";
+                dueText.style.color = "#21ce99";
+                submitBtn.style.background = "rgba(33, 206, 153, 0.1)";
+                submitBtn.style.color = "#21ce99";
+                submitBtn.style.borderColor = "rgba(33, 206, 153, 0.3)";
+            }
+        };
+
+        window.updateAssignmentUrgency();
 
         const translations = {
             en: {
                 langDisplay: "🌐 EN ▾", backDash: "Back to Dashboard", navDash: "Dashboard", navProf: "Profile", navSettings: "Settings", navLogout: "Logout",
-                cTitle: "Unit 4: Introduction to Computer Networks",
-                cDesc: "Learn the fundamentals of networking, the OSI model, IP addressing, and how data is securely transmitted across local and wide area networks.",
-                cProg: "Unit Progress: 10%", cContent: "Learning Aims",
+                cTitle: "Unit 3: Data Modeling & Spreadsheets",
+                cDesc: "Learn how to use spreadsheet software to model complex data, automate calculations, and present business information effectively.",
+                cProg: "Unit Progress: 15%", cContent: "Learning Aims",
                 
                 uGrades: "My Grades & Assessment", gAssign1: "Assignment 1", gAssign2: "Assignment 2", gFinal: "Target Grade", gCrit: "Criteria Achieved:",
                 
-                u1: "Learning Aim A: Networking Principles", 
-                u2: "Learning Aim B: OSI & TCP/IP Models", 
-                
+                u1: "Learning Aim A: Understanding Data Modeling", 
+                u2: "Learning Aim B: Designing Spreadsheet Models", 
+                u3: "Learning Aim C: Testing and Reviewing",
                 wAssign: "Assignment & Submission", btnSubmit: "Submit Work", wTools: "Required Software"
             },
             ar: {
                 langDisplay: "🌐 AR ▾", backDash: "العودة للوحة التحكم", navDash: "لوحة التحكم", navProf: "حسابي", navSettings: "الإعدادات", navLogout: "تسجيل الخروج",
-                cTitle: "الوحدة 4: مقدمة في شبكات الحاسوب",
-                cDesc: "تعلم أساسيات الشبكات، نموذج OSI، عنونة الـ IP، وكيفية نقل البيانات بأمان عبر الشبكات المحلية والواسعة.",
-                cProg: "نسبة إنجاز المادة: 10%", cContent: "الأهداف التعليمية (Learning Aims)",
+                cTitle: "نمذجة البيانات والجداول الإلكترونية",
+                cDesc: "تعلم كيفية استخدام الجداول الإلكترونية لنمذجة البيانات المعقدة، أتمتة الحسابات، وعرض المعلومات التجارية بفعالية.",
+                cProg: "نسبة إنجاز المادة: 15%", cContent: "الأهداف التعليمية (Learning Aims)",
                 
                 uGrades: "علاماتي وتقييمي", gAssign1: "الواجب الأول", gAssign2: "الواجب الثاني", gFinal: "التقييم المستهدف", gCrit: "المعايير المنجزة:",
 
-                u1: "الهدف التعليمي A: مبادئ وأساسيات الشبكات", 
-                u2: "الهدف التعليمي B: نماذج OSI و TCP/IP", 
-                
+                u1: "الهدف التعليمي A: فهم نمذجة البيانات", 
+                u2: "الهدف التعليمي B: تصميم نماذج الجداول الإلكترونية", 
+                u3: "الهدف التعليمي C: الاختبار والمراجعة",
                 wAssign: "تسليم الواجبات", btnSubmit: "تسليم الواجب", wTools: "البرامج المطلوبة"
             }
         };
@@ -384,6 +400,7 @@
 
             document.querySelector('.u-title-1').innerText = translations[lang].u1;
             document.querySelector('.u-title-2').innerText = translations[lang].u2;
+            document.querySelector('.u-title-3').innerText = translations[lang].u3;
             
             document.getElementById('w-assign').innerText = translations[lang].wAssign;
             document.getElementById('w-tools').innerText = translations[lang].wTools;
