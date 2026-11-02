@@ -290,12 +290,12 @@
     <!-- 🌟 تم استيراد ميزات الفايربيس الإضافية هنا 🌟 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
-            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            authDomain: "btec-cloud-portal.vercel.app",
             projectId: "btec-cloud-portal-d6a93",
             storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
             messagingSenderId: "230354414241",
@@ -332,7 +332,18 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const courseId = urlParams.get('id') || 'it-systems'; 
-        const currentCourse = coursesDB[courseId] || coursesDB['it-systems']; 
+        const currentCourse = coursesDB[courseId] || coursesDB['it-systems'];
+        let teacherAccessReady = false;
+        const teacherAccessPromise = new Promise((resolve, reject) => {
+            onAuthStateChanged(auth, async user => {
+                if (!user) { location.replace("teacher-auth.html"); reject(new Error("Teacher login required")); return; }
+                try {
+                    const token = await user.getIdTokenResult(true);
+                    if (token.claims.role !== "teacher" || typeof token.claims.teacherId !== "string") throw new Error("Teacher access is not verified by Firebase custom claims.");
+                    teacherAccessReady = true; resolve({ user, teacherId: token.claims.teacherId });
+                } catch (error) { console.error(error); alert("Teacher permissions are not configured securely. Contact the administrator."); reject(error); }
+            });
+        }); 
 
         const t = {
             en: { langStr: "🌐 EN ▾", portal: "Teacher Portal", back: "Back to Dashboard", studentGrading: "Student Grading", criteria: "Criteria Achieved:", final: "Resulting Grade:", aims: "Learning Aims", assignBox: "Assignment & Submission", due: "Due:", download: "Instructions:", viewSubs: "View Submissions", toolsBox: "Tools & Links", save: "Save Changes", saveGrades: "Save Grade", progress: "Unit Progress: 40%", pass: "PASS", merit: "MERIT", distinction: "DISTINCTION", fail: "FAIL (Unclassified)", pending: "PENDING", selectGrade: "Select Final Grade:", chooseGrade: "-- Choose Grade --", mEditDetails: "Edit Details", mUnitTitle: "Unit Title", mDesc: "Description", mEditAssign: "Edit Assignment", mAssignTitle: "Assignment Title", mDueDate: "Due Date", mUploadBrief: "Upload File", mAddAim: "Add Aim", mEditAim: "Edit Aim", mAimTitle: "Aim Title", mAimDesc: "Description", mAttachFile: "Attach File", mExtLink: "External Link", mAddTool: "Add Link", mEditTool: "Edit Link", mToolTitle: "Link Title", mUrlLink: "URL", chooseStudent: "-- Select a Student --", submissionsTitle: "Student Submissions", sectionFilter: "Section", allSections: "All Sections", section1: "Section 1", section2: "Section 2", loadingSubmissions: "Loading submissions...", noSubmissions: "No submissions for this section yet.", submittedAt: "Submitted", filesCount: "{count} file", downloadFolder: "Download Submission", preparingDownload: "Preparing...", downloadFallback: "Could not download the submission. Opening files instead.", confirmDelete: "Delete this item?", saveError: "Failed to save. Check Firebase Rules.", selectAll: "Select All", downloadSelected: "Download Selected", selectedCount: "{count} selected", noSelected: "Select at least one submission.", bulkZipName: "student-submissions.zip" },
