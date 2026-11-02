@@ -490,15 +490,16 @@
         }
 
         window.fetchStudentsForCard = async function() {
+            await teacherAccessPromise;
             const select = document.getElementById('card-student-select');
             try {
-                const querySnapshot = await getDocs(collection(db, "Users"));
+                const querySnapshot = await getDocs(collection(db, "StudentDirectory"));
                 let options = `<option value="" disabled selected>${t[window.activeLang].chooseStudent}</option>`;
                 let found = false;
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    if(!data.teacherId) { 
+                    if(data.active !== false) { 
                         found = true;
                         const name = data.name || data.fullName || "Student";
                         options += `<option value="${doc.id}">👤 ${name}</option>`;
@@ -558,7 +559,7 @@
             }
         }
 
-        window.saveCardGrades = async function() {
+        window.saveCardGrades = async function() {\n            await teacherAccessPromise;
             const studentId = document.getElementById('card-student-select').value;
             const grade = document.getElementById('card-master-grade').value;
             
@@ -978,7 +979,7 @@
         }
 
         // 🌟 دالة الحفظ اللي بتخزن بالـ Firebase مع الملفات والروابط 🌟
-        window.saveChanges = async function() {
+        window.saveChanges = async function() {\n            await teacherAccessPromise;
             const courseRef = doc(db, "Courses", courseId);
             saveModalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             saveModalBtn.disabled = true;
