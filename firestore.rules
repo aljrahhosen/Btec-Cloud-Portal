@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isTeacher() {
+      return signedIn()
+        && request.auth.token.role == 'teacher'
+        && request.auth.token.teacherId is string;
+    }
+    function isStudent(uid) {
+      return signedIn()
+        && request.auth.uid == uid
+        && !(request.auth.token.keys().hasAny(['role']) && request.auth.token.role == 'teacher');
+    }
+    function ownsSubmission() {
+      return signedIn()
+        && resource.data.studentId == request.auth.uid;
+    }
+
+    // User profile: students may read their own record. Only trusted
+    // server code should assign roles, teacher IDs, and grades.
+    match /Users/{uid} {
+      allow read: if isStudent(uid);
+      allow create: if isStudent(uid)
+        && request.resource.data.role == 'Student'
+        && request.resource.data.role == 'Student'\n        && !request.resource.data.keys().hasAny(['teacherId', 'grades']);
+      allow update: if isStudent(uid)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['name', 'fullName', 'email', 'school', 'major', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    // Teacher roster must use a minimal directory collection, not Users
+    // (which contains national IDs). Provision directory docs server-side.
+    match /StudentDirectory/{uid} {
+      allow read: if isTeacher();
+      allow write: if false;
+    }
+
+    // Teacher codes are redeemed only by a trusted backend.
+    match /TeacherCodes/{teacherId} {
+      allow read, write: if false;
+    }
+
+    match /Courses/{courseId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isTeacher();
+
+      match /submissions/{submissionId} {
+        allow create: if signedIn()
+          && request.resource.data.studentId == request.auth.uid
+          && request.resource.data.courseId == courseId;
+        allow read: if isTeacher() || ownsSubmission();
+        allow update, delete: if isTeacher();
+
+        match /fileChunks/{chunkId} {
+          allow read: if isTeacher()
+            || (signedIn()
+              && get(/databases/$(database)/documents/Courses/$(courseId)/submissions/$(submissionId)).data.studentId == request.auth.uid);
+          allow create: if signedIn()
+            && get(/databases/$(database)/documents/Courses/$(courseId)/submissions/$(submissionId)).data.studentId == request.auth.uid;
+          allow update, delete: if isTeacher();
+        }
+      }
+    }
+
+    // No client access to national-ID index or other private collections.
+    match /NationalIdIndex/{key} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

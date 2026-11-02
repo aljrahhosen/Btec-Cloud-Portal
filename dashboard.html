@@ -223,10 +223,11 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
-            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            authDomain: "btec-cloud-portal.vercel.app",
             projectId: "btec-cloud-portal-d6a93",
             storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
             messagingSenderId: "230354414241",
@@ -235,6 +236,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         window.currentUserDisplayName = "Student";
 
