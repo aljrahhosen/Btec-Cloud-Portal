@@ -2,7 +2,7 @@
   "name": "btec-cloud-portal-functions",
   "private": true,
   "engines": {
-    "node": "20"
+    "node": "26"
   },
   "main": "index.js",
   "dependencies": {
