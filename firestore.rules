@@ -20,10 +20,10 @@ service cloud.firestore {
     // User profile: students may read their own record. Only trusted
     // server code should assign roles, teacher IDs, and grades.
     match /Users/{uid} {
-      allow read: if isStudent(uid) || isTeacher();
+      allow read: if isStudent(uid);
       allow create: if isStudent(uid)
         && request.resource.data.role == 'Student'
-        && !request.resource.data.keys().hasAny(['teacherId', 'grades']);
+        && request.resource.data.role == 'Student'\n        && !request.resource.data.keys().hasAny(['teacherId', 'grades']);
       allow update: if isStudent(uid)
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['name', 'fullName', 'email', 'school', 'major', 'updatedAt']);
