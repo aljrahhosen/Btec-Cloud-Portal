@@ -106,7 +106,7 @@
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
-            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            authDomain: "btec-cloud-portal.vercel.app",
             projectId: "btec-cloud-portal-d6a93",
             storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
             messagingSenderId: "230354414241",
@@ -162,7 +162,7 @@
             signInWithPopup(auth, provider).then((result) => {
                 showToast("Welcome, " + result.user.displayName, "success");
                 setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
-            }).catch(() => { showToast("Google login failed."); });
+            }).catch((error) => { console.error("Google login failed:", error); showToast("Google login failed (" + (error.code || "unknown error") + ")."); });
         });
 
         // تسجيل الدخول بجيت هب
@@ -171,7 +171,7 @@
             signInWithPopup(auth, provider).then((result) => {
                 showToast("Welcome, " + result.user.displayName, "success");
                 setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
-            }).catch(() => { showToast("GitHub login failed."); });
+            }).catch((error) => { console.error("GitHub login failed:", error); showToast("GitHub login failed (" + (error.code || "unknown error") + ")."); });
         });
 
         // إظهار/إخفاء كلمة المرور
