@@ -2,7 +2,7 @@
   "name": "btec-cloud-portal",
   "private": true,
   "version": "1.0.0",
-  "engines": { "node": "20.x" },
+  "engines": { "node": "26.x" },
   "dependencies": {
     "firebase-admin": "^13.0.2"
   },
