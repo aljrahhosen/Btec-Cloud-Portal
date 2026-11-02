@@ -10,7 +10,7 @@ service cloud.firestore {
     function isStudent(uid) {
       return signedIn()
         && request.auth.uid == uid
-        && request.auth.token.role != 'teacher';
+        && !(request.auth.token.keys().hasAny(['role']) && request.auth.token.role == 'teacher');
     }
     function ownsSubmission() {
       return signedIn()
