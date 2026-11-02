@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Data model (all identity records are written only by the Vercel Admin API):
+    // Users/{uid}: role, registrationComplete, timestamps. Private to its owner.
+    // StudentPrivate/{uid}: fullName, nationalId, email. Owner + authorised teacher only.
+    // StudentDirectory/{uid}: displayName only. Teachers use it to select a student.
+    // Grades/{uid}/courseGrades/{courseId}: grade (P/M/D/F), teacher write, student read.
+    // Courses/{courseId}: published course content; teachers alone may modify it.
+    // Courses/{courseId}/submissions/{id}: student submission and bounded file chunks.
+
+    function signedIn() { return request.auth != null; }
+    function own(uid) { return signedIn() && request.auth.uid == uid; }
+    // The legacy profile fallback keeps the existing owner account working. The
+    // Users rules below prevent a client from creating or changing this role.
+    function isTeacher() {
+      return signedIn() && (
+        request.auth.token.role == 'teacher' ||
+        (exists(/databases/$(database)/documents/Users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.role == 'teacher')
+      );
+    }
+    function smallString(value, min, max) { return value is string && value.size() >= min && value.size() <= max; }
+    function validGrade() { return request.resource.data.keys().hasOnly(['grade', 'updatedAt', 'updatedBy']) &&
+      request.resource.data.grade in ['P', 'M', 'D', 'F'] &&
+      request.resource.data.updatedBy == request.auth.uid && request.resource.data.updatedAt is timestamp; }
+    function validSubmission() {
+      return request.resource.data.keys().hasOnly(['courseId', 'assignmentTitle', 'studentId', 'studentEmail', 'studentName', 'section', 'sectionLabel', 'folderName', 'originalFileName', 'fileStorageType', 'fileSize', 'fileType', 'chunkCount', 'fileCount', 'files', 'submittedAt', 'createdAtClient', 'uploading']) &&
+        request.resource.data.studentId == request.auth.uid &&
+        request.resource.data.courseId is string && request.resource.data.courseId.size() <= 80 &&
+        smallString(request.resource.data.studentName, 1, 120) &&
+        smallString(request.resource.data.assignmentTitle, 0, 200) &&
+        smallString(request.resource.data.studentEmail, 0, 254) &&
+        smallString(request.resource.data.sectionLabel, 0, 80) &&
+        smallString(request.resource.data.folderName, 0, 160) &&
+        smallString(request.resource.data.originalFileName, 1, 160) &&
+        smallString(request.resource.data.fileStorageType, 1, 40) &&
+        smallString(request.resource.data.fileType, 0, 120) &&
+        smallString(request.resource.data.createdAtClient, 1, 40) &&
+        request.resource.data.section in ['section-1', 'section-2'] &&
+        request.resource.data.fileSize is int && request.resource.data.fileSize >= 0 && request.resource.data.fileSize <= 20971520 &&
+        request.resource.data.chunkCount is int && request.resource.data.chunkCount >= 0 && request.resource.data.chunkCount <= 30 &&
+        request.resource.data.fileCount is int && request.resource.data.fileCount >= 0 && request.resource.data.fileCount <= 1 &&
+        request.resource.data.uploading is bool;
+    }
+    function canFinishSubmission() {
+      return validSubmission() && resource.data.studentId == request.auth.uid &&
+        resource.data.uploading == true && request.resource.data.uploading == false &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['uploading', 'submittedAt']);
+    }
+
+    match /Users/{uid} {
+      allow get: if own(uid);
+      allow list, create, update, delete: if false;
+    }
+    match /StudentPrivate/{uid} {
+      allow get: if own(uid) || isTeacher();
+      allow list, create, update, delete: if false;
+    }
+    match /StudentDirectory/{uid} {
+      allow read: if isTeacher();
+      allow write: if false;
+    }
+    match /NationalIds/{nationalId} { allow read, write: if false; }
+    match /TeacherCodes/{code} { allow read, write: if false; }
+
+    match /Grades/{uid}/courseGrades/{courseId} {
+      allow get: if own(uid) || isTeacher();
+      allow list: if isTeacher();
+      allow create, update: if isTeacher() && validGrade();
+      allow delete: if isTeacher();
+    }
+
+    match /Courses/{courseId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isTeacher();
+      match /submissions/{submissionId} {
+        allow get: if isTeacher() || (signedIn() && resource.data.studentId == request.auth.uid);
+        allow list: if isTeacher();
+        allow create: if signedIn() && validSubmission();
+        allow update: if isTeacher() || (signedIn() && canFinishSubmission());
+        allow delete: if isTeacher() || (signedIn() && resource.data.studentId == request.auth.uid);
+        match /fileChunks/{chunkId} {
+          allow read: if isTeacher() || (signedIn() && get(/databases/$(database)/documents/Courses/$(courseId)/submissions/$(submissionId)).data.studentId == request.auth.uid);
+          allow create: if signedIn() && request.resource.data.keys().hasOnly(['index', 'bytes']) && request.resource.data.index is int && request.resource.data.index >= 0 && request.resource.data.index < 30 && request.resource.data.bytes is bytes && request.resource.data.bytes.size() <= 716800 && get(/databases/$(database)/documents/Courses/$(courseId)/submissions/$(submissionId)).data.studentId == request.auth.uid;
+          allow update, delete: if false;
+        }
+      }
+    }
+  }
+}

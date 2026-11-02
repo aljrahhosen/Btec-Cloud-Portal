@@ -1,0 +1,13 @@
+{
+  "name": "btec-cloud-portal",
+  "private": true,
+  "version": "1.0.0",
+  "engines": { "node": "26.x" },
+  "dependencies": {
+    "firebase-admin": "^13.0.2"
+  },
+  "scripts": {
+    "check": "node --check api/register-student.js && node --check api/register-teacher.js",
+    "test:rules": "firebase emulators:exec --only firestore 'node tests/firestore-rules.test.mjs'"
+  }
+}

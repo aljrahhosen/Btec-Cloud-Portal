@@ -205,6 +205,8 @@
                         <select id="card-student-select" class="form-input" onchange="window.onCardStudentSelect()" style="border-color: rgba(255, 215, 0, 0.5); background: rgba(255, 215, 0, 0.05); color: var(--accent-yellow); font-weight: 600; font-size: 15px;">
                             <option value="" disabled selected>Loading students...</option>
                         </select>
+                        <button type="button" class="edit-btn" style="margin-top:10px;width:100%;" onclick="window.revealNationalId()"><i class="fas fa-shield-alt"></i> View national ID</button>
+                        <div id="national-id-status" style="font-size:12px;color:var(--text-muted);margin-top:6px;"></div>
                     </div>
 
                     <div id="card-grades-anim" class="card-grades-anim">
@@ -290,8 +292,8 @@
     <!-- 🌟 تم استيراد ميزات الفايربيس الإضافية هنا 🌟 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, getDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -305,6 +307,17 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app); 
         const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) return window.location.replace('teacher-auth.html');
+            try {
+                const token = await user.getIdTokenResult();
+                const profile = await getDoc(doc(db, 'Users', user.uid));
+                if (token.claims.role !== 'teacher' && (!profile.exists() || profile.data().role !== 'teacher')) {
+                    window.location.replace('dashboard.html');
+                }
+            } catch (_) { window.location.replace('teacher-auth.html'); }
+        });
 
         const modal = document.getElementById('dynamic-modal');
         const modalBox = document.getElementById('dynamic-modal-box');
@@ -481,17 +494,15 @@
         window.fetchStudentsForCard = async function() {
             const select = document.getElementById('card-student-select');
             try {
-                const querySnapshot = await getDocs(collection(db, "Users"));
+                const querySnapshot = await getDocs(collection(db, "StudentDirectory"));
                 let options = `<option value="" disabled selected>${t[window.activeLang].chooseStudent}</option>`;
                 let found = false;
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    if(!data.teacherId) { 
-                        found = true;
-                        const name = data.name || data.fullName || "Student";
-                        options += `<option value="${doc.id}">👤 ${name}</option>`;
-                    }
+                    found = true;
+                    const name = data.displayName || "Student";
+                    options += `<option value="${doc.id}">👤 ${name}</option>`;
                 });
                 
                 select.innerHTML = found ? options : `<option value="" disabled>No students found</option>`;
@@ -506,6 +517,17 @@
             animContainer.classList.add('show');
             document.getElementById('card-master-grade').value = "";
             window.autoFillCriteria();
+        }
+
+        window.revealNationalId = async function() {
+            const studentId = document.getElementById('card-student-select').value;
+            const status = document.getElementById('national-id-status');
+            if (!studentId) { status.textContent = 'Select a student first.'; return; }
+            status.textContent = 'Loading protected identity data…';
+            try {
+                const privateProfile = await getDoc(doc(db, 'StudentPrivate', studentId));
+                status.textContent = privateProfile.exists() ? `National ID: ${privateProfile.data().nationalId || 'Not recorded'}` : 'No protected profile found.';
+            } catch (_) { status.textContent = 'You are not authorised to view this national ID.'; }
         }
 
         window.autoFillCriteria = function() {
@@ -561,10 +583,8 @@
             btn.disabled = true;
 
             try {
-                const studentRef = doc(db, "Users", studentId);
-                await updateDoc(studentRef, {
-                    [`grades.${courseId}`]: grade
-                });
+                const gradeRef = doc(db, "Grades", studentId, "courseGrades", courseId);
+                await setDoc(gradeRef, { grade, updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid }, { merge: true });
 
                 btn.innerHTML = `<i class="fas fa-check"></i> ${window.activeLang === 'ar' ? 'تم حفظ العلامة!' : 'Grade Saved!'}`;
                 btn.style.background = 'var(--accent-green)';
