@@ -102,7 +102,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, GithubAuthProvider, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -130,6 +130,20 @@
             }, 4000);
         }
 
+        // استلام نتيجة تسجيل الدخول بعد العودة من Google أو GitHub
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result && result.user) {
+                    const displayName = result.user.displayName || result.user.email || "User";
+                    showToast("Welcome, " + displayName, "success");
+                    setTimeout(() => { window.location.replace("dashboard.html"); }, 700);
+                }
+            })
+            .catch((error) => {
+                console.error("Social login redirect failed:", error);
+                showToast("Social login failed (" + (error.code || "unknown error") + ").");
+            });
+
         // تسجيل الدخول العادي
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -156,22 +170,22 @@
                 });
         });
 
-        // تسجيل الدخول بجوجل
+        // تسجيل الدخول بجوجل: استخدام التحويل الكامل لتجنب حظر النوافذ المنبثقة
         document.getElementById('google-btn').addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider).then((result) => {
-                showToast("Welcome, " + result.user.displayName, "success");
-                setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
-            }).catch((error) => { console.error("Google login failed:", error); showToast("Google login failed (" + (error.code || "unknown error") + ")."); });
+            signInWithRedirect(auth, provider).catch((error) => {
+                console.error("Google redirect login failed:", error);
+                showToast("Google login failed (" + (error.code || "unknown error") + ").");
+            });
         });
 
-        // تسجيل الدخول بجيت هب
+        // تسجيل الدخول بجيت هب: استخدام التحويل الكامل لتجنب حظر النوافذ المنبثقة
         document.getElementById('github-btn').addEventListener('click', () => {
             const provider = new GithubAuthProvider();
-            signInWithPopup(auth, provider).then((result) => {
-                showToast("Welcome, " + result.user.displayName, "success");
-                setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
-            }).catch((error) => { console.error("GitHub login failed:", error); showToast("GitHub login failed (" + (error.code || "unknown error") + ")."); });
+            signInWithRedirect(auth, provider).catch((error) => {
+                console.error("GitHub redirect login failed:", error);
+                showToast("GitHub login failed (" + (error.code || "unknown error") + ").");
+            });
         });
 
         // إظهار/إخفاء كلمة المرور
