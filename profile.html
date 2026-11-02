@@ -163,10 +163,11 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
-            authDomain: "btec-cloud-portal-d6a93.firebaseapp.com",
+            authDomain: "btec-cloud-portal.vercel.app",
             projectId: "btec-cloud-portal-d6a93",
             storageBucket: "btec-cloud-portal-d6a93.firebasestorage.app",
             messagingSenderId: "230354414241",
@@ -175,6 +176,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         const translations = {
             en: {
@@ -261,7 +263,7 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                const userName = user.displayName || "Student";
+                const userName = profileData.fullName || profileData.name || user.displayName || "Student";
                 const userEmail = user.email || "No email provided";
                 
                 document.getElementById("nav-profile-pic").innerText = userName.charAt(0);
@@ -269,6 +271,7 @@
                 document.getElementById("display-name").innerText = userName;
                 document.getElementById("info-name").innerText = userName;
                 document.getElementById("info-email").innerText = userEmail;
+                document.getElementById("info-nid").innerText = profileData.nationalId || "Not available";
 
                 loadProfileData(); 
                 const savedLang = localStorage.getItem('preferredLang') || 'en';
@@ -285,7 +288,7 @@
         document.getElementById('close-modal-btn').addEventListener('click', closeModal);
         document.getElementById('cancel-btn').addEventListener('click', closeModal);
 
-        document.getElementById('save-btn').addEventListener('click', () => {
+        document.getElementById('save-btn').addEventListener('click', async () => {
             let saved = JSON.parse(localStorage.getItem('btec_user_profile')) || defaultData;
             
             saved.school = document.getElementById('input-school').value;
