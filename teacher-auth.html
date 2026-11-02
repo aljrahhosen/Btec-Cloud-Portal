@@ -180,7 +180,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -194,6 +194,17 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        async function completeTeacherRegistration(user, teacherId, name) {
+            const token = await user.getIdToken();
+            const response = await fetch('/api/register-teacher', {
+                method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ teacherId, name })
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(payload.error || 'Teacher registration failed.');
+            await user.getIdToken(true);
+        }
 
         const errorDiv = document.getElementById('error-message');
 
@@ -252,35 +263,13 @@
             errorDiv.style.display = 'none';
 
             try {
-                const codeRef = doc(db, "TeacherCodes", teacherId);
-                const codeSnap = await getDoc(codeRef);
-
-                if (!codeSnap.exists()) {
-                    showError("Invalid Teacher ID! Please contact administration.");
-                    btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
-                    return;
-                }
-
-                if (codeSnap.data().used === true) {
-                    showError("This Teacher ID has already been used to create an account.");
-                    btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
-                    return;
-                }
-
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
 
                 await updateProfile(user, { displayName: name });
 
-                await setDoc(doc(db, "Users", user.uid), {
-                    name: name,
-                    email: email,
-                    role: "teacher",
-                    teacherId: teacherId
-                });
-
-                await updateDoc(codeRef, { used: true });
+                await completeTeacherRegistration(user, teacherId, name);
 
                 window.location.href = `teacher-dashboard.html?code=${teacherId}`;
 

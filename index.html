@@ -103,6 +103,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, GithubAuthProvider, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDU_rKS6aUxflVRNzFPAvxdGFSKaFHgmaE",
@@ -116,6 +117,15 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        async function routeSignedInUser(user) {
+            const profile = await getDoc(doc(db, 'Users', user.uid));
+            if (!profile.exists()) return window.location.replace('complete-registration.html');
+            if (profile.data().role === 'teacher') return window.location.replace('teacher-dashboard.html');
+            if (profile.data().registrationComplete) return window.location.replace('dashboard.html');
+            return window.location.replace('complete-registration.html');
+        }
 
         function showToast(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -136,7 +146,7 @@
                 if (result && result.user) {
                     const displayName = result.user.displayName || result.user.email || "User";
                     showToast("Welcome, " + displayName, "success");
-                    setTimeout(() => { window.location.replace("dashboard.html"); }, 700);
+                    setTimeout(() => { routeSignedInUser(result.user).catch(() => showToast('Could not load account profile.')); }, 700);
                 }
             })
             .catch((error) => {
@@ -159,9 +169,9 @@
             btn.disabled = true;
 
             signInWithEmailAndPassword(auth, email, password)
-                .then(() => {
+                .then(({ user }) => {
                     showToast("Logged in successfully!", "success");
-                    setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
+                    setTimeout(() => { routeSignedInUser(user).catch(() => showToast('Could not load account profile.')); }, 1000);
                 })
                 .catch(() => {
                     showToast("Invalid email or password!");
@@ -182,6 +192,7 @@
         // تسجيل الدخول بجيت هب: استخدام التحويل الكامل لتجنب حظر النوافذ المنبثقة
         document.getElementById('github-btn').addEventListener('click', () => {
             const provider = new GithubAuthProvider();
+            provider.addScope('user:email');
             signInWithRedirect(auth, provider).catch((error) => {
                 console.error("GitHub redirect login failed:", error);
                 showToast("GitHub login failed (" + (error.code || "unknown error") + ").");

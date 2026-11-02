@@ -450,9 +450,6 @@
                 const submissionRef = doc(collection(db, "Courses", courseId, "submissions"));
                 const file = selection.file;
 
-                setSubmitButtonProgress(btn, texts.uploadingZip, 0);
-                const chunkCount = await saveFileToFirestoreChunks(submissionRef, file, btn, texts);
-
                 await setDoc(submissionRef, {
                     courseId,
                     assignmentTitle: document.getElementById('display-assign-title').innerText,
@@ -466,12 +463,16 @@
                     fileStorageType: "firestore-chunks",
                     fileSize: file.size,
                     fileType: file.type || "application/octet-stream",
-                    chunkCount,
+                    chunkCount: Math.max(1, Math.ceil(file.size / (700 * 1024))),
                     fileCount: 1,
                     files: [],
                     submittedAt: serverTimestamp(),
-                    createdAtClient: new Date().toISOString()
+                    createdAtClient: new Date().toISOString(),
+                    uploading: true
                 });
+                setSubmitButtonProgress(btn, texts.uploadingZip, 0);
+                const chunkCount = await saveFileToFirestoreChunks(submissionRef, file, btn, texts);
+                await setDoc(submissionRef, { chunkCount, uploading: false, submittedAt: serverTimestamp() }, { merge: true });
 
                 status.innerText = texts.submitSuccess;
                 btn.innerHTML = `<i class="fas fa-check"></i> ${texts.submitSuccess}`;
@@ -587,12 +588,11 @@
 
                 // 1. قراءة العلامة من حساب الطالب
                 try {
-                    const userDocRef = doc(db, "Users", user.uid);
-                    const docSnap = await getDoc(userDocRef);
+                    const gradeRef = doc(db, "Grades", user.uid, "courseGrades", courseId);
+                    const docSnap = await getDoc(gradeRef);
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        const grades = data.grades || {};
-                        window.displayStudentGrade(grades[courseId]);
+                        window.displayStudentGrade(data.grade);
                     } else {
                         window.displayStudentGrade(null); 
                     }
